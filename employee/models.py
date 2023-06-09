@@ -55,13 +55,13 @@ class Employee(models.Model):
     MALE = 'male'
     FEMALE = 'female'
     OTHER = 'other'
-    NOT_KNOWN = 'Not Known'
+    NOT_KNOWN = 'Prefer not to say'
 
     GENDER = (
     (MALE,'Male'),
     (FEMALE,'Female'),
     (OTHER,'Other'),
-    (NOT_KNOWN,'Not Known'),
+    (NOT_KNOWN,'Prefer not to say'),
     )
 
     MR = 'Mr'

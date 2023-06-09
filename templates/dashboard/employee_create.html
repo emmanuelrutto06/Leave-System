@@ -69,7 +69,14 @@
     -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5prgba(0,0,0,0.2);
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
 }
+.avatar {
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-family: sans-serif;
+    color: #0000FF;
 
+  }
 
   {% endblock %}
 
@@ -99,7 +106,7 @@
 
                     <section class="row">
                         <section class="col-lg-12 col-md-12 col-sm-12 text-center">
-                            <h3 class="title-h3">Add Employee</h3>
+                            <h3 class="title-h3">Add A New Employee To The System</h3>
                         </section>
                     </section>
 
@@ -108,16 +115,15 @@
                             <form action="" method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 {{form | crispy }}
-                                <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+                                <button type="submit" class="btn btn-primary btn-lg btn-block">Register New User</button>
                             </form>
                         </section>
 
                         <section  class="col-lg-4 col-md-12 col-sm-12 text-center">
 
                             <section class="prev-holder">
-                                <img src="{% static 'img/default-avatar.png' %}" alt="" id='temp-preview-image' class="prev-avatar" />
+                                <img src="{% static 'img/default-avatar.png' %}" alt="" id='temp-preview-image' class="prev-avatar" style="filter: hue-rotate(180deg);" />
                             </section>
-
 
 
                         </section>

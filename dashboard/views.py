@@ -15,13 +15,6 @@ from leave.forms import LeaveCreationForm
 
 
 def dashboard(request):
-	
-	'''
-	Summary of all apps - display here with charts etc.
-	eg.lEAVE - PENDING|APPROVED|RECENT|REJECTED - TOTAL THIS MONTH or NEXT MONTH
-	EMPLOYEE - TOTAL | GENDER 
-	CHART - AVERAGE EMPLOYEE AGES
-	'''
 	dataset = dict()
 	user = request.user
 
@@ -99,12 +92,6 @@ def dashboard_employees_create(request):
 			instance.othername = request.POST.get('othername')
 			
 			instance.birthday = request.POST.get('birthday')
-
-			
-
-			
-
-
 
 			role = request.POST.get('role')
 			role_instance = Role.objects.get(id = role)

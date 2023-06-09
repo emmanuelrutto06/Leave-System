@@ -123,10 +123,6 @@ class Leave(models.Model):
 			self.save()
 
 
-
-
-
-
 	@property
 	def reject_leave(self):
 		if self.is_approved or not self.is_approved:

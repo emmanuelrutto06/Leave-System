@@ -29,7 +29,7 @@
 
 
  .employee-box{
-    background: #5a4747;  /* fallback for old browsers */
+    background: #5a4747;
     background: rgb(2,0,36);
     background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
 
@@ -37,7 +37,7 @@
 
 
  .leave-box{
-    background: #5a4747;  /* fallback for old browsers */
+    background: #5a4747; 
     background: rgb(2,0,36);
     background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
 
@@ -72,7 +72,7 @@
 
 .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:not(.btn):hover, .navbar-default .navbar-nav > .active > a:not(.btn):focus, .navbar-default .navbar-nav > li > a:not(.btn):hover, .navbar-default .navbar-nav > li > a:not(.btn):focus { color: #f44336 }
 
-.navbar-default .navbar-nav > .dropdown > a:hover .caret, .navbar-default .navbar-nav > .dropdown > a:focus .caret { border-bottom-color:  #d04247; border-top-color:  #d04247; }
+{% comment %} .navbar-default .navbar-nav > .dropdown > a:hover .caret, .navbar-default .navbar-nav > .dropdown > a:focus .caret { border-bottom-color:  #d04247; border-top-color:  #d04247; } {% endcomment %}
      
   {% endblock %}
 
@@ -87,9 +87,9 @@
             		<section class="col col-lg-4">
             			<div class="employee-box sec-box">
             				<a href="">
-            				<span style="font-size: 24px;">Registered Employees:  {{ employees.count }}</span>
+            				<span style="font-size: 24px;">Registered Employees: {{ employees.count }}</span>
             				</a>
-            				<!-- <span class="count-object"></span>  -->
+            			 {% comment %} <span class="count-object"></span> {% endcomment %}
             			</div>
             		</section>
             		<section class="col col-lg-4">
