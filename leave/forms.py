@@ -8,7 +8,9 @@ class LeaveCreationForm(forms.ModelForm):
 
     class Meta:
         model = Leave
-        exclude = ['user', 'defaultdays', 'hrcomments', 'status', 'is_approved', 'updated', 'created']
+        exclude = ['status', 'is_approved', 'updated', 'created']
+        # 'user', 'defaultdays', 'hrcomments', 
+        
 
     def clean_enddate(self):
         enddate = self.cleaned_data['enddate']

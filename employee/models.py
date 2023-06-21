@@ -41,8 +41,8 @@ class Department(models.Model):
 
 
     class Meta:
-        verbose_name = _('Department')
-        verbose_name_plural = _('Departments')
+        verbose_name = _('Designation')
+        verbose_name_plural = _('Designations')
         ordering = ['name','created']
     
     def __str__(self):
@@ -97,20 +97,19 @@ class Employee(models.Model):
     
     
     # PERSONAL DATA
+    
     user = models.ForeignKey(User,on_delete=models.CASCADE,default=1)
     
     image = models.FileField(_('Profile Image'),upload_to='profiles',default='default.png',blank=True,null=True,help_text='upload image size less than 2.0MB')#work on path username-date/image
-    firstname = models.CharField(_('Firstname'),max_length=125,null=False,blank=False)
-    lastname = models.CharField(_('Lastname'),max_length=125,null=False,blank=False)
-    othername = models.CharField(_('Othername (optional)'),max_length=125,null=True,blank=True)
+    firstname = models.CharField(_('Firstname'),max_length=250,null=False,blank=False)
+    lastname = models.CharField(_('Lastname'),max_length=250,null=False,blank=False)
+    othername = models.CharField(_('Othername (optional)'),max_length=250,null=True,blank=True)
     birthday = models.DateField(_('Birthday'),blank=False,null=False)
-   
- 
-    department =  models.ForeignKey(Department,verbose_name =_('Department'),on_delete=models.SET_NULL,null=True,default=None)
+    designation =  models.ForeignKey(Department,verbose_name =_('Designation'),on_delete=models.SET_NULL,null=True,default=None)
     role =  models.ForeignKey(Role,verbose_name =_('Role'),on_delete=models.SET_NULL,null=True,default=None)
     startdate = models.DateField(_('Employement Date'),help_text='date of employement',blank=False,null=True)
-    employeetype = models.CharField(_('Employee Type'),max_length=15,default=FULL_TIME,choices=EMPLOYEETYPE,blank=False,null=True)
-    employeeid = models.CharField(_('Employee ID Number'),max_length=10,null=True,blank=True)
+    employeetype = models.CharField(_('Employee Type'),max_length=115,default=FULL_TIME,choices=EMPLOYEETYPE,blank=False,null=True)
+    peronal_number = models.CharField(_('Personal Number'),max_length=100,null=True,blank=True)
     dateissued = models.DateField(_('Date Issued'),help_text='date staff id was issued',blank=False,null=True)
 
     # app related
@@ -124,7 +123,7 @@ class Employee(models.Model):
     #PLUG MANAGERS
     objects = EmployeeManager()
 
-    
+        
     
     class Meta:
         verbose_name = _('Employee')
@@ -135,6 +134,10 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.get_full_name
+    from datetime import timedelta
+    
+
+
 
     
 

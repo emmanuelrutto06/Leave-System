@@ -54,12 +54,12 @@
         
     }
 
-
+{% comment %} 
     .main-panel > .content {
     padding: 60px 15px;
-    min-height: calc(100% - 123px);
+    min-height: calc(100% - 123px); {% endcomment %}
 
-
+    {% comment %} } {% endcomment %}
 
 
   {% endblock %}
@@ -79,6 +79,7 @@
                                     {% for message in messages %}
                                      <div {% if message.tags %} class="{{ message.tags}}"{% endif %}>
                                          {{ message }}
+                                         
                                          <button type="button" class="close" id = "override-start"data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
                                          </button>
                                      </div>

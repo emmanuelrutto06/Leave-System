@@ -12,6 +12,7 @@ from employee.forms import EmployeeCreateForm
 from leave.models import Leave
 from employee.models import *
 from leave.forms import LeaveCreationForm
+from datetime import date
 
 
 def dashboard(request):
@@ -102,10 +103,8 @@ def dashboard_employees_create(request):
 			instance.employeeid = request.POST.get('employeeid')
 			instance.dateissued = request.POST.get('dateissued')
 
-			
-
+		
 			instance.save()
-
 			
 
 			return  redirect('dashboard:employees')
@@ -215,41 +214,101 @@ def dashboard_employee_info(request,id):
 
 
 
-# ---------------------LEAVE-------------------------------------------
-
-
+# ---------------------LEAVE--------------------------------------from datetime import date
 
 def leave_creation(request):
-	if not request.user.is_authenticated:
-		return redirect('accounts:login')
-	if request.method == 'POST':
-		form = LeaveCreationForm(data = request.POST)
-		if form.is_valid():
-			instance = form.save(commit = False)
-			user = request.user
-			instance.user = user
-			instance.save()
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+
+    if request.method == 'POST':
+        form = LeaveCreationForm(data=request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            user = request.user
+            instance.user = user
+            instance.save()
+
+            # Calculate days taken and remaining
+            default_leave_days = 30  # Replace with the appropriate value for your application
+            days_taken = (instance.enddate - instance.startdate).days
+            today = date.today()
+            days_remaining = (instance.enddate - today).days
+
+            context = {
+                'leave': instance,
+                'default_leave_days': default_leave_days,
+                'days_taken': days_taken,
+                'days_remaining': days_remaining,
+            }
+
+            messages.success(request, 'Leave Request Sent, wait for Admins response', extra_tags='alert alert-success alert-dismissible show')
+            return render(request, 'dashboard/create_leave.html', context)
+
+        messages.error(request, 'Failed to request a Leave, please check entry dates', extra_tags='alert alert-warning alert-dismissible show')
+
+    else:  # GET request
+        form = LeaveCreationForm()
+        dataset = {
+            'form': form,
+            'title': 'Apply for Leave',
+        }
+        return render(request, 'dashboard/create_leave.html', dataset)
+
+    # Calculate days taken and remaining based on the current date
+    default_leave_days = 30  # Replace with the appropriate value for your application
+    leave_requests = LeaveRequest.objects.filter(user=request.user)
+    today = date.today()
+
+    days_taken = 0
+    for request in leave_requests:
+        if request.status == 'approved':
+            days_taken += (request.enddate - request.startdate).days
+
+    days_remaining = default_leave_days - days_taken
+
+    if days_remaining <= 0:
+        messages.error(request, 'Your leave days are depleted', extra_tags='alert alert-warning alert-dismissible show')
+
+    context = {
+        'leave_requests': leave_requests,
+        'default_leave_days': default_leave_days,
+        'days_taken': days_taken,
+        'days_remaining': days_remaining,
+    }
+
+    return render(request, 'dashboard/create_leave.html', context)
 
 
-			# print(instance.defaultdays)
-			messages.success(request,'Leave Request Sent,wait for Admins response',extra_tags = 'alert alert-success alert-dismissible show')
-			return redirect('dashboard:createleave')
 
-		messages.error(request,'failed to Request a Leave,please check entry dates',extra_tags = 'alert alert-warning alert-dismissible show')
-		return redirect('dashboard:createleave')
+    # if request.method == 'POST':
+    #     form = LeaveCreationForm(data=request.POST)
+    #     if form.is_valid():
+    #         instance = form.save(commit=False)
+    #         user = request.user
+    #         instance.user = user
+    #         instance.save()
+            
+    #         leave = Leave.objects.filter(user=user)
+    #         default_leave_days = leave.default_leave_days
+    #         days_taken = leave.total_leave_days_taken
+    #         days_remaining = leave.total_leave_days_remaining
 
+    #         context = {
+    #             'leave': leave,
+    #             'days_taken': days_taken,
+    #             'days_remaining': days_remaining,
+    #             'default_leave_days': default_leave_days,
+    #         }
 
-	dataset = dict()
-	form = LeaveCreationForm()
-	dataset['form'] = form
-	dataset['title'] = 'Apply for Leave'
-	return render(request,'dashboard/create_leave.html',dataset)
-	
+    #         messages.success(request, 'Leave Request Sent, wait for Admins response', extra_tags='alert alert-success alert-dismissible show')
+    #         return render(request, 'dashboard/create_leave.html', context)
+    #     messages.error(request, 'Failed to request a Leave, please check entry dates', extra_tags='alert alert-warning alert-dismissible show')
 
-
-
-
-
+    # dataset = dict()
+    # form = LeaveCreationForm()
+    # dataset['form'] = form
+    # dataset['title'] = 'Apply for Leave'
+    # return render(request, 'dashboard/create_leave.html', dataset)
 
 
 def leaves_list(request):
@@ -279,13 +338,6 @@ def leaves_view(request,id):
 	return render(request,'dashboard/leave_detail_view.html',{'leave':leave,'employee':employee,'title':'{0}-{1} leave'.format(leave.user.username,leave.status)})
 
 
-
-
-
-
-
-
-
 def approve_leave(request,id):
 	if not (request.user.is_superuser and request.user.is_authenticated):
 		return redirect('/')
@@ -293,7 +345,6 @@ def approve_leave(request,id):
 	user = leave.user
 	employee = Employee.objects.filter(user = user)[0]
 	leave.approve_leave
-
 	messages.error(request,'Leave successfully approved for {0}'.format(employee.get_full_name),extra_tags = 'alert alert-success alert-dismissible show')
 	return redirect('dashboard:userleaveview', id = id)
 
