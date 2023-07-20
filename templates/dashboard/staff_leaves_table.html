@@ -177,7 +177,7 @@ body {
 							    <tr>
 							      <!-- <th scope="col">#</th> -->
 							      <th scope="col"><b>Type</b></th>
-							      <th scope="col"><b>Day(s)</b></th>
+							      <th scope="col"><b>Leave Day(s) Remaining </b></th><br>
 							      <th scope="col"><b>Status</b></th>
 							    </tr>
 							  </thead>
@@ -186,7 +186,8 @@ body {
 							    <tr>
 
 							      <td>{{ leave.leavetype}}</td>
-							      <td>{{ leave.leave_days }}</td>
+							      {% comment %} <td>{{ leave.leave_days }}</td> {% endcomment %}
+								  <td>{{leave.total_leave_days_remaining}}</td>
 							      {% if leave.is_approved %}
 							      <td ><span class="badge badge-success" style="background-color:green; font-size: 14px;">{{ leave.status }}</span></td>
 								  {% elif leave.is_rejected %}
@@ -196,10 +197,11 @@ body {
 							      {% endif %}
 
 							      <td> 
+									{% comment %} <a href="" style="color: #795548;">Recommend</a> {% endcomment %}
+
 							      	<a href="{% url 'dashboard:userleaveview' leave.id %}" style="color: #795548;">
-							      	    View Details
+										&nbsp; &nbsp; &nbsp; View Leave Details
 							      	</a>
-							      	
 							      </td>
 							    </tr>
 

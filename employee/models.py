@@ -2,12 +2,103 @@ import datetime
 from employee.utility import code_format
 from django.db import models
 from employee.managers import EmployeeManager
-from phonenumber_field.modelfields import PhoneNumberField
-from django.utils.translation import gettext as _
+# from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.models import User
-from leave.models import Leave
+import django.contrib.auth.base_user as auth_base
+from django.utils.translation import gettext as _
+# from django.contrib.auth.models import AbstractUser, BaseUserManager
+# from django.contrib.auth import get_user_model
+
+# User = get_user_model()
+
+# class UserManager(BaseUserManager):
+#     def create_user(self, email, first_name, last_name, username, password=None):
+#         if not email:
+#             raise ValueError('User requires an email address')
+#         # if not username:
+#         #     raise ValueError('User requires a username')
+#         user = self.model(
+#             email=self.normalize_email(email),
+#             first_name=first_name,
+#             last_name=last_name,
+#             username=username,
+#         )
+#         user.set_password(password)
+#         user.save(using=self._db)
+#         return user
+
+#     def create_superuser(self, email, first_name, last_name, username, password=None):
+#         user = self.create_user(
+#             email=self.normalize_email(email),
+#             first_name=first_name,
+#             last_name=last_name,
+#             username=username,
+#             password=password,
+#         )
+#         user.is_admin = True
+#         user.is_active = True
+#         user.is_staff = True
+#         user.is_superuser = True  # Set is_superuser to True for superusers
+#         user.save(using=self._db)
+#         return user
 
 
+# class CustomUser(AbstractUser): #auth_base.AbstractBaseUser
+#     HR = 1
+#     SUPERVISOR = 2
+#     USER = 3
+
+#     ROLE_CHOICES = (
+#         (HR, 'hr'),
+#         (SUPERVISOR, 'supervisor'),
+#         (USER, 'user'),
+#     )
+#     first_name = models.CharField(max_length=100)
+#     last_name = models.CharField(max_length=100)
+#     username = models.CharField(max_length=100)
+#     email = models.EmailField(unique=True)
+#     phone_number = models.CharField(max_length=100)
+#     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True)
+
+#     # Required fields
+#     date_joined = models.DateTimeField(auto_now_add=True)
+#     last_login = models.DateTimeField(auto_now=True)
+#     created_date = models.DateField(auto_now_add=True)
+#     modified_date = models.DateField(auto_now=True)
+#     is_active = models.BooleanField(default=False)
+#     is_admin = models.BooleanField(default=False)
+#     is_superuser = models.BooleanField(default=False)
+#     is_staff = models.BooleanField(default=False)
+
+#     objects = UserManager()
+
+#     USERNAME_FIELD = 'email'
+#     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+
+#     def __str__(self):
+#         return self.email
+
+    # def has_perm(self, perm, obj=None):
+    #     return self.is_admin
+
+    # def has_module_perms(self, app_label):
+    #     return True
+
+    # def get_all_permissions(self):
+    #     return self.user_permissions.all()
+
+    # def save(self, *args, **kwargs):
+    #     # Assign the appropriate role based on the selected value
+    #     if self.role == CustomUser.HR:
+    #         self.is_admin = True
+    #         self.is_superuser = True
+    #         self.is_staff = True
+    #         self.is_active = True
+    #     elif self.role == CustomUser.SUPERVISOR:
+    #         self.is_staff = True
+    #     else:
+    #         self.is_staff = False
+    #     super().save(*args, **kwargs)
 
 
 # Create your models here.
@@ -18,7 +109,7 @@ class Role(models.Model):
 
     created = models.DateTimeField(verbose_name=_('Created'),auto_now_add=True)
     updated = models.DateTimeField(verbose_name=_('Updated'),auto_now=True)
-
+    # supervisor_role = Role.objects.create(name='Supervisor', description='Role for supervisors')
 
     class Meta:
         verbose_name = _('Role')
@@ -43,7 +134,7 @@ class Department(models.Model):
     class Meta:
         verbose_name = _('Designation')
         verbose_name_plural = _('Designations')
-        ordering = ['name','created']
+        ordering = ['name', 'created']
     
     def __str__(self):
         return self.name
@@ -92,9 +183,6 @@ class Employee(models.Model):
     (CONTRACT,'Contract'),
     (INTERN,'Intern'),
     )
-
-
-    
     
     # PERSONAL DATA
     
@@ -131,15 +219,10 @@ class Employee(models.Model):
         ordering = ['-created']
 
 
-
     def __str__(self):
         return self.get_full_name
     from datetime import timedelta
-    
 
-
-
-    
 
     @property
     def get_full_name(self):
@@ -172,29 +255,12 @@ class Employee(models.Model):
         pass
 
 
-
-
-
-   
-
-    
-
-
-
-
-
     def save(self,*args,**kwargs):
-        '''
-        overriding the save method - for every instance that calls the save method 
-        perform this action on its employee_id
-        added : March, 03 2019 - 11:08 PM
-
-        '''
-        get_id = self.employeeid #grab employee_id number from submitted form field
+        get_id = self.peronal_number #grab employee_id number from submitted form field
         data = code_format(get_id)
-        self.employeeid = data #pass the new code to the employee_id as its orifinal or actual code
+        self.personal_number = data #pass the new code to the employee_id as its orifinal or actual code
         super().save(*args,**kwargs) # call the parent save method
-        # print(self.employeeid)
+        # print(self.peronal_number)
 
 
 

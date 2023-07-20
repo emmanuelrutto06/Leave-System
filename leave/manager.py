@@ -23,6 +23,8 @@ class LeaveManager(models.Manager):
 	def all_cancel_leaves(self):
 		return super().get_queryset().filter(status = 'cancelled').order_by('-created')
 
+	def edit_leave(self):
+		return super().get_queryset().filter(status = 'edited').order_by('-created')
 
 
 
@@ -38,6 +40,11 @@ class LeaveManager(models.Manager):
 		'''
 		return super().get_queryset().filter(status = 'approved')
 
+	def all_recommended_leaves(self):
+		'''
+		gets all approved leaves -> Leave.objects.all_approved_leaves()
+		'''
+		return super().get_queryset().filter(status = 'recommended')
 
 
 	def current_year_leaves(self):

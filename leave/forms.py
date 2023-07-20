@@ -2,15 +2,14 @@ from django import forms
 from .models import Leave
 import datetime
 
-
 class LeaveCreationForm(forms.ModelForm):
     reason = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 4, 'cols': 40}))
 
     class Meta:
         model = Leave
-        exclude = ['status', 'is_approved', 'updated', 'created']
+        exclude = ['status', 'user', 'is_approved', 'updated', 'created', 'default_leave_days', 'leave_days_taken', 'leave_days_remaining',]
         # 'user', 'defaultdays', 'hrcomments', 
-        
+
 
     def clean_enddate(self):
         enddate = self.cleaned_data['enddate']

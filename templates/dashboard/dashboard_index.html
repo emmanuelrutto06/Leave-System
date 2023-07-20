@@ -83,9 +83,9 @@
         <section class="content">
             <section class="container-fluid">
             	<section class="row">
-            		{% if request.user.is_superuser and request.user.is_staff %}
+            		{% if request.user.is_superuser or request.user.is_staff or request.user.is_supervisor %}
             		<section class="col col-lg-4">
-            			<div class="employee-box sec-box">
+            			<div class="employee-box sec-box">s
             				<a href="">
             				<span style="font-size: 24px;">Registered Employees: {{ employees.count }}</span>
             				</a>
@@ -96,7 +96,6 @@
             			<div class="leave-box sec-box">
             				<a href="">
             				<span style="font-size: 24px;"></span>Leaves Requested: {{ leaves.count }}</span>
-            				</a>
                             <!-- <span class="count-object" style="color:#41b6d6;"></span>  -->
             			</div>
             		</section>
@@ -107,7 +106,7 @@
                             <a href="">
                             <span>Total Leaves: {{ staff_leaves.count }}</span>
                             </a>
-                            <!-- <span class="count-object" style="color:#41b6d6;"></span>  -->
+                          {% comment %} <span class="count-object" style="color:#41b6d6;"></span> {% endcomment %}
                         </div>
                     </section>
                     
@@ -148,7 +147,7 @@
 
           $.notify({
               icon: 'fa fa-user fa-fade',
-              message: "Welcome to Rutto's Leave Management System, " +get_login_user
+              message: "Welcome to the KeFS Leave Management System, " +get_login_user
 
             },{
                 type: 'info',

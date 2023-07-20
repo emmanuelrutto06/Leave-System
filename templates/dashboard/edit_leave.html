@@ -1,0 +1,6 @@
+<form method="post" action="{% url 'dashboard:edit_leave' leave.id %}">
+
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Update Leave</button>
+</form>

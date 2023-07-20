@@ -100,6 +100,8 @@
                             <form action="{% url 'dashboard:createleave' %}" method="POST">
                                 {% csrf_token %}
                                 {{ form | crispy }}
+                                {{startdate}}
+                                {{enddate}}
                                 <button type="submit" class="btn btn-primary btn-lg btn-block">Request Leave</button>
                             </form>
                         </section>

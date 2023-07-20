@@ -7,9 +7,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.models import User
 from employee.models import *
-from .forms import UserLogin,UserAddForm
-
-
+from .forms import UserLogin, UserAddForm
 
 def changepassword(request):
 	if not request.user.is_authenticated:
@@ -24,7 +22,7 @@ def changepassword(request):
 			update_session_auth_hash(request,user)
 
 			messages.success(request,'Password changed successfully',extra_tags = 'alert alert-success alert-dismissible show' )
-			return redirect('accounts:changepassword')
+			# return redirect('accounts:changepassword')
 		else:
 			messages.error(request,'Error,changing password',extra_tags = 'alert alert-warning alert-dismissible show' )
 			return redirect('accounts:changepassword')
@@ -36,18 +34,18 @@ def changepassword(request):
 
 
 def register_user_view(request):
-	# WORK ON (MESSAGES AND UI) & extend with email field
+	# I NEED TO WORK ON (MESSAGES AND UI) & extend with email field
 	if request.method == 'POST':
 		form = UserAddForm(data = request.POST)
 		if form.is_valid():
 			instance = form.save(commit = False)
 			instance.save()
-			username = form.cleaned_data.get("username")
+			email = form.cleaned_data.get("email") #changed username to email
 
-			messages.success(request,'Account created for {0} !!!'.format(username),extra_tags = 'alert alert-success alert-dismissible show' )
+			messages.success(request,'Account created for {0} !!!'.format(email),extra_tags = 'alert alert-success alert-dismissible show' )
 			return redirect('accounts:register')
 		else:
-			messages.error(request,'Username or password is invalid',extra_tags = 'alert alert-warning alert-dismissible show')
+			messages.error(request,'The Email or password is invalid',extra_tags = 'alert alert-warning alert-dismissible show')
 			return redirect('accounts:register')
 
 
@@ -59,13 +57,35 @@ def register_user_view(request):
 
 
 
+# def login_view(request):
+#     if request.method == 'POST':
+#         form = UserLogin(data=request.POST)
+#         if form.is_valid():
+#             username = form.cleaned_data.get('username')
+#             password = form.cleaned_data.get('password')
+
+#             user = authenticate(request, username=username, password=password)
+#             if user is not None and user.is_active:
+#                 login(request, user)
+#                 return redirect('dashboard:dashboard')
+#             else:
+#                 messages.error(request, 'Invalid username or password', extra_tags='alert alert-error alert-dismissible show')
+#                 return redirect('accounts:login')
+#         else:
+#             messages.error(request, 'Invalid form data', extra_tags='alert alert-error alert-dismissible show')
+#             return redirect('accounts:login')
+#     else:
+#         form = UserLogin()
+
+#     dataset = {'form': form}
+#     return render(request, 'accounts/login.html', dataset)
 
 def login_view(request):
 	'''
-	work on me - needs messages and redirects
+	I need to work on needs messages and redirects
 	
 	'''
-	login_user = request.user
+	# login_user = request.user
 	if request.method == 'POST':
 		form = UserLogin(data = request.POST)
 		if form.is_valid():
@@ -75,11 +95,11 @@ def login_view(request):
 			user = authenticate(request, username = username, password = password)
 			if user and user.is_active:
 				login(request,user)
-				if login_user.is_authenticated:
+				if user.is_authenticated:
 					return redirect('dashboard:dashboard')
 			else:
-			    messages.error(request,'Account is invalid',extra_tags = 'alert alert-error alert-dismissible show' )
-			    return redirect('accounts:login')
+				messages.error(request,'Account is invalid',extra_tags = 'alert alert-error alert-dismissible show' )
+				return redirect('accounts:login')
 
 		else:
 			return HttpResponse('data not valid')
@@ -126,7 +146,7 @@ def users_list(request):
 
 
 def users_unblock(request,id):
-	user = get_object_or_404(User,id = id)
+	user = get_object_or_404(CustomUser,id = id)#modified customuser
 	emp = Employee.objects.filter(user = user).first()
 	emp.is_blocked = False
 	emp.save()
@@ -137,7 +157,7 @@ def users_unblock(request,id):
 
 
 def users_block(request,id):
-	user = get_object_or_404(User,id = id)
+	user = get_object_or_404(CustomUser,id = id)#customuser edited
 	emp = Employee.objects.filter(user = user).first()
 	emp.is_blocked = True
 	emp.save()

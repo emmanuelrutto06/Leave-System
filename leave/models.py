@@ -5,35 +5,38 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import datetime
 from datetime import date
+from django.conf import settings
+
+
 
 ANNUAL = 'annual'
 SICK = 'sick'
-# CASUAL = 'casual'
-# EMERGENCY = 'emergency'
-# STUDY = 'study'
-# MATERNITY = 'maternity'
-# BEREAVEMENT = 'bereavement'
-# QUARANTINE = 'quarantine'
-# COMPENSATORY = 'compensatory'
-# SABBATICAL = 'sabbatical'
+CASUAL = 'casual'
+EMERGENCY = 'emergency'
+STUDY = 'study'
+MATERNITY = 'maternity'
+BEREAVEMENT = 'bereavement'
+QUARANTINE = 'quarantine'
+COMPENSATORY = 'compensatory'
+SABBATICAL = 'sabbatical'
 
 LEAVE_TYPE = (
     (ANNUAL, 'annual'),
     (SICK, 'Sick Leave'),
-    # (CASUAL, 'Casual Leave'),
-    # (EMERGENCY, 'Emergency Leave'),
-    # (STUDY, 'Study Leave'),
-    # (MATERNITY, 'Maternity Leave'),
-    # (BEREAVEMENT, 'Bereavement Leave'),
-    # (QUARANTINE, 'Self Quarantine'),
-    # (COMPENSATORY, 'Compensatory Leave'),
-    # (SABBATICAL, 'Sabbatical Leave')
+    (CASUAL, 'Casual Leave'),
+    (EMERGENCY, 'Emergency Leave'),
+    (STUDY, 'Study Leave'),
+    (MATERNITY, 'Maternity Leave'),
+    (BEREAVEMENT, 'Bereavement Leave'),
+    (QUARANTINE, 'Self Quarantine'),
+    (COMPENSATORY, 'Compensatory Leave'),
+    (SABBATICAL, 'Sabbatical Leave')
 )
 
 
 
 class Leave(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
     startdate = models.DateField(verbose_name=_('Start Date'), help_text='leave start date is on ..', null=True, blank=False)
     enddate = models.DateField(verbose_name=_('End Date'), help_text='coming back on ...', null=True, blank=False)
     leavetype = models.CharField(choices=LEAVE_TYPE, max_length=25, default=SICK, null=True, blank=False)
@@ -41,20 +44,33 @@ class Leave(models.Model):
     default_leave_days = models.PositiveIntegerField(default=30)
     leave_days_taken = models.PositiveIntegerField(default=0)
     leave_days_remaining = models.PositiveIntegerField(default=0)
-    status = models.CharField(max_length=12, default='pending')
+    status = models.CharField(max_length=20, default='pending')
     is_approved = models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
+
     objects = LeaveManager()
 
+# Leave Types
     
     class Meta:
         verbose_name = _('Leave')
         verbose_name_plural = _('Leaves')
         ordering = ['-created']
-                
+   
+    # class Meta:
+    #     permissions = [
+    #         ('can_approve_leave', 'Can approve leave'),
+    #         ('can_reject_leave', 'Can reject leave'),
+    #         # more permissions...
+    #     ]
+
+    
     def __str__(self):
-        return '{0} - {1}'.format(self.leavetype, self.user)
+        return '{0} - {1}'.format(self.leavetype, self.user.get_full_name())
+                
+    # def __str__(self):
+    #     return '{0} - {1}'.format(self.leavetype, self.user)
 
     @property
     def pretty_leave(self):
@@ -70,19 +86,40 @@ class Leave(models.Model):
     def leave_approved(self):
         return self.is_approved == True
     
-    @property
+    
+    # @property
     def approve_leave(self):
         if not self.is_approved:
             self.is_approved = True
             self.status = 'approved'
             self.save()
-    
+
     @property
     def unapprove_leave(self):
         if self.is_approved:
             self.is_approved = False
             self.status = 'pending'
             self.save()
+  
+    # @property
+    def recommend_leave(self):
+        if self.status == 'pending':
+            self.is_approved = True
+            self.status = 'recommended'
+            self.save()
+    @property
+    def unrecommend_leave(self):
+        if self.is_approved:
+            self.is_approved = False
+            self.status = 'Unrecommended'
+            self.save()
+            
+
+    # def recommend_leave(self):
+    #     if self.unapprove_leave:
+    #         self.unapprove_leave = True
+    #         self.status = 'recommended'
+    #         self.save()
 
     @property
     def leaves_cancel(self):
@@ -115,22 +152,22 @@ class Leave(models.Model):
     print(total_leave_days_remaining)
 
 
-# Create an instance of LeaveModel
-leave = Leave(
-    startdate=date(2023, 6, 17),
-    enddate=date(2023, 6, 29),
-)
- 
-leave.save()
-
-context = {
-    'leave': leave,
-}
-# Access the leave days taken and remaining
-default_leave_days = leave.default_leave_days
-days_taken = leave.total_leave_days_taken
-days_remaining = leave.total_leave_days_remaining
-
-print("total leave days:", default_leave_days)
-print("Days taken:", days_taken)
-print("Days remaining:", days_remaining)
+# # Create an instance of LeaveModel
+# leave = Leave(
+#     startdate=date(2023, 6, 17),
+#     enddate=date(2023, 6, 29),
+# )
+#
+# leave.save()
+#
+# context = {
+#     'leave': leave,
+# }
+# # Access the leave days taken and remaining
+# default_leave_days = leave.default_leave_days
+# days_taken = leave.total_leave_days_taken
+# days_remaining = leave.total_leave_days_remaining
+#
+# print("total leave days:", default_leave_days)
+# print("Days taken:", days_taken)
+# print("Days remaining:", days_remaining)

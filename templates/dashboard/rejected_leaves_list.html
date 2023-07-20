@@ -197,7 +197,7 @@ body {
 							      <!-- <th scope="col">#</th> -->
 							      <th scope="col"><b>User</b></th>
 							      <th scope="col"><b>Type</b></th>
-							      <th scope="col"><b>Day(s)</b></th>
+							      <th scope="col"><b>Leave Day(s) Remaining</b></th>
 							      <th scope="col"><b>Status</b></th>
 							      <th scope="col"><b>Actions</b></th>
 							    </tr>
@@ -208,7 +208,8 @@ body {
 
 							      <td>{{ leave.user }}</td>
 							      <td>{{ leave.leavetype}}</td>
-							      <td>{{ leave.leave_days }}</td>
+							      {% comment %} <td>{{ leave.leave_days }}</td> {% endcomment %}
+								  <td>{{leave.total_leave_days_remaining}}</td>
 							      <td><span class="badge badge-success" style="background-color:#d04247; font-size: 14px;">{{ leave.status }}</span></td>
 
 							      <td> 

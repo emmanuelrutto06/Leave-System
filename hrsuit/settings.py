@@ -1,5 +1,7 @@
 import os
+# import pytz
 from decouple import config
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,7 +30,7 @@ INSTALLED_APPS = [
     # PROJECT APPS
     'dashboard',
     'accounts',
-    'employee',
+    'employee', #User
     'leave',
 
 ]
@@ -42,6 +44,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'hrsuit.urls'
 
@@ -72,6 +75,7 @@ DATABASES = {
         'HOST': config('DB_HOST'),
     }
 }
+# AUTH_USER_MODEL = 'employee.CustomUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -97,17 +101,27 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+
 STATIC_URL = '/static/'
+
 
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static_cdn', 'static_root')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static_in_proj', 'our_static'),
+  
 ]
+
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static_cdn', 'media_root')
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]

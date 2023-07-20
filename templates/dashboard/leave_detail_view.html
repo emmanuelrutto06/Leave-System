@@ -40,7 +40,7 @@ span{
 }
 
 
-.list-group-item {
+{% comment %} .list-group-item {
     position: relative;
     display: block;
     padding: 10px 15px;
@@ -48,7 +48,7 @@ span{
     background-color: #fff;
     border: 1px solid transparent;
     font-size:17px;
-}
+} {% endcomment %}
 
   #override-start{
     background:none !important;
@@ -169,26 +169,66 @@ span{
 
                              
                                   <span style="font-size: 13px;padding-left: 1rem;" class="pull-left">Created <b>{{ leave.created }}</b></span>
-                              
+              
+              {% if request.user.is_staff and not request.user.is_superuser %}
+                    {%if leave.recommend_leave %}
+                    {% comment %} <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-info" style="background-color: orange; color: white;" name="Recommend">Recommend</a> {% endcomment %}
+                    {% endif %}
+              {% endif %}
 
-              {% if request.user.is_superuser and request.user.is_staff %}
+              {% if request.user.is_superuser %}
+                  <section class="row">
+                      <section class="col col-lg-4 col-sm-12 col-lg-offset-7 text-center">
+                          <div class="btn-group btn-group-justified">
+                              {% if leave.leave_approved %}
+                                  <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline</a>
+                              {% else %}
+                                  <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:green; color: white;" name='approve'>&nbsp;Approve</a>
+                              {% endif %}
+                              <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
+                              <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a>
+                              <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>
+                          </div>
+        </section>
+    </section>
+{% elif request.user.is_staff %}
+    <section class="row">
+        <section class="col col-lg-4 col-sm-12 col-lg-offset-7 text-center">
+            <div class="btn-group btn-group-justified">
+                {% if leave.leave_approved %}
+                    {% comment %} <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline</a> {% endcomment %}
+                {% endif %}
+                <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:orange; color: white;" name='approve'>&nbsp;Approve</a>
+                <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
+                <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a>
+                <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>
+            </div>
+        </section>
+    </section>
+{% endif %}
 
+            
+              {% comment %} {% if request.user.is_superuser or request.user.is_staff %}
                     <section class="row">
                       <section class="col col-lg-4 col-sm-12 col-lg-offset-7 text-center">
                         <div class="btn-group btn-group-justified">
                           {%if leave.leave_approved %}
                           <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline
                           </a>
+                        
                           {% else %}
-                          <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:green; color: white;" name='approve'>Approve</a>
+                          
+                          <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:green; color: white;" name='approve'>&nbsp;Approve</a>
                           {% endif %}
                           <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
-                          <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>  
+                          <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a>
+                          <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>
                         </div>
+       
                       </section>
                     </section>
 
-              {% endif %}
+              {% endif %} {% endcomment %}
 
                 </section>
 

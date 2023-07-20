@@ -28,9 +28,12 @@
                         </p>
                     </a>
                     <ul class="dropdown-menu">
-                        {% if request.user.is_superuser %}
+                        {% if request.user.is_superuser or request.user.is_staff %}
                         <li><a href="{% url 'dashboard:leaveslist' %}">Pending Leaves</a></li>
                         <li><a href="{% url 'dashboard:approvedleaveslist' %}">Approved Leaves</a></li>
+                        <li><a href="{% url 'dashboard:recommendedleavelist' %}">Recommended Leaves</a></li>
+                        {% endif %}
+                        {% if request.user.is_superuser%}
                         <li><a href="{% url 'dashboard:canceleaveslist' %}">Cancelled Leaves</a></li>
                         <li><a href="{% url 'dashboard:leavesrejected' %}">Rejected Leaves</a></li>
                         <li class="divider"></li>
@@ -43,7 +46,7 @@
                     </ul>
                 </li>
 
-                {% if request.user.is_superuser and request.user.is_staff %}
+                {% if request.user.is_superuser or request.user.is_staff %}
                 <li class="dropdown hoverable">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <p>
@@ -58,7 +61,7 @@
                 </li>
                 {% endif %}
 
-                {% if request.user.is_superuser and request.user.is_staff %}
+                {% if request.user.is_superuser or request.user.is_staff %}
                 <li class="dropdown hoverable">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <p>

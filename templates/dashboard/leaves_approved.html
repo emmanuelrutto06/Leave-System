@@ -192,7 +192,7 @@ body {
 							      <!-- <th scope="col">#</th> -->
 							      <th scope="col"><b>User</b></th>
 							      <th scope="col"><b>Type</b></th>
-							      <th scope="col"><b>Day(s)</b></th>
+							      <th scope="col"><b>Leave Day(s) Remaining</b></th>
 							      <th scope="col"><b>Status</b></th>
 							      <th scope="col"><b>Actions</b></th>
 							    </tr>
@@ -203,16 +203,19 @@ body {
 
 							      <td>{{ leave.user }}</td>
 							      <td>{{ leave.leavetype}}</td>
-							      <td>{{ leave.leave_days }}</td>
+								  <td>{{leave.total_leave_days_remaining}}</td>
+						
 							      <td><span class="badge badge-success" style="background-color:rgb(21, 172, 34); font-size: 14px;">{{ leave.status }}</span></td>
 
 							      <td> 
 							      	<a href="{% url 'dashboard:userleaveview' leave.id %}" style="color: #795548;">
 							      	    <span>View &nbsp;</span>
 							      	</a>
+									{% if request.user.is_superuser %}
 							      	
 							        <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" style="color:#bd0404;">
 							       	<span>Unapprove</span>
+									{% endif %}
 							        </a>
 
 							      </td>
