@@ -113,22 +113,22 @@ def login_view(request):
 
 
 
-# def user_profile_view(request):
-# 	'''
-# 	user profile view -> staffs (No edit) only admin/HR can edit.
-# 	'''
-# 	user = request.user
-# 	if user.is_authenticated:
-# 		employee = Employee.objects.filter(user = user).first()
+def user_profile_view(request):
+	'''
+	user profile view -> staffs (No edit) only admin/HR can edit.
+	'''
+	user = request.user
+	if user.is_authenticated:
+		employee = Employee.objects.filter(user = user).first()
 		
 
-# 		dataset = dict()
-# 		dataset['employee'] = employee
+		dataset = dict()
+		dataset['employee'] = employee
 	
 		
 
-# 		return render(request,'dashboard/employee_detail.html',dataset)
-# 	return HttpResponse("Sorry , not authenticated for this,admin or whoever you are :)")
+		return render(request,'dashboard/employee_detail.html',dataset)
+	return HttpResponse("Sorry , not authenticated for this,admin or whoever you are :)")
 
 
 

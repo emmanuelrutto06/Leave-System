@@ -86,6 +86,20 @@ class Leave(models.Model):
     def leave_approved(self):
         return self.is_approved == True
     
+    @property
+    def leave_pending(self):
+        return self.is_approved == True
+    
+    # @property
+    # def pending_recommendation(self):
+    #     return self.is_approved== True
+
+    
+    
+    # @property
+    # def leave_recommended(self):
+    #     return self.is_approved == True
+    
     
     # @property
     def approve_leave(self):
@@ -101,12 +115,19 @@ class Leave(models.Model):
             self.status = 'pending'
             self.save()
   
-    # @property
+    @property
     def recommend_leave(self):
         if self.status == 'pending':
             self.is_approved = True
             self.status = 'recommended'
             self.save()
+    # @property
+    def approve_recommended_leave(self):
+        if self.status == 'recommended':
+            self.is_approved = True
+            self.status = 'approved'
+            self.save()
+            
     @property
     def unrecommend_leave(self):
         if self.is_approved:
@@ -127,6 +148,7 @@ class Leave(models.Model):
             self.is_approved = False
             self.status = 'cancelled'
             self.save()
+    
 
     @property
     def reject_leave(self):

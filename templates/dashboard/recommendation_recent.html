@@ -1,6 +1,5 @@
 
 {% extends '_layout.html' %}
-
 {% block title %} {{ title }} {% endblock %}
 
  {% block navheader %}
@@ -46,6 +45,10 @@
 
 	}
 
+	body {
+		font-size:17px;
+	}
+
 	.alert-warning{
 	    background:#fd7b7b;
 	}
@@ -73,10 +76,6 @@
     transition: all 400ms ease-in;
 
     font-variant: petite-caps;
-}
-
-body {
-	font-size:17px;
 }
 
 
@@ -146,10 +145,7 @@ body {
 }
 
 
-.total-leaves-count p{
-	font-size: 14px;
-    color: #9d9d9d;
-}
+
 
 
 {% endblock %}
@@ -178,13 +174,8 @@ body {
                 	<!-- TABLE -->
                 	<div class="table-responsive table-shadow">
                 		<div class="text-center table-description">
-                			<h4 class="title-h3" style="text-shadow: 1px 0px rgba(0,0,0,0.11)">Recommended Leaves</h4>
+                			<h4 class="title-h3" style="text-shadow: 1px 0px rgba(0,0,0,0.11)">Leaves Pending Recommendation</h4>
                 		</div>
-                		<section class="total-leaves-count">
-                			{% if leave_list %}
-                			<p>Total Recommended Leaves - <span>{{ leave_list.count }}</span></p>
-                			{% endif %}
-                		</section>
                 	
                 		<table class="table">
 							  <thead>
@@ -204,20 +195,14 @@ body {
 							      <td>{{ leave.user }}</td>
 							      <td>{{ leave.leavetype}}</td>
 								  <td>{{leave.total_leave_days_remaining}}</td>
-						
-							      <td><span class="badge badge-success" style="background-color:rgb(21, 172, 34); font-size: 14px;">{{ leave.status }}</span></td>
+							      {% comment %} <td>{{ leave.leave_days }}</td> {% endcomment %}
+							      <td><span class="badge badge-success" style="background-color:rgb(189, 138, 0); font-size: 14px;">{{ leave.status }}</span></td>
 
 							      <td> 
 							      	<a href="{% url 'dashboard:userrecommendview' leave.id %}" style="color: #795548;">
-							      	    <span>View &nbsp;</span>
+							      	    <span>View</span>
 							      	</a>
-									{% if request.user.is_superuser %}
 							      	
-							        <a href="{% url 'dashboard:userunrecommendleave' leave.id %}" style="color:#bd0404;">
-							       	<span>Unrecommend</span>
-									{% endif %}
-							        </a>
-
 							      </td>
 							    </tr>
 
@@ -242,5 +227,3 @@ body {
 
 {% endblock %}
 </script>
-
-<!-- pe-7s-back   <= -->

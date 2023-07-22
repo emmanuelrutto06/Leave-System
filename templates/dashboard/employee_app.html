@@ -172,13 +172,13 @@
 
                         </section>
                     </section>
-                    <!-- <div class="container"> -->
+                    <div class="container">
                     <section class="row margin-bottom">
                     	<div class="container-fluid">
                     	<section class="col-lg-4 col-md-4 col-sm-12">
 	            			<div class="employee-box sec-box">
 	            				<a href="">
-	            				<span>Employees  {{ employees.count }}</span>
+	            				<span>Employees:{{employees.count}}</span> 
 	            				</a>
 	            				<span class="count-object"></span> 
 	            			</div>
@@ -195,18 +195,18 @@
 
 <script type="text/javascript">
 {% block extrajs%}
-/*create-user-button - handler*/
+create-user-button - handler
 
-// $(document).ready(function(){
+ $(document).ready(function(){
 
-// var createuser = $('.create-user-model');
-// createuser.on('click',function(){
-// alert("who clicked me ?")
+var createuser = $('.create-user-model');
+createuser.on('click',function(){
+alert("who clicked me ?")
 
-// });
+});
 
 
-// });
+});
 
 {% endblock %}
 </script>

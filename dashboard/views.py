@@ -78,7 +78,7 @@ def dashboard_employees_create(request):
 		if form.is_valid():
 			instance = form.save(commit = False)
 			user = request.POST.get('user')
-			assigned_user = CustomUser.objects.get(id = user)
+			assigned_user = User.objects.get(id = user)
 
 			instance.user = assigned_user
 
@@ -116,7 +116,7 @@ def dashboard_employees_create(request):
 
 
 def employee_edit_data(request,id):
-	if not (request.user.is_authenticated and request.user.is_superuser and request.user.is_staff):
+	if not (request.user.is_authenticated and request.user.is_superuser or request.user.is_staff):
 		return redirect('/')
 	employee = get_object_or_404(Employee, id = id)
 	if request.method == 'POST':
@@ -125,7 +125,7 @@ def employee_edit_data(request,id):
 			instance = form.save(commit = False)
 
 			user = request.POST.get('user')
-			assigned_user = CustomUser.objects.get(id = user)
+			assigned_user = User.objects.get(id = user)
 
 			instance.user = assigned_user
 
@@ -392,8 +392,13 @@ def leaves_list(request):
     leaves = Leave.objects.all_pending_leaves()
     return render(request, 'dashboard/leaves_recent.html', {'leave_list': leaves, 'title': 'Leaves List - Pending'})
 
+def pending_recommendation(request):
+    leaves = Leave.objects.all_pending_leaves_to_be_recommended_leaves()
+    return render(request, 'dashboard/recommendation_recent.html', {'leave_list': leaves, 'title': 'Leaves List - Pending Recommendation'})
+
+
 def Unrecommend_list(request):
-    leaves = Leave.objects.all_recommended_leaves()
+    leaves = Leave.objects.all_unrecommended_leaves()
     return render(request, 'dashboard/unrecommended.html', {'leave_list': leaves, 'title': 'Leaves List - Unrecommended'})
 
 def edit_leave(request,id):
@@ -433,7 +438,7 @@ def edit_leave(request,id):
 # 	leaves = Leave.objects.all_approved_leaves() #approved leaves -> calling model manager method
 # 	return render(request,'dashboard/leaves_approved.html',{'leave_list':leaves,'title':'approved leave list'})
 
-
+#dashboard userleaveview
 def leaves_view(request,id):
 	if not (request.user.is_authenticated):
 		return redirect('/')
@@ -444,7 +449,7 @@ def leaves_view(request,id):
 	print(employee)
 	return render(request,'dashboard/leave_detail_view.html',{'leave':leave,'employee':employee,'title':'{0}-{1} leave'.format(leave.user.username,leave.status)})
 
-
+#dashboard recommendleaveview
 def recommend_view(request,id):
 	if not (request.user.is_authenticated):
 		return redirect('/')
@@ -453,19 +458,19 @@ def recommend_view(request,id):
 	print(leave.user)
 	employee = Employee.objects.filter(user = leave.user)[0]
 	print(employee)
-	return render(request,'dashboard/leaves_recommended.html',{'leave':leave,'employee':employee,'title':'{0}-{1} leave'.format(leave.user.username,leave.status)})
+	return render(request,'dashboard/leave_recommended_view.html',{'leave':leave,'employee':employee,'title':'{0}-{1} leave'.format(leave.user.username,leave.status)})
 
 
 
-def unrecommend_view(request,id):
-	if not (request.user.is_authenticated):
-		return redirect('/')
+# def unrecommend_view(request,id):
+# 	if not (request.user.is_authenticated):
+# 		return redirect('/')
 
-	leave = get_object_or_404(Leave, id = id)
-	print(leave.user)
-	employee = Employee.objects.filter(user = leave.user)[0]
-	print(employee)
-	return render(request,'dashboard/leave_detail_view.html',{'leave':leave,'employee':employee,'title':'{0}-{1} leave'.format(leave.user.username,leave.status)})
+# 	leave = get_object_or_404(Leave, id = id)
+# 	print(leave.user)
+# 	employee = Employee.objects.filter(user = leave.user)[0]
+# 	print(employee)
+# 	return render(request,'dashboard/leave_detail_view.html',{'leave':leave,'employee':employee,'title':'{0}-{1} leave'.format(leave.user.username,leave.status)})
 
 #supervisor who is staff should see this
 
@@ -490,7 +495,7 @@ def approve_leave(request,id):
 	messages.error(request,'Leave successfully approved for {0}'.format(employee.get_full_name),extra_tags = 'alert alert-success alert-dismissible show')
 	return redirect('dashboard:userleaveview', id = id)
 
-#supervisor who is staff should do this
+#supervisor who is in this case has the is_staff status should do this
 def recommend_leave(request,id):
 	if not (request.user.is_authenticated and request.user.is_superuser or request.user.is_staff):
 		return redirect('/')
@@ -499,15 +504,10 @@ def recommend_leave(request,id):
 	employee = Employee.objects.filter(user = user)[0]
 	leave.recommend_leave()
 	messages.success(request, 'Leave successfully recommended for {0}'.format(employee.get_full_name),extra_tags = 'alert alert-success alert-dismissible show')
-	return redirect('dashboard:recommendview')
+	return redirect('dashboard:userrecommendview', id = id)
 
-#supervisor who is staff should see this
-def recommend_leave_list(request):
-	if not (request.user.is_superuser or request.user.is_staff):
-		return redirect('/')
-	leaves = Leave.objects.all_recommended_leaves() #recommended leaves -> calling model manager method
-	return render(request,'dashboard/leaves_recommended.html',{'leave_list':leaves,'title':'recommended leave list'})
 
+# recommendview
 
 #supervisor who is staff should see this
 def cancel_leaves_list(request):
@@ -569,6 +569,18 @@ def leaves_approved_list(request):
     else:
         return HttpResponse("You need to log in to access this page.")
 
+def recommended_leave_list(request):
+    if request.user.is_authenticated:
+        leaves = Leave.objects.all_recommended_leaves()
+        return render(request, 'dashboard/leaves_recommended.html', {'leave_list': leaves, 'title': 'Recommended Leave List'})
+    else:
+        return HttpResponse("You need to log in to access this page.")
+
+#supervisor who is staff should see this
+# def recommended_leave_list(request):
+#     if not (request.user.is_superuser or request.user.is_staff):
+#         leaves = Leave.objects.all_recommended_leaves()
+#         return render(request, 'dashboard/leaves_recommended.html', {'leave_list': leaves, 'title': 'Leaves List - Pending'})
 
 #Still in development
 
@@ -629,20 +641,35 @@ def unreject_leave(request,id):
 
 
 #  staffs leaves table user only
+from django.contrib.auth.decorators import user_passes_test
+
 def view_my_leave_table(request):
-	# work on the logics
-	if request.user.is_authenticated:
-		user = request.user
-		leaves = Leave.objects.filter(user = user)
-		employee = Employee.objects.filter(user = user).first()
-		print(leaves)
-		dataset = dict()
-		dataset['leave_list'] = leaves
-		dataset['employee'] = employee
-		dataset['title'] = 'Leaves List'
-	else:
-		return redirect('accounts:login')
-	return render(request,'dashboard/staff_leaves_table.html',dataset)
+    if request.user.is_authenticated:
+        user = request.user
+        leaves = Leave.objects.filter(user=user) if not user.is_staff else Leave.objects.all()
+        employee = Employee.objects.filter(user=user).first()
+        dataset = dict()
+        dataset['leave_list'] = leaves
+        dataset['employee'] = employee
+        dataset['title'] = 'Leaves List'
+    else:
+        return redirect('accounts:login')
+    return render(request, 'dashboard/staff_leaves_table.html', dataset)
+
+# def view_my_leave_table(request):
+# 	# work on the logics
+# 	if request.user.is_authenticated:
+# 		user = request.user
+# 		leaves = Leave.objects.filter(user = user)
+# 		employee = Employee.objects.filter(user = user).first()
+# 		print(leaves)
+# 		dataset = dict()
+# 		dataset['leave_list'] = leaves
+# 		dataset['employee'] = employee
+# 		dataset['title'] = 'Leaves List'
+# 	else:
+# 		return redirect('accounts:login')
+# 	return render(request,'dashboard/staff_leaves_table.html',dataset)
 
 
 
