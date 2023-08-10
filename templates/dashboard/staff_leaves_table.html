@@ -178,16 +178,20 @@ body {
 							      <!-- <th scope="col">#</th> -->
 							      <th scope="col"><b>Type</b></th>
 							      <th scope="col"><b>Leave Day(s) Remaining </b></th><br>
+								  <th scope="col"><b>Total Days Taken</b></th>
 							      <th scope="col"><b>Status</b></th>
+								  
 							    </tr>
 							  </thead>
 							  <tbody>
+								{% comment %} <p>Number of days in a financial year = {{total_days_taken}}</p> {% endcomment %}
 							  	{% for leave in leave_list %}
 							    <tr>
+							      <td>{{leave.leavetype}}</td>
+								  {% comment %} <td>{{leave.total_leave_days_remaining}} <p>for this particular leave</p></td> {% endcomment %}
+								  <td><p>{{ total_days_taken }}</p></td>
 
-							      <td>{{ leave.leavetype}}</td>
-							      {% comment %} <td>{{ leave.leave_days }}</td> {% endcomment %}
-								  <td>{{leave.total_leave_days_remaining}}</td>
+								  {% comment %} <td>{{Leave.total_days_taken}}</td> {% endcomment %}
 							      {% if leave.is_approved %}
 							      <td ><span class="badge badge-success" style="background-color:green; font-size: 14px;">{{ leave.status }}</span></td>
 								  {% elif leave.is_rejected %}
@@ -206,6 +210,7 @@ body {
 							    </tr>
 
 							    {% endfor %}
+								
 
 							  </tbody>
 

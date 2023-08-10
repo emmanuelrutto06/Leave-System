@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import Leave
+from .models import Leave, CarriedForward
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User, Group
 # from .models import Comment
 
 
 admin.site.register(Leave)
+admin.site.register(CarriedForward)
 # admin.site.unregister(User)
 # admin.site.unregister(Group)
 # admin.site.register(Comment)

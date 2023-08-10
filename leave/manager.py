@@ -40,11 +40,11 @@ class LeaveManager(models.Manager):
 		'''
 		return super().get_queryset().filter(status = 'approved')
 	
-	def all_pending_leaves_to_be_recommended_leaves(self):
-		'''
-		gets all pending leaves awaiting to be approved -> Leave.objects.all_pending_leaves_to_be_recommended_leaves()
-		'''
-		return super().get_queryset().filter(status = 'pending recommendation')
+	# def all_pending_leaves_to_be_recommended_leaves(self):
+	# 	'''
+	# 	gets all pending leaves awaiting to be approved -> Leave.objects.all_pending_leaves_to_be_recommended_leaves()
+	# 	'''
+	# 	return super().get_queryset().filter(status = 'pending recommendation')
 
 	def all_recommended_leaves(self):
 		'''

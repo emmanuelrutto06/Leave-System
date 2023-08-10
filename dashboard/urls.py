@@ -28,19 +28,19 @@ urlpatterns = [
     # path('bank/edit/<int:id>/',views.employee_bank_account_update,name='accountedit'),
     path('leave/apply/',views.leave_creation,name='createleave'),
     path('leaves/pending/all/',views.leaves_list,name='leaveslist'),
-    path('leaves/recommended-view/all/',views.pending_recommendation,name='recommendlist'),
+    # path('leaves/recommended-view/all/',views.pending_recommendation,name='recommendlist'),
 
    
     #Approve Leave
-    path('leaves/approved/all/',views.leaves_approved_list,name='approvedleaveslist'),
     path('leave/approve/<int:id>/',views.approve_leave,name='userleaveapprove'),
+    path('leaves/approved/all/',views.leaves_approved_list,name='approvedleaveslist'),
     path('leave/unapprove/<int:id>/',views.unapprove_leave,name='userleaveunapprove'), 
     path('leaves/all/view/<int:id>/',views.leaves_view,name='userleaveview'),
    
     #used to display the recommended status of the leave
-    path('leaves/recommended/all/',views.recommended_leave_list,name='recommendedleavelist'),
-    path('leave/recommend/<int:id>/',views.recommend_leave,name='userleaverecommend'),
-    path('leave/unrecommendleave/<int:id>/',views.unrecommend_leave,name='userunrecommendleave'),
+    path('leave/recommend/<int:id>/', views.recommend_leave,name='userleaverecommend'), 
+    path('leaves/recommended/all/',views.recommended_leave_list,name='recommendedleavelist'), #very perfect
+    path('leave/unrecommendleave/<int:id>/',views.unrecommend_leave,name='userunrecommendleave'),#very perfect
     path('leaves/recommend/view/<int:id>/',views.recommend_view,name='userrecommendview'),
     # path('leave/unrecommended/all',views.Unrecommend_list,name='unrecommendedleavelist'),
 # recommend_view

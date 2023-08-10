@@ -115,7 +115,7 @@ span{
                     <section class="row">
                         <section class="col col-lg-8 col-md-12  col-sm-12">
 
-                            {% if  messages %}
+                            {% if messages %}
                                     {% for message in messages %}
                                      <div {% if message.tags %} class="{{ message.tags}}"{% endif %}>
                                          {{ message }}
@@ -124,6 +124,9 @@ span{
                                      </div>
                                     {% endfor %}
                             {% endif %}
+
+
+                            
 
                         </section>
                     </section>
@@ -154,11 +157,29 @@ span{
                                             <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Reason:</span> <div><b>{{ leave.reason}}</b></div>
                                             </a>
                                              <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Status:</span> <div><b>{{ leave.status}}</b></div>
-                                           <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Default Leave Days:</span> <div><b> {{ leave.default_leave_days }} </b></div>
+                                           <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Default Annual Leave Days:</span> <div><b> {{ leave.default_annual_leave_days }} </b></div>
+                                          
+                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Carried Forward Days: </span><div> <b>{{ carried_forward_days }}</b></div>
+                                                  
+                                            <!-- Inside the leave_detail_view template -->
+                                            <form>
+                                              {% csrf_token %}
+                                              <!-- Other fields -->
+                                              <div class="form-group">
+                                                  <label for="carried_forward_days">Days Carried Forward</label>
+                                                  <input type="number" id="carried_forward_days" name="carried_forward_days" value="{{ carried_forward_days }}" readonly>
+                                              </div>
+                                              <!-- Other fields and buttons -->
+                                            </form>
+
+
+                                            {% comment %} <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Total Leave Days Available:</span> <div><b> {{ leave.calculate_total_leave_days_available }}</b></div> {% endcomment %}
+                                              {% comment %} <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Total leave Days Remaining:</span> <div><b> {{ leave.total_leave_days_remaining }} </b></div> {% endcomment %}
+
 
                                             <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Days Taken: </span> <div><b> {{ leave.total_leave_days_taken }} </b></div>
                                               
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Days Remaining:</span> <div><b> {{ leave.total_leave_days_remaining }} </b></div>
+                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Days Remaining:</span> <div><b> {{ leave.calculated_total_leave_days_remaining }} </b></div>
                                             </a>
 
                                       </div>
@@ -170,11 +191,11 @@ span{
                              
                                   <span style="font-size: 13px;padding-left: 1rem;" class="pull-left">Created <b>{{ leave.created }}</b></span>
               
-              {% if request.user.is_staff and not request.user.is_superuser %}
-                    {%if leave.recommend_leave %}
-                    {% comment %} <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-info" style="background-color: orange; color: white;" name="Recommend">Recommend</a> {% endcomment %}
-                    {% endif %}
-              {% endif %}
+                  {% if request.user.is_staff and not request.user.is_superuser %}
+                        {%if leave.is_recommended %}
+                            {% comment %} <a href="{% url 'dashboard:userleaverecommend' leave.id %}" class="btn btn-primary" style="background-color:grey; color: white;" name='approve'>Recommend</a> {% endcomment %}
+                        {% endif %}
+                  {% endif %}
 
               {% if request.user.is_superuser %}
                   <section class="row">
@@ -183,7 +204,7 @@ span{
                               {% if leave.leave_approved %}
                                   <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline</a>
                               {% else %}
-                                  <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:green; color: white;" name='approve'>Approve</a>
+                                  {% comment %} <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:green; color: white;" name='approve'>Approve</a> {% endcomment %}
                                   <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
                                   {% comment %} <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a> {% endcomment %}
                                   <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>
@@ -203,11 +224,12 @@ span{
         <section class="col col-lg-4 col-sm-12 col-lg-offset-7 text-center">
             <div class="btn-group btn-group-justified">
                 {% if leave.leave_approved %}
+                {% comment %} &nbsp; {% endcomment %}
                     {% comment %} <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline</a> {% endcomment %}
                 {% endif %}
-                <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:orange; color: white;" name='approve'>&nbsp;Approve</a>
+                <a href="{% url 'dashboard:userleaverecommend' leave.id %}" class="btn btn-primary" style="background-color:grey; color: white;" name='approve'>Recommend</a>
                 <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
-                <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a>
+                {% comment %} <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a> {% endcomment %}
                 <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>
             </div>
         </section>

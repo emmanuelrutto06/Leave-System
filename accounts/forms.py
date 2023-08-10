@@ -14,6 +14,18 @@ class UserAddForm(UserCreationForm):
         fields = ['email', 'username', 'password1', 'password2']
 
 
+class UserLogin(forms.Form):
+	username = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Username'}))
+	password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'password'}))
+
+
+from django import forms
+
+class CarriedForwardForm(forms.Form):
+    carried_forward_days = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'class': 'form-control'})  # I need to add Bootstrap class for styling
+    )
+
 
 
 
@@ -36,18 +48,5 @@ class UserAddForm(UserCreationForm):
 # 	class Meta:
 # 		model = User
 # 		fields = ['username','email','password1','password2']
-  
-		
-
-	
-
-
-
-
-
-class UserLogin(forms.Form):
-	username = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Username'}))
-	password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'password'}))
-
 
 
