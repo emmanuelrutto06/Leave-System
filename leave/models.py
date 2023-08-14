@@ -61,14 +61,6 @@ class Leave(models.Model):
         verbose_name = _('Leave')
         verbose_name_plural = _('Leaves')
         ordering = ['-created']
-   
-    # class Meta:
-    #     permissions = [
-    #         ('can_approve_leave', 'Can approve leave'),
-    #         ('can_reject_leave', 'Can reject leave'),
-    #         # more permissions...
-    #     ]
-
     
     def __str__(self):
         return '{0} - {1}'.format(self.leavetype, self.user.get_full_name())
@@ -172,21 +164,21 @@ class Leave(models.Model):
 
     
     
-    @property
-    def calculated_leave_days_carried_forward(self):
-        carried_forward = self.default_annual_leave_days - self.total_leave_days_taken
-        return min(carried_forward, 15)
+    # @property
+    # def calculated_leave_days_carried_forward(self):
+    #     carried_forward = self.default_annual_leave_days - self.total_leave_days_taken
+    #     return min(carried_forward, 15)
 
-    @property
-    def calculated_total_leave_days_available(self):
-        carried_forward_days = self.calculated_leave_days_carried_forward  # Calculate carried forward days
-        total_leave_days_available = self.default_annual_leave_days + carried_forward_days
-        return total_leave_days_available
+    # @property
+    # def calculated_total_leave_days_available(self):
+    #     carried_forward_days = self.calculated_leave_days_carried_forward  # Calculate carried forward days
+    #     total_leave_days_available = self.default_annual_leave_days + carried_forward_days
+    #     return total_leave_days_available
 
 
-    @property
-    def calculated_total_leave_days_remaining(self):
-        return self.total_leave_days_available - self.total_leave_days_taken
+    # @property
+    # def calculated_total_leave_days_remaining(self):
+    #     return self.total_leave_days_available - self.total_leave_days_taken
 
 
     # @property

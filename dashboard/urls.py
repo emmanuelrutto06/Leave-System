@@ -54,6 +54,7 @@ urlpatterns = [
     path('leave/reject/<int:id>/',views.reject_leave,name='reject'),
     path('leave/unreject/<int:id>/',views.unreject_leave,name='unreject'),
     path('leave/edit/<int:id>/', views.edit_leave, name='edit_leave'),
+    path('leave/update_leave_end_date/<int:id>/', views.update_leave_end_date, name='update_leave_end_date'),
 
 
     # BIRTHDAY ROUTE

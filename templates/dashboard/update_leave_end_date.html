@@ -1,0 +1,26 @@
+
+{% extends '_layout.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% load crispy_forms_tags %}
+
+ {% block navheader %}
+    {% include 'includes/navheader_employee_app.html' %}
+ {% endblock %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Leave End Date</title>
+</head>
+<body>
+    <h1>Update Leave End Date</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="enddate">New End Date:</label>
+        <input type="date" name="enddate" required>
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>

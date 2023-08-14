@@ -434,17 +434,15 @@ def leave_creation(request):
             instance.user = user
             instance.save()
 
-            # Calculate days taken and remaining
-            default_leave_days = 30  # Replace with the appropriate value for your application
-            days_taken = (instance.enddate - instance.startdate).days
-            today = date.today()
-            days_remaining = (instance.enddate - today).days
+            # # Calculate days taken and remaining
+            # default_leave_days = 30  # Replace with the appropriate value for your application
+            # days_taken = (instance.enddate - instance.startdate).days
+            # today = date.today()
+            # days_remaining = (instance.enddate - today).days
 
             context = {
                 'leave': instance,
-                'default_leave_days': default_leave_days,
-                'days_taken': days_taken,
-                'days_remaining': days_remaining,
+            
             }
 
             messages.success(request, 'Leave Request Sent, wait for Admins response',
@@ -540,6 +538,29 @@ def edit_leave(request,id):
     }
     return render(request, 'dashboard/edit_leave.html', context)
 
+from django.shortcuts import render, redirect
+
+def update_leave_end_date(request, id):
+    if not request.user.is_authenticated:
+        return redirect('/')
+
+    leave = get_object_or_404(Leave, id=id)
+
+    if not request.user.is_staff:
+        return redirect('dashboard:leaves')  # Redirect if not a staff member
+
+    if request.method == 'POST':
+        new_end_date = request.POST.get('enddate')
+        leave.enddate = new_end_date
+        leave.save()
+        # Redirect back to the leave detail view
+        return redirect('dashboard:userleaveview', id=leave.id)
+
+    return render(request, 'dashboard/update_leave_end_date.html', {'leave': leave})
+
+
+
+
 # def edit_leave(request):
 #         if not (request.user.is_superuser and request.user.is_authenticated):
 #             return redirect('/')
@@ -585,22 +606,121 @@ def leaves_view(request, id):
 
     leave = get_object_or_404(Leave, id=id)
     employee = Employee.objects.filter(user=leave.user)[0]
-
-    # Retrieve carried forward days for the user
+    
     try:
         carried_forward = CarriedForward.objects.get(user=leave.user)
         carried_forward_days = carried_forward.leave_days_carried_forward
     except CarriedForward.DoesNotExist:
         carried_forward_days = 0
 
+    # Calculate total leave days available
+    total_leave_days_available = 30 + carried_forward_days
+    
+    # Calculate total leave days taken
+    total_leave_days_taken = leave.total_leave_days_taken
+    
+    # Calculate total leave days remaining
+    total_leave_days_remaining = total_leave_days_available - total_leave_days_taken
+    carried_forward_days = min(carried_forward_days, 15)
+
+    # Check if the user is a staff member
+    is_staff = request.user.is_staff
+    
     context = {
         'leave': leave,
         'employee': employee,
-        'carried_forward_days': carried_forward_days,  # Pass carried forward days to the template
+        'carried_forward_days': carried_forward_days,
+        'total_leave_days_available': total_leave_days_available,
+        'total_leave_days_taken': total_leave_days_taken,
+        'total_leave_days_remaining': total_leave_days_remaining,
+        'is_staff': is_staff,  # Include the is_staff status in the context
         'title': '{0}-{1} leave'.format(leave.user.username, leave.status),
     }
 
     return render(request, 'dashboard/leave_detail_view.html', context)
+
+
+
+# def leaves_view(request, id):
+#     if not request.user.is_authenticated:
+#         return redirect('/')
+
+#     leave = get_object_or_404(Leave, id=id)
+#     employee = Employee.objects.filter(user=leave.user)[0]
+    
+#     try:
+#         carried_forward = CarriedForward.objects.get(user=leave.user)
+#         carried_forward_days = carried_forward.leave_days_carried_forward
+#     except CarriedForward.DoesNotExist:
+#         carried_forward_days = 0
+
+#     # Calculate total leave days available
+#     total_leave_days_available = 30 + carried_forward_days
+    
+#     # Calculate total leave days taken
+#     total_leave_days_taken = leave.total_leave_days_taken
+    
+#     # Calculate total leave days remaining
+#     total_leave_days_remaining = total_leave_days_available - total_leave_days_taken
+#     carried_forward_days = min(carried_forward_days, 15)
+
+    
+#     context = {
+#         'leave': leave,
+#         'employee': employee,
+#         'carried_forward_days': carried_forward_days,
+#         'total_leave_days_available': total_leave_days_available,
+#         'total_leave_days_taken': total_leave_days_taken,
+#         'total_leave_days_remaining': total_leave_days_remaining,
+#         'title': '{0}-{1} leave'.format(leave.user.username, leave.status),
+#     }
+
+#     return render(request, 'dashboard/leave_detail_view.html', context)
+
+# def leaves_view(request, id):
+#     if not request.user.is_authenticated:
+#         return redirect('/')
+
+#     leave = get_object_or_404(Leave, id=id)
+#     employee = Employee.objects.filter(user=leave.user)[0]
+    
+#     try:
+#         carried_forward = CarriedForward.objects.get(user=leave.user)
+#         carried_forward_days = carried_forward.leave_days_carried_forward
+#     except CarriedForward.DoesNotExist:
+#         carried_forward_days = 0
+#     context = {
+#         'leave': leave,
+#         'employee': employee,
+#         'carried_forward_days': carried_forward_days,
+#         'title': '{0}-{1} leave'.format(leave.user.username, leave.status),
+#     }
+
+#     return render(request, 'dashboard/leave_detail_view.html', context)
+
+
+# def leaves_view(request, id):
+#     if not request.user.is_authenticated:
+#         return redirect('/')
+
+#     leave = get_object_or_404(Leave, id=id)
+#     employee = Employee.objects.filter(user=leave.user)[0]
+
+#     # Retrieve carried forward days for the user
+#     try:
+#         carried_forward = CarriedForward.objects.get(user=leave.user)
+#         carried_forward_days = carried_forward.leave_days_carried_forward
+#     except CarriedForward.DoesNotExist:
+#         carried_forward_days = 0
+
+#     context = {
+#         'leave': leave,
+#         'employee': employee,
+#         'carried_forward_days': carried_forward_days,  # Pass carried forward days to the template
+#         'title': '{0}-{1} leave'.format(leave.user.username, leave.status),
+#     }
+
+#     return render(request, 'dashboard/leave_detail_view.html', context)
 
 
 # def leaves_view(request,id):

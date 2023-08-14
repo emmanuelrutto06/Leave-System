@@ -7,7 +7,7 @@ class LeaveCreationForm(forms.ModelForm):
 
     class Meta:
         model = Leave
-        exclude = ['status', 'user', 'is_approved', 'updated', 'created', 'default_leave_days', 'leave_days_taken', 'leave_days_remaining',]
+        exclude = ['status', 'user', 'is_approved', 'updated', 'created', 'default_leave_days', 'leave_days_taken', 'leave_days_remaining', 'default_annual_leave_days', 'total_leave_days_available']
         # 'user', 'defaultdays', 'hrcomments', 
 
 
