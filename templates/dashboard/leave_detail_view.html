@@ -108,6 +108,14 @@ span{
   cursor: pointer;
 }
 
+.gray-button {
+  background-color: gray;
+  color: white;
+  border: none;
+  padding: 2px 5px;
+  border-radius: px;
+  cursor: pointer;
+}
 
   {% endblock %}
 
@@ -249,7 +257,7 @@ span{
                 {% comment %} &nbsp; {% endcomment %}
                     {% comment %} <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline</a> {% endcomment %}
                 {% endif %}
-                <a href="{% url 'dashboard:userleaverecommend' leave.id %}" class="btn btn-primary" style="background-color:grey; color: white;" name='approve'>Recommend</a>
+                <a href="{% url 'dashboard:userleaverecommend' leave.id %}" class="btn btn-gray-button " style="background-color:grey; color: white;" name='approve'>Recommend</a>
                 <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
                 {% comment %} <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a> {% endcomment %}
                 <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>

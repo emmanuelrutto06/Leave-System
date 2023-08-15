@@ -24,9 +24,14 @@
 	margin:2px 0 5px 0 !important;
 	}
 
-	.table-description{
-		<!-- STYLE WITH GOOGLE FONT -->
-	}
+.table-description {
+    font-family: 'Roboto', sans-serif; /* Using the Google Font 'Roboto' */
+    font-size: 16px;
+    color: #333; /* Text color */
+    margin-bottom: 10px; /* Add some space below the element */
+    /* Add any other CSS properties you want */
+}
+
 
 	.download-print-action{
 		padding-bottom: 12px;
@@ -177,14 +182,12 @@ body {
 							    <tr>
 							      <!-- <th scope="col">#</th> -->
 							      <th scope="col"><b>Type</b></th>
-							      <th scope="col"><b>Leave Day(s) Remaining </b></th><br>
-								  <th scope="col"><b>Total Days Taken</b></th>
+							      <th scope="col"><b>Leave Day(s) Taken In A Financial Year </b></th><br>
 							      <th scope="col"><b>Status</b></th>
 								  
 							    </tr>
 							  </thead>
 							  <tbody>
-								{% comment %} <p>Number of days in a financial year = {{total_days_taken}}</p> {% endcomment %}
 							  	{% for leave in leave_list %}
 							    <tr>
 							      <td>{{leave.leavetype}}</td>
@@ -194,6 +197,8 @@ body {
 								  {% comment %} <td>{{Leave.total_days_taken}}</td> {% endcomment %}
 							      {% if leave.is_approved %}
 							      <td ><span class="badge badge-success" style="background-color:green; font-size: 14px;">{{ leave.status }}</span></td>
+								  {% elif leave.is_recommended %}
+								  <td><span class="badge badge-info" style="background-color:rgb(0, 150, 136); font-size: 14px;">{{ leave.status }}</span></td>
 								  {% elif leave.is_rejected %}
 							      <td ><span class="badge badge-success" style="background-color:rgb(184, 12, 0); font-size: 14px;">{{ leave.status }}</span></td> 
 								  {% else %}
