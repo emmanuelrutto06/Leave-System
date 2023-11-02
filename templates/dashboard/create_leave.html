@@ -74,6 +74,7 @@
                     <section class="row">
                         <section class="col col-lg-12 col-md-12  col-sm-12">
 
+
                             {% if  messages %}
                                     {% for message in messages %}
                                      <div {% if message.tags %} class="{{ message.tags}}"{% endif %}>
@@ -103,8 +104,6 @@
                                 {{startdate}}
                                 {{enddate}}
                                 <button type="submit" class="btn btn-primary btn-lg btn-block">Request Leave</button>
-    
-                           
                           
                                 {% comment %} {% if carried_forward_days %}
                                     <p>Carried Forward Leave Days from Previous Year: {{ carried_forward_days }}</p>

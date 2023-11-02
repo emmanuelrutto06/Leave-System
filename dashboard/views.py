@@ -219,6 +219,103 @@ def get_financial_year_start_end(current_date):
     financial_year_end = date(current_year + 1, 6, 30) #Sets the financial_year_end variable to June 30th of the next year. This represents the end of the financial year.
     return financial_year_start, financial_year_end
 
+from datetime import timedelta, date
+
+def get_weekdays(start_date, end_date):
+    # Calculate the number of weekdays between two dates
+    weekdays = 0
+    current_date = start_date
+    while current_date <= end_date:
+        if current_date.weekday() < 5:  # Monday to Friday (0 to 4)
+            weekdays += 1
+        current_date += timedelta(days=1)
+    return weekdays
+
+def adjust_weekend(end_date):
+    # Adjust the end date to the next working day if it's a weekend
+    while end_date.weekday() >= 5:  # Saturday or Sunday
+        end_date += timedelta(days=1)
+    return end_date
+
+def leave_creation(request):
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+    if request.method == 'POST':
+        form = LeaveCreationForm(data=request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            user = request.user
+            instance.user = user
+
+            # Calculate the adjusted end date that excludes weekends
+            adjusted_end_date = adjust_weekend(instance.enddate)
+
+            # Calculate the number of weekdays between start date and adjusted end date
+            weekdays = get_weekdays(instance.startdate, adjusted_end_date)
+
+            # Calculate the number of extra days needed to adjust for weekends
+            extra_days = weekdays - (adjusted_end_date - instance.startdate).days
+
+            # Adjust the end date by adding the extra days
+            instance.enddate += timedelta(days=extra_days)
+
+            instance.save()
+
+            context = {
+                'leave': instance,
+                'weekdays': weekdays,
+				'adjusted_end_date': instance.enddate,  # Add this line
+
+            }
+
+            messages.success(request, 'Leave Request Sent, wait for Admins response',
+                             extra_tags='alert alert-success alert-dismissible show')
+            return render(request, 'dashboard/create_leave.html', context)
+        messages.error(request, 'Failed to request a Leave, please check entry dates',
+                       extra_tags='alert alert-warning alert-dismissible show')
+
+    dataset = dict()
+    form = LeaveCreationForm()
+    dataset['form'] = form
+    dataset['title'] = 'Apply for Leave'
+    return render(request, 'dashboard/create_leave.html', dataset)
+
+# def leave_creation(request):
+#     if not request.user.is_authenticated:
+#         return redirect('accounts:login')
+#     if request.method == 'POST':
+#         form = LeaveCreationForm(data=request.POST)
+#         if form.is_valid():
+#             instance = form.save(commit=False)
+#             user = request.user
+#             instance.user = user
+#             instance.save()
+
+#             # # Calculate days taken and remaining
+#             # default_leave_days = 30  # Replace with the appropriate value for your application
+#             # days_taken = (instance.enddate - instance.startdate).days
+#             # today = date.today()
+#             # days_remaining = (instance.enddate - today).days
+
+#             context = {
+#                 'leave': instance,
+            
+#             }
+
+#             messages.success(request, 'Leave Request Sent, wait for Admins response',
+#                              extra_tags='alert alert-success alert-dismissible show')
+#             return render(request, 'dashboard/create_leave.html', context)
+#         messages.error(request, 'Failed to request a Leave, please check entry dates',
+#                        extra_tags='alert alert-warning alert-dismissible show')
+
+#     dataset = dict()
+#     form = LeaveCreationForm()
+#     dataset['form'] = form
+#     dataset['title'] = 'Apply for Leave'
+#     return render(request, 'dashboard/create_leave.html', dataset)
+
+
+
 # def leave_creation(request):	
 #     if not request.user.is_authenticated:
 #         return redirect('accounts:login')
@@ -423,41 +520,6 @@ def get_financial_year_start_end(current_date):
     # }
     # return render(request, 'dashboard/create_leave.html', dataset)
 
-def leave_creation(request):
-    if not request.user.is_authenticated:
-        return redirect('accounts:login')
-    if request.method == 'POST':
-        form = LeaveCreationForm(data=request.POST)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            user = request.user
-            instance.user = user
-            instance.save()
-
-            # # Calculate days taken and remaining
-            # default_leave_days = 30  # Replace with the appropriate value for your application
-            # days_taken = (instance.enddate - instance.startdate).days
-            # today = date.today()
-            # days_remaining = (instance.enddate - today).days
-
-            context = {
-                'leave': instance,
-            
-            }
-
-            messages.success(request, 'Leave Request Sent, wait for Admins response',
-                             extra_tags='alert alert-success alert-dismissible show')
-            return render(request, 'dashboard/create_leave.html', context)
-        messages.error(request, 'Failed to request a Leave, please check entry dates',
-                       extra_tags='alert alert-warning alert-dismissible show')
-
-    dataset = dict()
-    form = LeaveCreationForm()
-    dataset['form'] = form
-    dataset['title'] = 'Apply for Leave'
-    return render(request, 'dashboard/create_leave.html', dataset)
-
-
 
 
 
@@ -539,24 +601,46 @@ def edit_leave(request,id):
     return render(request, 'dashboard/edit_leave.html', context)
 
 from django.shortcuts import render, redirect
+from django.core.exceptions import ValidationError
+from django.shortcuts import render, redirect, get_object_or_404
+from leave.models import Leave
 
 def update_leave_end_date(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated and request.user.is_staff and not request.user.is_superuser:
         return redirect('/')
-
     leave = get_object_or_404(Leave, id=id)
-
     if not request.user.is_staff:
         return redirect('dashboard:leaves')  # Redirect if not a staff member
-
     if request.method == 'POST':
         new_end_date = request.POST.get('enddate')
-        leave.enddate = new_end_date
-        leave.save()
-        # Redirect back to the leave detail view
-        return redirect('dashboard:userleaveview', id=leave.id)
+        try:
+            # Attempt to update the leave end date
+            leave.enddate = new_end_date
+            leave.save()
+        except ValidationError:
+            error_message = "Check your date input well"
+            return render(request, 'dashboard/update_leave_end_date.html', {'leave': leave, 'error_message': error_message})
 
     return render(request, 'dashboard/update_leave_end_date.html', {'leave': leave})
+
+
+# def update_leave_end_date(request, id):
+#     if not request.user.is_authenticated:
+#         return redirect('/')
+
+#     leave = get_object_or_404(Leave, id=id)
+
+#     if not request.user.is_staff:
+#         return redirect('dashboard:leaves')  # Redirect if not a staff member
+
+#     if request.method == 'POST':
+#         new_end_date = request.POST.get('enddate')
+#         leave.enddate = new_end_date
+#         leave.save()
+#         # Redirect back to the leave detail view
+#         return redirect('dashboard:userleaveview', id=leave.id)
+
+#     return render(request, 'dashboard/update_leave_end_date.html', {'leave': leave})
 
 
 
@@ -593,20 +677,25 @@ def update_leave_end_date(request, id):
     #     'title': f'{leave.user.username}-{leave.status} leave',
     # }
     
-    # return render(request, 'dashboard/leave_detail_view.html', context)
+    # return render(request, 'dashboard/leave_detail_view.html', context)  
+    
+from datetime import timedelta, date
+from django.shortcuts import render, redirect, get_object_or_404
+from leave.models import Leave, CarriedForward
+from employee.models import Employee
+from leave.models import Holiday
 
-
-
-
-from leave.models import CarriedForward  # Import the CarriedForward model
+from datetime import timedelta
 
 def leaves_view(request, id):
     if not request.user.is_authenticated:
         return redirect('/')
 
     leave = get_object_or_404(Leave, id=id)
-    employee = Employee.objects.filter(user=leave.user)[0]
-    
+    employee = Employee.objects.filter(user=leave.user).first()
+
+    # Fetch the related Holiday object
+    holiday = leave.holiday if hasattr(leave, 'holiday') else None
     try:
         carried_forward = CarriedForward.objects.get(user=leave.user)
         carried_forward_days = carried_forward.leave_days_carried_forward
@@ -615,17 +704,43 @@ def leaves_view(request, id):
 
     # Calculate total leave days available
     total_leave_days_available = 30 + carried_forward_days
-    
+
     # Calculate total leave days taken
     total_leave_days_taken = leave.total_leave_days_taken
-    
+
     # Calculate total leave days remaining
     total_leave_days_remaining = total_leave_days_available - total_leave_days_taken
     carried_forward_days = min(carried_forward_days, 15)
 
     # Check if the user is a staff member
     is_staff = request.user.is_staff
-    
+
+    # Store the original end date
+    original_end_date = leave.enddate
+
+    # Initialize adjusted_end_date with the original end date
+    adjusted_end_date = original_end_date
+
+    if adjusted_end_date is not None:
+        current_date = leave.startdate
+        business_days_to_add = 0  # Count of business days (weekdays) to add
+
+        while business_days_to_add < total_leave_days_taken:
+            # Check if the current_date is a weekday (Monday to Friday)
+            if current_date.weekday() < 5:
+                business_days_to_add += 1
+
+            # Move to the next day
+            current_date += timedelta(days=1)
+
+            # Check if the adjusted_end_date is a weekend (Saturday or Sunday)
+            if adjusted_end_date.weekday() >= 5:
+                # Move the adjusted_end_date to the next Monday (weekday)
+                adjusted_end_date += timedelta(days=(7 - adjusted_end_date.weekday()))
+
+    # Ensure adjusted_end_date is on or after the original end date
+    adjusted_end_date = max(original_end_date, adjusted_end_date)
+
     context = {
         'leave': leave,
         'employee': employee,
@@ -633,105 +748,71 @@ def leaves_view(request, id):
         'total_leave_days_available': total_leave_days_available,
         'total_leave_days_taken': total_leave_days_taken,
         'total_leave_days_remaining': total_leave_days_remaining,
-        'is_staff': is_staff,  # Include the is_staff status in the context
+        'is_staff': is_staff,
+        'adjusted_end_date': adjusted_end_date,
         'title': '{0}-{1} leave'.format(leave.user.username, leave.status),
     }
-
     return render(request, 'dashboard/leave_detail_view.html', context)
 
 
-
-# def leaves_view(request, id):
-#     if not request.user.is_authenticated:
-#         return redirect('/')
-
-#     leave = get_object_or_404(Leave, id=id)
-#     employee = Employee.objects.filter(user=leave.user)[0]
-    
-#     try:
-#         carried_forward = CarriedForward.objects.get(user=leave.user)
-#         carried_forward_days = carried_forward.leave_days_carried_forward
-#     except CarriedForward.DoesNotExist:
-#         carried_forward_days = 0
-
-#     # Calculate total leave days available
-#     total_leave_days_available = 30 + carried_forward_days
-    
-#     # Calculate total leave days taken
-#     total_leave_days_taken = leave.total_leave_days_taken
-    
-#     # Calculate total leave days remaining
-#     total_leave_days_remaining = total_leave_days_available - total_leave_days_taken
-#     carried_forward_days = min(carried_forward_days, 15)
-
-    
-#     context = {
-#         'leave': leave,
-#         'employee': employee,
-#         'carried_forward_days': carried_forward_days,
-#         'total_leave_days_available': total_leave_days_available,
-#         'total_leave_days_taken': total_leave_days_taken,
-#         'total_leave_days_remaining': total_leave_days_remaining,
-#         'title': '{0}-{1} leave'.format(leave.user.username, leave.status),
-#     }
-
-#     return render(request, 'dashboard/leave_detail_view.html', context)
-
-# def leaves_view(request, id):
-#     if not request.user.is_authenticated:
-#         return redirect('/')
-
-#     leave = get_object_or_404(Leave, id=id)
-#     employee = Employee.objects.filter(user=leave.user)[0]
-    
-#     try:
-#         carried_forward = CarriedForward.objects.get(user=leave.user)
-#         carried_forward_days = carried_forward.leave_days_carried_forward
-#     except CarriedForward.DoesNotExist:
-#         carried_forward_days = 0
-#     context = {
-#         'leave': leave,
-#         'employee': employee,
-#         'carried_forward_days': carried_forward_days,
-#         'title': '{0}-{1} leave'.format(leave.user.username, leave.status),
-#     }
-
-#     return render(request, 'dashboard/leave_detail_view.html', context)
+from django.http import HttpResponseRedirect
+from datetime import timedelta
+from django.shortcuts import render, redirect, get_object_or_404
+from leave.models import Leave
+from leave.models import Holiday
+from accounts.forms import HolidayForm
 
 
-# def leaves_view(request, id):
-#     if not request.user.is_authenticated:
-#         return redirect('/')
+def add_holiday_view(request, id):
+    if not request.user.is_authenticated or (not request.user.is_staff and not request.user.is_superuser):
+        return redirect('/')
 
-#     leave = get_object_or_404(Leave, id=id)
-#     employee = Employee.objects.filter(user=leave.user)[0]
+    leave = get_object_or_404(Leave, id=id)
+    holiday_name = 'Not yet updated'
+    holiday_type = 'Not yet updated'
+    holiday_date = 'Not yet updated'
 
-#     # Retrieve carried forward days for the user
-#     try:
-#         carried_forward = CarriedForward.objects.get(user=leave.user)
-#         carried_forward_days = carried_forward.leave_days_carried_forward
-#     except CarriedForward.DoesNotExist:
-#         carried_forward_days = 0
+    if request.method == 'POST':
+        form = HolidayForm(request.POST)
+        if form.is_valid():
+            holiday = form.save(commit=False)
+            holiday_name = holiday.holiday_name
+            holiday_type = holiday.holiday_type
+            holiday_date = holiday.holiday_date
+            holiday.save()
 
-#     context = {
-#         'leave': leave,
-#         'employee': employee,
-#         'carried_forward_days': carried_forward_days,  # Pass carried forward days to the template
-#         'title': '{0}-{1} leave'.format(leave.user.username, leave.status),
-#     }
+        # Update adjusted_end_date based on the new holiday
+            adjusted_end_date = leave.enddate
+            days_to_add = 0
+            current_date = leave.startdate
+            while current_date <= adjusted_end_date:
+                if current_date.weekday() >= 5:  # Saturday (5) or Sunday (6)
+                    days_to_add += 2
+                if current_date == holiday_date:
+                    days_to_add += 1
+                current_date += timedelta(days=1)
+            adjusted_end_date += timedelta(days=days_to_add)
 
-#     return render(request, 'dashboard/leave_detail_view.html', context)
+            leave.enddate = adjusted_end_date
+            leave.save()
+            return redirect('dashboard:userleaveview', id=id)
+        else:
+            print('Form is Not Valid', form.errors)
 
 
-# def leaves_view(request,id):
-# 	if not (request.user.is_authenticated):
-# 		return redirect('/')
-
-# 	leave = get_object_or_404(Leave, id = id)
-# 	# print(leave.user)
-# 	employee = Employee.objects.filter(user = leave.user)[0]
-# 	# print(employee)
-# 	return render(request,'dashboard/leave_detail_view.html',{'leave':leave,'employee':employee,'title':'{0}-{1} leave'.format(leave.user.username,leave.status)})
+    form = HolidayForm()
+    context = {
+        'leave': leave,
+        'form': form,
+        'title': 'Add Holiday for Leave Adjustment',
+        'holiday_date': holiday_date,
+        'holiday_name': holiday_name,
+        'holiday_type': holiday_type,
+    }
+    print(holiday_name)
+    print(holiday_date)
+    print(holiday_type)
+    return render(request, 'dashboard/add_holiday.html', context)
 
 def recommend_view(request,id):
 	if not (request.user.is_authenticated):
@@ -864,6 +945,13 @@ def unreject_leave(request,id):
 
 #  staffs leaves table user only
 
+from django.contrib import messages
+
+# from django.contrib import messages
+# from datetime import date
+# from .models import Leave, Employee
+# from .utils import get_financial_year_start_end  # Import your utility function
+
 def view_my_leave_table(request):
     if request.user.is_authenticated:
         user = request.user
@@ -878,23 +966,28 @@ def view_my_leave_table(request):
         
         financial_year_start, financial_year_end = get_financial_year_start_end(date.today())
         
+        # Calculate total days taken from approved leaves within the current financial year
         total_days_taken = sum((leave.enddate - leave.startdate).days for leave in approved_leaves
                                if financial_year_start <= leave.startdate <= financial_year_end)
         print("Total days taken within the current financial year:", total_days_taken)
-        print(financial_year_end)
         
         default_leave_days = 30  # Replace with the appropriate value for your application
         days_remaining = default_leave_days - total_days_taken
         
+        # Add a variable to the dataset to indicate whether the "Apply Leave" button should be disabled
         dataset = {
             'leave_list': leaves,
             'employee': employee,
             'title': 'Leaves List',
             'total_days_taken': total_days_taken,  # Adding total_days_taken to the context
+            'days_remaining': days_remaining,  # Adding days_remaining to the context
+            'apply_leave_disabled': days_remaining <= 0,  # True if no leave days remaining, else False
         }
         
-        if days_remaining <= 0:
-            messages.warning(request, 'Your leave days have been depleted.', extra_tags='alert alert-warning alert-dismissible show')
+        # Check if days_remaining is less than or equal to 7 and raise an alert
+        if days_remaining <= 7:
+            messages.warning(request, f'Your leave days are running low. Only {days_remaining} days remaining.',
+                             extra_tags='alert alert-warning alert-dismissible show')
         
         # Calculate total days taken from all approved leaves within the current financial year
         total_days_taken_all = sum((leave.enddate - leave.startdate).days for leave in approved_leaves
@@ -907,6 +1000,50 @@ def view_my_leave_table(request):
         return redirect('accounts:login')
     
     return render(request, 'dashboard/staff_leaves_table.html', dataset)
+
+# def view_my_leave_table(request):
+#     if request.user.is_authenticated:
+#         user = request.user
+        
+#         if user.is_staff:
+#             leaves = Leave.objects.all()
+#         else:
+#             leaves = Leave.objects.filter(user=user)
+            
+#         employee = Employee.objects.filter(user=user).first()
+#         approved_leaves = Leave.objects.filter(user=user, is_approved=True)
+        
+#         financial_year_start, financial_year_end = get_financial_year_start_end(date.today())
+        
+#         total_days_taken = sum((leave.enddate - leave.startdate).days for leave in approved_leaves
+#                                if financial_year_start <= leave.startdate <= financial_year_end)
+#         print("Total days taken within the current financial year:", total_days_taken)
+#         print(financial_year_end)
+        
+#         default_leave_days = 30  # Replace with the appropriate value for your application
+#         days_remaining = default_leave_days - total_days_taken
+        
+#         dataset = {
+#             'leave_list': leaves,
+#             'employee': employee,
+#             'title': 'Leaves List',
+#             'total_days_taken': total_days_taken,  # Adding total_days_taken to the context
+#         }
+        
+#         if days_remaining <= 0:
+#             messages.warning(request, 'Your leave days have been depleted.', extra_tags='alert alert-warning alert-dismissible show')
+        
+#         # Calculate total days taken from all approved leaves within the current financial year
+#         total_days_taken_all = sum((leave.enddate - leave.startdate).days for leave in approved_leaves
+#                                    if financial_year_start <= leave.startdate <= financial_year_end)
+#         print("Total days taken from all leaves within the current financial year:", total_days_taken_all)
+        
+#         dataset['total_days_taken_all'] = total_days_taken_all  # Add total_days_taken_all to the dataset
+        
+#     else:
+#         return redirect('accounts:login')
+    
+#     return render(request, 'dashboard/staff_leaves_table.html', dataset)
 
 
 # def view_my_leave_table(request):
@@ -1045,6 +1182,7 @@ def view_my_leave_table(request):
 # 	else:
 # 		return redirect('accounts:login')
 # 	return render(request,'dashboard/staff_leaves_table.html',dataset)
+
 
 
 

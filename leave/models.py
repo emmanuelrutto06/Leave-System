@@ -10,6 +10,20 @@ from django.core.validators import MaxValueValidator
 from accounts.models import FinancialYear
 
 
+class Holiday(models.Model):
+    HOLIDAY_TYPES = [
+        ('public', 'Public Holiday'),
+        ('company', 'Company Holiday'),
+    ]
+    holiday_date = models.DateField(max_length=100)
+    holiday_type = models.CharField(max_length=10, choices=HOLIDAY_TYPES)
+    holiday_name = models.CharField(max_length=100, default="To be Updated")  # Add default value
+
+    def __str__(self):
+        return f"{self.holiday_type} - {self.holiday_date}"
+
+
+
 ANNUAL = 'annual'
 SICK = 'sick'
 CASUAL = 'casual'
@@ -48,7 +62,8 @@ class Leave(models.Model):
     is_approved = models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
-    
+    holiday = models.ForeignKey(Holiday, on_delete=models.SET_NULL, null=True, blank=True)
+
     objects = LeaveManager()
     
  
@@ -207,6 +222,9 @@ class CarriedForward(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     financial_year = models.ForeignKey(FinancialYear, on_delete=models.CASCADE)  # Use ForeignKey to FinancialYear model
     leave_days_carried_forward = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(15)])
+
+
+
 
 # class Leave(models.Model):
 #     user = models.ForeignKey(User, settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)

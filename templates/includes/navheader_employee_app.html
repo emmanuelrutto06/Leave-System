@@ -39,7 +39,18 @@
                         <li class="divider"></li>
                         <li><a href="{% url 'dashboard:createleave' %}">Apply for Leave</a></li>
                         {% else %}
-                        <li><a href="{% url 'dashboard:createleave' %}">Apply for Leave</a></li>
+                                {% if not apply_leave_disabled %}
+                                        <!-- If the user has leave days remaining, render a clickable "Apply Leave" button -->
+                                        <li><a href="{% url 'dashboard:createleave' %}"  class="btn btn-primary">Apply for Leave</a></li>
+
+                                        {% comment %} <a href="{% url 'dashboard:createleave' %}" class="btn btn-primary">Apply Leave</a> {% endcomment %}
+                                {% else %}
+                                        {% comment %} <li><a href="{% url 'dashboard:createleave' %}">Apply for Leave</a></li> {% endcomment %}
+                                        <p class="text-danger">You cannot apply for more leave.</p>
+
+                                        <!-- If the user has no leave days remaining, render a disabled "Apply Leave" button and display a message -->
+                                        {% comment %} <button class="btn btn-primary" disabled>Apply Leave</button> {% endcomment %}
+                            {% endif %}
                         <li class="divider"></li>
                         <li><a href="{% url 'dashboard:staffleavetable' %}">All Leaves</a></li>
                         {% endif %}

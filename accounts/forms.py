@@ -26,9 +26,16 @@ class CarriedForwardForm(forms.Form):
         widget=forms.NumberInput(attrs={'class': 'form-control'})  # I need to add Bootstrap class for styling
     )
 
+from leave.models import Holiday
 
 
 
+class HolidayForm(forms.ModelForm):
+    holiday_date = forms.DateField(input_formats=['%d/%m/%Y',])  # Specify input format
+
+    class Meta:
+        model = Holiday
+        fields = ['holiday_date', 'holiday_type', 'holiday_name']
 
 # from django import forms
 # from django.contrib.auth.models import User
