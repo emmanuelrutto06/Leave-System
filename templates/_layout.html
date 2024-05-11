@@ -1,7 +1,4 @@
 {% load static %}
-
-{% load humanize %}
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -95,8 +92,8 @@
     }
 
     {% block stylesheet %}
-     
-     
+
+
     {% endblock %}
               background: rgb(2,0,36);
           background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
@@ -127,7 +124,7 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
-                
+
                 {% if request.user.is_superuser and request.user.is_staff %}
                 <li>
                     <a href="{% url 'dashboard:employees' %}">
@@ -143,7 +140,7 @@
                         <p>Leave Dashboard</p>
                     </a>
                 </li>
-                
+
             </ul>
     	</div>
 
@@ -159,16 +156,16 @@
     {% block content %}
     <section class="content">
         <section class="container-fluid">
-                
 
 
-        </section> <!-- /container -->           
+
+        </section> <!-- /container -->
      </section>
     {% endblock %}
     <!--/CONTENTS-->
 
-        
-        
+
+
     </div>
 </div>
 

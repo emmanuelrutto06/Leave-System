@@ -50,10 +50,10 @@
 
         .btn-lg{
         padding:8px 30px;
-        
+
     }
 
-{% comment %} 
+{% comment %}
     .main-panel > .content {
     padding: 60px 15px;
     min-height: calc(100% - 123px); {% endcomment %}
@@ -64,12 +64,12 @@
   {% endblock %}
 
 
-  
+
 
  {% block content %}
         <section class="content">
             <section class="container-fluid">
-           
+
                 <section class="form-wrapper">
                     <section class="row">
                         <section class="col col-lg-12 col-md-12  col-sm-12">
@@ -79,7 +79,7 @@
                                     {% for message in messages %}
                                      <div {% if message.tags %} class="{{ message.tags}}"{% endif %}>
                                          {{ message }}
-                                         
+
                                          <button type="button" class="close" id = "override-start"data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
                                          </button>
                                      </div>
@@ -94,7 +94,7 @@
                             <h3 class="title-h3">{{ title}}</h3>
                         </section>
                     </section>
-                    
+
 
                     <section class="row">
                         <section class="col-lg-12 col-md-12 col-sm-12">
@@ -104,7 +104,7 @@
                                 {{startdate}}
                                 {{enddate}}
                                 <button type="submit" class="btn btn-primary btn-lg btn-block">Request Leave</button>
-                          
+
                                 {% comment %} {% if carried_forward_days %}
                                     <p>Carried Forward Leave Days from Previous Year: {{ carried_forward_days }}</p>
                                 {% endif %}
@@ -114,8 +114,8 @@
                                 <input type="number" id="carried_forward_days" name="carried_forward_days" min="0" max="15"> {% endcomment %}
 
                                 {% comment %} <button type="submit" class="btn btn-primary btn-lg btn-block">Carry Forward</button> {% endcomment %}
-                           
-                           
+
+
                         </section>
 
                     </section>
@@ -123,7 +123,7 @@
                 </section>
 
 
-            </section> <!-- /container --> 
+            </section> <!-- /container -->
         </section>
  {% endblock %}
 

@@ -15,7 +15,7 @@ class Holiday(models.Model):
         ('public', 'Public Holiday'),
         ('company', 'Company Holiday'),
     ]
-    holiday_date = models.DateField(max_length=100)
+    holiday_date = models.DateField(default="YYYY-MM-DD")
     holiday_type = models.CharField(max_length=10, choices=HOLIDAY_TYPES)
     holiday_name = models.CharField(max_length=100, default="To be Updated")  # Add default value
 
@@ -63,6 +63,8 @@ class Leave(models.Model):
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     holiday = models.ForeignKey(Holiday, on_delete=models.SET_NULL, null=True, blank=True)
+    is_recommended = models.BooleanField(default=False)
+
 
     objects = LeaveManager()
     
@@ -96,38 +98,31 @@ class Leave(models.Model):
     @property
     def leave_approved(self):
         return self.is_approved == True
-    
+
+    @property
+    def leave_recommended(self):
+        return self.is_recommended == True
+    @property
+    def leave_recommended(self):
+        return self.status == 'recommended'
+
     @property
     def leave_pending(self):
         return self.is_approved == True
-    
-    # @property
-    # def pending_recommendation(self):
-    #     return self.is_approved== False
-    
-    
-    @property
-    def leave_recommended(self):
-        return self.is_approved == False
-    
-    @property
-    def is_recommended(self):
-        return self.status == 'recommended'
-    
-    
+
     # @property
     def approve_leave(self):
         if not self.is_approved:
             self.is_approved = True
             self.status = 'approved'
             self.save()
-            
-    # @property
+
+    # if self.status == 'pending':
     def recommend_leave(self):
-        if self.status == 'pending':
-            self.is_recommended== True
-            self.status = 'recommended'
-            self.save()
+        if not self.is_recommended:
+            self.is_recommended = True  # Marking it as recommended
+            self.status = 'recommended'  # Updating the status to 'recommended'
+            self.save()  # Saving the changes
 
     @property
     def unapprove_leave(self):
@@ -135,21 +130,28 @@ class Leave(models.Model):
             self.is_approved = False
             self.status = 'pending'
             self.save()
+    # @property
+    def unrecommend_leave(self):
+        if self.is_recommended:
+            self.is_recommended = False
+            self.status = 'pending'
+            self.save()
 
-      
+    # @property
+    # def unrecommend_leave(self):
+    #     if self.is_approved:
+    #         self.is_approved = False
+    #         self.status = 'pending'
+    #         self.save()
+
+
     def approve_recommended_leave(self):
         if self.status == 'recommended':
             self.is_approved = True
-            self.status = 'approved'
+            self.status = 'recommended'
             self.save()
             
-    @property
-    def unrecommend_leave(self):
-        if self.is_approved:
-            self.is_approved = False
-            self.status = 'Unrecommended'
-            self.save()
-            
+
     @property
     def leaves_cancel(self):
         if self.is_approved or not self.is_approved:
@@ -177,46 +179,10 @@ class Leave(models.Model):
             return (self.enddate - self.startdate).days
         return 0
 
-    
-    
-    # @property
-    # def calculated_leave_days_carried_forward(self):
-    #     carried_forward = self.default_annual_leave_days - self.total_leave_days_taken
-    #     return min(carried_forward, 15)
+    @property
+    def total_leave_days_remaining(self):
+        return self.total_leave_days_available - self.total_leave_days_taken
 
-    # @property
-    # def calculated_total_leave_days_available(self):
-    #     carried_forward_days = self.calculated_leave_days_carried_forward  # Calculate carried forward days
-    #     total_leave_days_available = self.default_annual_leave_days + carried_forward_days
-    #     return total_leave_days_available
-
-
-    # @property
-    # def calculated_total_leave_days_remaining(self):
-    #     return self.total_leave_days_available - self.total_leave_days_taken
-
-
-    # @property
-    # def calculated_leave_days_carried_forward(self):
-    #     carried_forward = self.calculated_total_leave_days_available - self.total_leave_days_taken
-    #     return min(carried_forward, 15)
-
-
-    # @property
-    # def calculated_total_leave_days_remaining(self):
-    #     return self.total_leave_days_available - self.total_leave_days_taken
-    # print(calculated_total_leave_days_remaining)
-
-    # @property
-    # def total_leave_days_available(self):
-    #     return self.default_annual_leave_days + self.calculated_leave_days_carried_forward
-    # print(total_leave_days_available)
-    
-    # @property
-    # def calculated_total_leave_days_available(self):
-    #     carried_forward_days = self.calculated_leave_days_carried_forward  # Calculate carried forward days
-    #     total_leave_days_available = self.default_annual_leave_days + carried_forward_days
-    #     return total_leave_days_available
 
 class CarriedForward(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -224,47 +190,3 @@ class CarriedForward(models.Model):
     leave_days_carried_forward = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(15)])
 
 
-
-
-# class Leave(models.Model):
-#     user = models.ForeignKey(User, settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
-#     startdate = models.DateField(verbose_name=_('Start Date'), help_text='leave start date is on ..', null=True, blank=False)
-#     enddate = models.DateField(verbose_name=_('End Date'), help_text='coming back on ...', null=True, blank=False)
-#     leavetype = models.CharField(choices=LEAVE_TYPE, max_length=25, default=SICK, null=True, blank=False)
-#     reason = models.CharField(verbose_name=_('Reason for Leave'), max_length=255, help_text='add additional information for leave', null=True, blank=True)
-#     default_annual_leave_days = models.PositiveIntegerField(default=30)
-#     leave_days_taken = models.PositiveIntegerField(default=0)
-#     leave_days_remaining = models.PositiveIntegerField(default=0)
-#     leave_days_carried_forward = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(15)])
-#     total_leave_days_available = models.PositiveIntegerField(default=0)
-#     status = models.CharField(max_length=20, default='pending')
-#     is_approved = models.BooleanField(default=False)
-#     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
-#     created = models.DateTimeField(auto_now=False, auto_now_add=True)
-    
-    
-    # default_leave_days = models.PositiveIntegerField(default=30)
-    # leave_days_taken = models.PositiveIntegerField(default=0)
-    # leave_days_remaining = models.PositiveIntegerField(default=0)
-    # leave_days_carried_forward = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(15)])
-    # total_leave_days_available = models.PositiveIntegerField(default=0)
-
-# # Create an instance of LeaveModel
-# leave = Leave(
-#     startdate=date(2023, 6, 17),
-#     enddate=date(2023, 6, 29),
-# )
-#
-# leave.save()
-#
-# context = {
-#     'leave': leave,
-# }
-# # Access the leave days taken and remaining
-# default_leave_days = leave.default_leave_days
-# days_taken = leave.total_leave_days_taken
-# days_remaining = leave.total_leave_days_remaining
-#
-# print("total leave days:", default_leave_days)
-# print("Days taken:", days_taken)
-# print("Days remaining:", days_remaining)

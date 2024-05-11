@@ -8,7 +8,7 @@
 {% block stylesheet %}
   #id_holiday_date,
   #id_holiday_name,
-  
+
   #id_holiday_type {
       padding: 2px;                /* Add padding to the form fields */
       border: 1px solid #ccc;      /* Add a border around the form fields */
@@ -27,7 +27,7 @@
       border-radius: 5px;         /* Add rounded corners to the form container */
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow to the form container */
   }
-  
+
 /* Style the form inside the container */
 form {
     margin-left: 300px;
@@ -49,7 +49,7 @@ form {
   margin-bottom: 20px; /*
 
 }
-  
+
   {% endblock %}
 
 {% block content %}
@@ -57,16 +57,25 @@ form {
 <div id="page-container">
   <form method="post">
       {% csrf_token %}
-      {{ form|crispy }} 
+      {{ form|crispy }}
       <button type="submit" class="btn btn-primary">Add Holiday</button>
   </form>
-  <p>Holiday name: {{ holiday_name}}</p>
-  <p>Holiday Date: {{ holiday_date }}</p>
-  <p>Holiday Type: {{ holiday_type }}</p>
+
+{% if leave.holiday %}
+    <p>Holiday name: {{ leave.holiday.holiday_name }}</p>
+    <p>Holiday Date: {{ leave.holiday.holiday_date }}</p>
+    <p>Holiday Type: {{ leave.holiday.holiday_type }}</p>
+{% else %}
+    <p>No holiday information available.</p>
+{% endif %}
+
+{#  <p>Holiday name: {{ holiday_name}}</p>#}
+{#  <p>Holiday Date: {{ holiday_date }}</p>#}
+{#  <p>Holiday Type: {{ holiday_type }}</p>#}
 
   <!-- Display the adjusted end date -->
   {% if adjusted_end_date %}
       <p>Adjusted End Date: {{ adjusted_end_date }}</p>
-  {% endif %} 
+  {% endif %}
 </div>
 {% endblock %}

@@ -213,8 +213,8 @@ body {
 							      	</a>
 									{% if request.user.is_superuser %}
 							      	
-							        <a href="{% url 'dashboard:userunrecommendleave' leave.id %}" style="color:#bd0404;">
-							       	<span>Unrecommend</span>
+							        <a href="{% url 'dashboard:reject' leave.id %}" style="color:#bd0404;">
+							       	<span>Reject Recommendation</span>
 									{% endif %}
 							        </a>
 

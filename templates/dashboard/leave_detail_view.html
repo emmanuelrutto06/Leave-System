@@ -117,10 +117,11 @@ span{
   cursor: pointer;
 }
 
+
   {% endblock %}
 
 
-  
+
 
  {% block content %}
         <section class="content">
@@ -167,7 +168,7 @@ span{
                                             </a>
                                             <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Newly Adjusted End Date:</span><div><b>{{ adjusted_end_date}}</b></div>
 
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Duration:</span> <div><b>{{ leave.leave_days}}</b></div>
+                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Duration:</span> <div><b>{{ leave.total_leave_days_taken}}</b></div>
                                             </a>
                                             <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Type:</span> <div><b>{{ leave.leavetype}}</b></div>
                                             </a>
@@ -175,39 +176,14 @@ span{
                                             </a>
                                              <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Status:</span> <div><b>{{ leave.status}}</b></div>         
 
-                                              <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Holiday Name:</span> <div><b>{{ holiday.holiday_name }}</b></div>
-                                              </a>
-
-                                              <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Holiday Date:</span> <div><b>{{ holiday.holiday_date }}</b></div>
-                                              </a>
-                                              <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Holiday Type:</span> <div><b>{{ holiday.holiday_type }}</b></div>
+                                              <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Holiday Name:</span> <div><b>{{ holiday_name }}</b></div>
                                               </a>
 
 
-
-                                              {% comment %} <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>New Holiday Name:</span> <div><b> {{ holidays }}</b></div>
-                                                <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>New Holiday Date:</span> <div><b>{{ holiday.holiday_date }}</b></div>          {% endcomment %}
-
-                                                  <!-- Your existing template code... -->
-                                                  {% comment %} {% if holiday_name and holiday_date and holiday_type %} {% endcomment %}
-                                                  {% comment %} <div class="list-group">
-                                                      <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls="">
-                                                          <span>Name:</span> <div><b>{{ holiday_name }}</b></div>
-                                                      </a>
-                                                      <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls="">
-                                                          <span>Type:</span> <div><b>{{ holiday_type }}</b></div>
-                                                      </a>
-                                                      <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls="">
-                                                          <span>Date:</span> <div><b>{{ holiday_date|date:"F d, Y" }}</b></div>
-                                                      </a>
-                                                  </div> {% endcomment %}
-                                              {% comment %} {% endif %} {% endcomment %}
-                                              
-<!-- Your existing template code... -->
-
-                                                    <!-- Your existing template code... -->
-
-
+                                              <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Holiday Date:</span> <div><b>{{ holiday_date }}</b></div>
+                                              </a>
+                                              <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Holiday Type:</span> <div><b>{{ holiday_type }}</b></div>
+                                              </a>
 
                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Default Annual Leave Days:</span> <div><b> {{ leave.default_annual_leave_days }} </b></div>
                                           
@@ -234,28 +210,7 @@ span{
                                               
                                             <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Total Leave Days Remaining:</span> <div><b> {{ total_leave_days_remaining }} </b></div>
                                             </a>
-
-{% comment %} 
-                                               {% if is_staff %} 
-                                                    {% if leave.enddate != adjusted_end_date %}
-                                                      <p>End Date: {{ adjusted_end_date }} <span style="color: green;">(Adjusted)</span></p>
-                                                    {% else %}
-                                                      <p>End Date: {{ leave.enddate }} <span style="color: gray;">(Original date)</span></p>
-                                                    {% endif %}
-                                                    <form method="post" action="{% url 'dashboard:update_leave_end_date' leave.id %}">
-                                                      {% csrf_token %}
-                                                      <label for="enddate">Edit End Date:</label>
-                                                      <input type="date" name="enddate" value="{{ leave.enddate }}">
-                                                      <button type="submit" class="btn btn-info">Update</button>
-                                                    </form>
-                                                    {% if error_message %}
-                                                      <p>{{ error_message }}</p>
-                                                    {% endif %}
-                                                {% endif %} {% endcomment %}
-
-
-                                                <!-- Your template content -->
-                                                  {% if is_staff %}
+                                                {% if is_staff %}
                                                   <p>End Date: {{ leave.enddate }}</p> 
                                                   <form method="post" action="{% url 'dashboard:update_leave_end_date' leave.id %}">
                                                       {% csrf_token %}
@@ -276,87 +231,50 @@ span{
                                       </div>
 
                         </section>
-                    </section>
-
-
-                             
+                    </section>       
                                   <span style="font-size: 13px;padding-left: 1rem;" class="pull-left">Created <b>{{ leave.created }}</b></span>
-              
-                  {% if request.user.is_staff and not request.user.is_superuser %}
-                        {%if leave.is_recommended %}
-                            {% comment %} <a href="{% url 'dashboard:userleaverecommend' leave.id %}" class="btn btn-primary" style="background-color:grey; color: white;" name='approve'>Recommend</a> {% endcomment %}
-                        {% endif %}
-                  {% endif %}
-
-              {% if request.user.is_superuser %}
-                  <section class="row">
-                      <section class="col col-lg-4 col-sm-12 col-lg-offset-5 text-center">
-                          <div class="btn-group btn-group-justified">
-                              {% if leave.leave_approved %}
-                                  <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline</a>
-                              {% else %}
-                                  {% comment %} <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:green; color: white;" name='approve'>Approve</a> {% endcomment %}
-                                  <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
-                                  {% comment %} <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a> {% endcomment %}
-                                  <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>
-                              {% endif %}
-                             
-                              {% comment %} {% if leave.leave_pending %}
-                              <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:green; color: white;" name='approve'>&nbsp;Approve</a>
-
-                              {% else %}
-                              <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline</a>
-                              {% endif %} {% endcomment %}
-                          </div>
-        </section>
-    </section>
-{% elif request.user.is_staff %}
+{% if request.user.is_superuser %}
     <section class="row">
-        <section class="col col-lg-4 col-sm-12 col-lg-offset-7 text-center">
+        <section class="col col-lg-4 col-sm-12 col-lg-offset-5 text-center">
             <div class="btn-group btn-group-justified">
                 {% if leave.leave_approved %}
-                {% comment %} &nbsp; {% endcomment %}
-                    {% comment %} <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline</a> {% endcomment %}
+                    <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline</a>
+                {% else %}
+                    <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:green; color: white;" name='approve'>Approve</a>
+                    <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
+                    <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>
                 {% endif %}
-                <a href="{% url 'dashboard:userleaverecommend' leave.id %}" class="btn btn-gray-button " style="background-color:grey; color: white;" name='approve'>Recommend</a>
-                <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
-                {% comment %} <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a> {% endcomment %}
-                <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>
+            </div>
+        </section>
+    </section>
+
+{% else %}
+    {% if request.user.is_staff and not request.user.is_superuser %}
+    <section class="row">
+        <section class="col col-lg-4 col-sm-12 col-lg-offset-5 text-center">
+            <div class="btn-group btn-group-justified">
+                {% if not leave.leave_approved %}
+                    {% if leave.leave_recommended %}
+                        <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline</a>
+                    {% else %}
+                        <a href="{% url 'dashboard:userleaverecommend' leave.id %}" class="btn btn-gray-button " style="background-color:grey; color: white;" name='approve'>Recommend</a>
+                        <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
+{#                        <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a>#}
+                        <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>
+                    {% endif %}
+                {% else %}
+                    <!-- Display a message or disable buttons indicating that the leave is already approved -->
+                        <strong><span class="label label-info" >Leave already approved</span></strong>
+                {% endif %}
             </div>
         </section>
     </section>
 {% endif %}
 
-            
-              {% comment %} {% if request.user.is_superuser or request.user.is_staff %}
-                    <section class="row">
-                      <section class="col col-lg-4 col-sm-12 col-lg-offset-7 text-center">
-                        <div class="btn-group btn-group-justified">
-                          {%if leave.leave_approved %}
-                          <a href="{% url 'dashboard:userleaveunapprove' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='unapprove'>Decline
-                          </a>
-                        
-                          {% else %}
-                          
-                          <a href="{% url 'dashboard:userleaveapprove' leave.id %}" class="btn btn-success" style="background-color:green; color: white;" name='approve'>&nbsp;Approve</a>
-                          {% endif %}
-                          <a href="{% url 'dashboard:userleavecancel' leave.id %}" class="btn btn-info" style="background-color:rgb(0, 142, 185); color: white;" name='cancel'>Cancel</a>
-                          <a href="{% url 'dashboard:edit_leave' leave.id %}" class="btn btn-primary" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Edit</a>
-                          <a href="{% url 'dashboard:reject' leave.id %}" class="btn btn-danger" style="background-color:rgb(185, 0, 0); color: white;" name='reject'>Reject</a>
-                        </div>
-       
-                      </section>
-                    </section>
-
-              {% endif %} {% endcomment %}
-
+{% endif %}
                 </section>
-
-            </section> <!-- /container --> 
+            </section>
         </section>
-        {% comment %} <div class="holiday-details">
-          {% include 'dashboard/add_holiday.html' %}
-      </div> {% endcomment %}
  {% endblock %}
 
 <script type="text/javascript">

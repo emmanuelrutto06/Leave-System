@@ -17,55 +17,53 @@ from datetime import date
 
 
 def dashboard(request):
-	dataset = dict()
-	user = request.user
-	if not request.user.is_authenticated:
-		return redirect('accounts:login')
-	employees = Employee.objects.all()
-	leaves = Leave.objects.all_pending_leaves()
-	staff_leaves = Leave.objects.filter(user = user)
-	dataset['employees'] = employees
-	dataset['leaves'] = leaves
+    dataset = dict()
+    user = request.user
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+    employees = Employee.objects.all()
+    leaves = Leave.objects.all_pending_leaves()
+    leavey = Leave.objects.all_recommended_leaves()
+    staff_leaves = Leave.objects.filter(user=user)
+    dataset['employees'] = employees
+    dataset['leaves'] = leaves
+    dataset['leavey'] = leavey
+    dataset['staff_leaves'] = staff_leaves
+    dataset['title'] = 'summary'
 
-	dataset['staff_leaves'] = staff_leaves
-	dataset['title'] = 'summary'
+    return render(request, 'dashboard/dashboard_index.html', dataset)
 
 
-	return render(request,'dashboard/dashboard_index.html',dataset)
-
-
-
+from django.shortcuts import render
 
 def dashboard_employees(request):
-	if not (request.user.is_authenticated or request.user.is_superuser or request.user.is_staff):
-		return redirect('/')
+    if not (request.user.is_authenticated or request.user.is_superuser or request.user.is_staff):
+        return redirect('/')
 
-	dataset = dict()
-	departments = Department.objects.all()
-	employees = Employee.objects.all()
+    dataset = dict()
+    departments = Department.objects.all()
+    employees = Employee.objects.all()
 
-	#pagination
-	query = request.GET.get('search')
-	if query:
-		employees = employees.filter(
-			Q(firstname__icontains = query) |
-			Q(lastname__icontains = query)
-		)
+    # Pagination
+    query = request.GET.get('search')
+    if query:
+        employees = employees.filter(
+            Q(firstname__icontains=query) |
+            Q(lastname__icontains=query)
+        )
 
+    paginator = Paginator(employees, 10)  # Show 10 employee lists per page
+    page = request.GET.get('page')
+    employees_paginated = paginator.get_page(page)
 
-
-	paginator = Paginator(employees, 10) #show 10 employee lists per page
-
-	page = request.GET.get('page')
-	employees_paginated = paginator.get_page(page)
-
-
-
-	blocked_employees = Employee.objects.all_blocked_employees()
+    # Include employees in the dataset
+    # dataset['employees'] = employees_paginated
+    dataset['employees'] = employees
 
 
-	return render(request,'dashboard/employee_app.html',dataset)
+    blocked_employees = Employee.objects.all_blocked_employees()
 
+    return render(request, 'dashboard/employee_app.html', dataset)
 
 
 
@@ -98,6 +96,7 @@ def dashboard_employees_create(request):
 			instance.employeetype = request.POST.get('employeetype')
 			instance.employeeid = request.POST.get('employeeid')
 			instance.dateissued = request.POST.get('dateissued')
+			instance.designation = request.POST.get('designation')
 
 
 			instance.save()
@@ -696,6 +695,10 @@ def leaves_view(request, id):
 
     # Fetch the related Holiday object
     holiday = leave.holiday if hasattr(leave, 'holiday') else None
+    holiday_name = holiday.holiday_name if holiday else 'Not yet updated'
+    holiday_type = holiday.holiday_type if holiday else 'Not yet updated'
+    holiday_date = holiday.holiday_date if holiday else 'Not yet updated'
+
     try:
         carried_forward = CarriedForward.objects.get(user=leave.user)
         carried_forward_days = carried_forward.leave_days_carried_forward
@@ -751,6 +754,9 @@ def leaves_view(request, id):
         'is_staff': is_staff,
         'adjusted_end_date': adjusted_end_date,
         'title': '{0}-{1} leave'.format(leave.user.username, leave.status),
+        'holiday_name': holiday_name,
+        'holiday_type': holiday_type,
+        'holiday_date': holiday_date,
     }
     return render(request, 'dashboard/leave_detail_view.html', context)
 
@@ -762,6 +768,8 @@ from leave.models import Leave
 from leave.models import Holiday
 from accounts.forms import HolidayForm
 
+
+from django.http import HttpResponseRedirect
 
 def add_holiday_view(request, id):
     if not request.user.is_authenticated or (not request.user.is_staff and not request.user.is_superuser):
@@ -809,44 +817,105 @@ def add_holiday_view(request, id):
         'holiday_name': holiday_name,
         'holiday_type': holiday_type,
     }
-    print(holiday_name)
-    print(holiday_date)
+    print(Holiday.holiday_name)
+    print(Holiday.holiday_date)
     print(holiday_type)
     return render(request, 'dashboard/add_holiday.html', context)
 
-def recommend_view(request,id):
-	if not (request.user.is_authenticated):
-		return redirect('/')
 
-	leave = get_object_or_404(Leave, id = id)
-	print(leave.user)
-	employee = Employee.objects.filter(user = leave.user)[0]
-	print(employee)
-	return render(request,'dashboard/leave_recommended_view.html',{'leave':leave,'employee':employee,'title':'{0}-{1} leave'.format(leave.user.username,leave.status)})
+def recommend_view(request, id):
+    if not request.user.is_authenticated:
+        return redirect('/')
+
+    leave = get_object_or_404(Leave, id=id)
+    print(leave.user)
+
+    # Check if there are any results in the queryset
+    employees = Employee.objects.filter(user=leave.user)
+    if employees.exists():
+        employee = employees[0]  # Access the first element if it exists
+        print(employee)
+    else:
+        # Handle the case where no employees are found for the given user
+        # You can return an error message or handle it as appropriate for your application
+        print("No employee found for user:", leave.user)
+
+    return render(request, 'dashboard/leave_recommended_view.html', {
+        'leave': leave,
+        'employee': employee if employees.exists() else None,  # Pass None if no employees are found
+        'title': '{0}-{1} leave'.format(leave.user.username, leave.status)
+    })
 
 
-def approve_leave(request,id):
-	if not (request.user.is_superuser or request.user.is_staff and request.user.is_authenticated):
-		return redirect('/')
-	leave = get_object_or_404(Leave, id = id)
-	user = leave.user
-	employee = Employee.objects.filter(user = user)[0]
-	leave.approve_leave()
-	print('i have been approved')
-	messages.error(request,'Leave successfully approved for {0}'.format(employee.get_full_name),extra_tags = 'alert alert-success alert-dismissible show')
-	return redirect('dashboard:userleaveview', id = id)
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
+
+
+def approve_leave(request, id):
+    if not (request.user.is_superuser or (request.user.is_staff and request.user.is_authenticated)):
+        return redirect('/')
+
+    leave = get_object_or_404(Leave, id=id)
+    user = leave.user
+
+    try:
+        employee = Employee.objects.get(user=user)
+    except Employee.DoesNotExist:
+        # Handle the case where the Employee does not exist
+        error_message = "We couldn't find the employee associated with this leave request. Please contact your administrator for assistance."
+        return HttpResponse(error_message)
+
+    leave.approve_leave()
+    print('i have been approved')
+
+    messages.success(request, 'Leave successfully approved for {0}'.format(employee.get_full_name),
+                     extra_tags='alert alert-success alert-dismissible show')
+    return redirect('dashboard:userleaveview', id=id)
+
+
+def recommend_leave(request, id):
+    if not (request.user.is_authenticated and request.user.is_staff and not request.user.is_superuser):
+        return redirect('/')
+
+    leave = get_object_or_404(Leave, id=id)
+
+    if leave.status == 'pending':
+        # Update status to 'recommended'
+        leave.status = 'recommended'
+        leave.save()
+
+        # Get user and employee information
+        user = leave.user
+        employee = Employee.objects.filter(user=user).first()
+
+        # Print a message
+        print('Leave request has been recommended')
+
+        # Add a success message
+        messages.success(request, 'Leave successfully recommended for {0}'.format(employee.get_full_name),
+                         extra_tags='alert alert-success alert-dismissible show')
+
+        # Redirect to the recommended view
+        return redirect('dashboard:userrecommendview', id=id)
+    else:
+        # Handle cases where leave is not pending (optional)
+        messages.warning(request, 'Leave request cannot be recommended as it is not in pending status',
+                         extra_tags='alert alert-warning alert-dismissible show')
+        return redirect('dashboard:userrecommendview', id=id)
+
 
 #supervisor who is in this case has the is_staff status should do this
 
-def recommend_leave(request,id):
-	if not (request.user.is_authenticated and request.user.is_superuser or request.user.is_staff):
-		return redirect('/')
-	leave = get_object_or_404(Leave, id = id)
-	user = leave.user
-	employee = Employee.objects.filter(user = user)[0]
-	leave.recommend_leave()
-	messages.success(request, 'Leave successfully recommended for {0}'.format(employee.get_full_name),extra_tags = 'alert alert-success alert-dismissible show')
-	return redirect('dashboard:userrecommendview', id = id)
+# def recommend_leave(request, id):
+#     if not (request.user.is_authenticated and request.user.is_staff and not request.user.is_superuser):
+#         return redirect('/')
+#     leave = get_object_or_404(Leave, id=id)
+#     user = leave.user
+#     employee = Employee.objects.filter(user=user)[0]
+#     leave.recommend_leave()
+#     print('i have been recommended')
+#     messages.success(request, 'Leave successfully recommended for {0}'.format(employee.get_full_name), extra_tags='alert alert-success alert-dismissible show')
+#     return redirect('dashboard:userrecommendview', id=id)
 
 
 # recommendview
@@ -867,12 +936,19 @@ def unapprove_leave(request,id):
 	leave.unapprove_leave
 	return redirect('dashboard:leaveslist') #redirect to unapproved list
 
-def unrecommend_leave(request, id):
-	if not (request.user.is_authenticated and request.user.is_superuser or request.user.is_staff):
-		return redirect('/')
-	leave = get_object_or_404(Leave, id = id)
-	leave.unapprove_leave
-	return redirect('dashboard:leaveslist') #redirect to unapproved list
+# def unrecommend_leave(request, id):
+# 	if not (request.user.is_authenticated and request.user.is_superuser or request.user.is_staff):
+# 		return redirect('/')
+# 	leave = get_object_or_404(Leave, id = id)
+# 	leave.unrecommend_leave
+# 	return redirect('dashboard:leaveslist') #redirect to unapproved list
+# def unrecommend_leave(request, id):
+#     if not (request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff)):
+#         return redirect('/')
+#     leave = get_object_or_404(Leave, id=id)
+#     # Call the unrecommend_leave property method
+#     leave.unrecommend_leave()
+#     return redirect('dashboard:recommendedleavelist')  # Redirect to unapproved list
 
 def leaves_approved_list(request):
     if request.user.is_authenticated:

@@ -2,7 +2,7 @@
 {% extends '_layout.html' %}
 
 {% block title %} {{ title }} {% endblock %}
-
+<style>
   {% block stylesheet %}
      .sec-box{
      <!-- width:400px; --><!-- dont uncomment this code - line -->
@@ -76,8 +76,8 @@
      
   {% endblock %}
 
-  
 
+</style>
  <!--CONTENTS-->
  {% block content %}
         <section class="content">
@@ -85,7 +85,7 @@
             	<section class="row">
             		{% if request.user.is_superuser or request.user.is_staff or request.user.is_supervisor %}
             		<section class="col col-lg-4">
-            			<div class="employee-box sec-box">s
+            			<div class="employee-box sec-box">
             				<a href="">
             				<span style="font-size: 24px;">Total Registered Employees: {{ employees.count }}</span>
             				</a>
@@ -95,8 +95,15 @@
             		<section class="col col-lg-4">
             			<div class="leave-box sec-box">
             				<a href="">
+                                {% if request.user.is_staff and not request.user.is_superuser %}
             				<span style="font-size: 24px;"></span>Total Leaves Requested: {{ leaves.count }}</span>
                             <!-- <span class="count-object" style="color:#41b6d6;"></span>  -->
+                                    {% endif %}
+                                {% if request.user.is_superuser %}
+            				<span style="font-size: 24px;"></span>Total Leaves Requested: {{ leavey.count }}</span>
+                            <!-- <span class="count-object" style="color:#41b6d6;"></span>  -->
+                                    {% endif %}
+
             			</div>
             		</section>
             		
@@ -129,13 +136,13 @@
         </section>
 
         
- {% endblock %}
+{# {% endblock %}#}
 
  
+    <script>
 
 
 {% block extrajs%}
-    
     
 
     $(document).ready(function(){
@@ -155,5 +162,6 @@
             });
 
       });
-
+</script>
+{% endblock %}
 {% endblock %}
