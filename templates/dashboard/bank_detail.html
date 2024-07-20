@@ -1,0 +1,38 @@
+<!-- bank_detail.html -->
+
+{% extends '_layout.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% load crispy_forms_tags %}
+
+ {% block navheader %}
+    {% include 'includes/navheader_employee_app.html' %}
+ {% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Account Details</title>
+    <!-- Add your CSS links here -->
+</head>
+<body>
+    <div class="container">
+        <h1>Bank Account Details</h1>
+        {% if bank %}
+            <p><strong>Bank Name:</strong> {{ bank.name }}</p>
+            <p><strong>Account Number:</strong> {{ bank.account }}</p>
+            <p><strong>Branch:</strong> {{ bank.branch }}</p>
+            <p><strong>Salary (Initial):</strong> {{ bank.salary }}</p>
+            <!-- Add more bank account details as needed -->
+        {% else %}
+            <p>No bank account information found for the current user.</p>
+        {% endif %}
+    </div>
+    <!-- Add your JavaScript links here -->
+</body>
+</html>
+{% endblock %}

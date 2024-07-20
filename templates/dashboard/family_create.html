@@ -1,0 +1,155 @@
+{% extends '_layout.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Custom CSS to prevent horizontal scrolling */
+    </style>
+{% endblock %}
+
+{% block stylesheet %}
+        /* Styles for the container */
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        /* Styles for the form wrapper */
+        .form-wrapper {
+            padding: 20px;
+        }
+
+        /* Styles for the form elements */
+        form label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        form select, form input[type="text"], form input[type="email"], form input[type="password"] {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 5px;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        /* Styles for the submit button */
+        .btn-primary {
+            background-color: dodgerblue;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e90ff;
+        }
+
+        /* Styles for the form group */
+        .form-group {
+            width: 100%;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 767px) {
+            .container {
+                margin: 20px;
+                padding: 10px;
+            }
+
+            form select, form input[type="text"], form input[type="email"], form input[type="password"] {
+                font-size: 14px;
+            }
+
+            .btn-primary {
+                font-size: 14px;
+            }
+        }
+
+        /* Two-column layout */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .col-md-6 {
+            flex: 0 0 50%;
+            max-width: 40%;
+            padding: 0 15px;
+        }
+{% endblock %}
+
+{% block navheader %}
+    {% include 'includes/navheader_employee_app.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+<h1 style="color: deepskyblue; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; text-align: center;">Add Family Information</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-wrapper">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="user">Select User:</label>
+                        <select name="user" id="user" class="form-control">
+                            <option value="">Select User</option>
+                            {% for us in users %}
+                                <option value="{{ us.id }}">{{ us.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="employee">Select Employee:</label>
+                        <select name="employee" id="employee" class="form-control">
+                            <option value="">Select Employee</option>
+                            {% for employee in employees %}
+                                <option value="{{ employee.id }}">{{ employee.firstname }} {{ employee.lastname }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {% for field in form %}
+                        {% if forloop.counter <= 5 %}
+                            <div class="form-group">
+                                {{ field.label_tag }}
+                                {{ field }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6">
+                    {% for field in form %}
+                        {% if forloop.counter > 5 %}
+                            <div class="form-group">
+                                {{ field.label_tag }}
+                                {{ field }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

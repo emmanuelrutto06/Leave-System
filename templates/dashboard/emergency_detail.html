@@ -1,0 +1,36 @@
+<!-- emergency_detail.html -->
+
+{% extends '_layout.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% load crispy_forms_tags %}
+
+ {% block navheader %}
+    {% include 'includes/navheader_employee_app.html' %}
+ {% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+</head>
+<body>
+<h1 style="color: deepskyblue; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; text-align: center;">Emergency Information</h1>
+    {% if emergency_info %}
+        <p>User: {{ emergency_info.user }}</p>
+        <p>Emergency Contact Name: {{ emergency_info.fullname }}</p>
+        <p>Emergency Contact Number: {{ emergency_info.tel }}</p>
+        <p>Emergency Location: {{ emergency_info.location }}</p>
+        <p>Emergency Relationship: {{ emergency_info.relationship }}</p>
+        <p>Emergency Updated: {{ emergency_info.updated }}</p>
+
+        <!-- Add more fields as needed -->
+    {% else %}
+        <p>No emergency information found for the current user.</p>
+    {% endif %}
+</body>
+</html>
+{% endblock %}

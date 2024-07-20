@@ -4,85 +4,75 @@
 {% block navheader %}
     {% include 'includes/navheader_employee_app.html' %}
 {% endblock %}
-
-
- {% block stylesheet %}
+{% block head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Custom CSS to prevent horizontal scrolling */
+        body {
+            overflow-x: hidden;
+        }
+    </style>
 {% endblock %}
-        <!--CONTENTS-->
- }
- {% block content %}
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-12">
-                    <a href="{{ request.META.HTTP_REFERER|escape }}" style="color: #c1c1c1;">back</a>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-8 offset-sm-2">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                                {{ message }}
-                                <button type="button" class="close" id="override-start" data-dismiss="alert"
-                                        aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-            <div class="container">
-                <div class="row margin-bottom">
-                    <div class="container-fluid">
-                        <div class="col-lg-8 col-md-8 col-sm-12">
-                            <div class="employee-box sec-box">
-                                <span style="font-size: 24px; color: deepskyblue">All System Employees: {{ employees.count }}</span>
-                                <table class="table table-responsive-lg">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col" class="name-header">No.</th>
-                                            <th scope="col" class="name-header">Employee (Full Name)</th>
-                                            <th scope="col" class="department-header">Department</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for emp in employees %}
-                                            <tr>
-                                                <td>{{ forloop.counter }}</td> <!-- Use forloop.counter as the row number -->
-                                                <td>{{ emp.get_full_name }}</td>
-                                                <td>{{ emp.designation }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                                <span class="count-object"></span>
-                            </div>
-                        </div>
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <a href="{{ request.META.HTTP_REFERER|escape }}" style="color: #c1c1c1;">Back</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-8 offset-sm-2">
+            {% if messages %}
+                {% for message in messages %}
+                    <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                        {{ message }}
+                        <button type="button" class="close" id="override-start" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="row margin-bottom">
+        <div class="col-lg-8 col-md-8 col-sm-12">
+            <div class="card">
+                <div class="card-header">
+
+                    <span style="color: deepskyblue; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; text-align: center;">All System Employees: {{ employees.count }}</span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="name-header" style="padding: 10px;">No.</th>
+                                <th scope="col" class="name-header" style="padding: 10px;">Employee (Full Name)</th>
+                                <th scope="col" class="department-header" style="padding: 10px;">Department</th>
+                                <th scope="col" class="profile-header" style="padding: 10px;">Profile</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for emp in employees %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ emp.get_full_name }}</td>
+                                    <td>{{ emp.designation }}</td>
+                                    <td><a href="{% url 'dashboard:employeeinfo' emp.id %}" class="btn btn-info btn-sm">View Profile</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <span class="count-object"></span>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</div>
 {% endblock %}
 
-
-
+{% block extrajs %}
 <script type="text/javascript">
-{% block extrajs%}
-/*create-user-button - handler*/
-
-// $(document).ready(function(){
-
-// var createuser = $('.create-user-model');
-// createuser.on('click',function(){
-// alert("who clicked me ?")
-
-// });
-
-
-// });
-
-{% endblock %}
+    // Your custom JavaScript code can go here
 </script>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends '_layout.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Custom CSS to prevent horizontal scrolling */
+        body {
+            overflow-x: hidden;
+        }
+    </style>
+{% endblock %}
+
+{% block navheader %}
+    {% include 'includes/navheader_employee_app.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h1 class="card-title">Family Information</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <h2>Status</h2>
+                    <p>{{ status }}</p>
+                </div>
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <h3>Spouse Information</h3>
+                    <p><strong>Name:</strong> {{ family.spouse }}</p>
+                    <p><strong>Occupation:</strong> {{ family.occupation }}</p>
+                    <p><strong>Phone:</strong> {{ family.tel }}</p>
+                </div>
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <h3>Children Information</h3>
+                    <p>{{ family.children }}</p>
+                </div>
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <h3>Next of Kin Information</h3>
+                    <p><strong>Name:</strong> {{ family.nextofkin }}</p>
+                    <p><strong>Contact:</strong> {{ family.contact }}</p>
+                    <p><strong>Relationship:</strong> {{ family.relationship }}</p>
+                </div>
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <h3>Parents Information</h3>
+                    <p><strong>Father's Name:</strong> {{ family.father }}</p>
+                    <p><strong>Father's Occupation:</strong> {{ family.foccupation }}</p>
+                    <p><strong>Mother's Name:</strong> {{ family.mother }}</p>
+                    <p><strong>Mother's Occupation:</strong> {{ family.moccupation }}</p>
+                </div>
+            </div>
+            {% if messages %}
+                <div class="alert alert-info mt-3">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

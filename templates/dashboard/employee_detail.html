@@ -208,7 +208,6 @@ span{
                                             <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Lastname</span> <div> {{ employee.lastname }} </div>
                                             </a>
                                             {% endif %}
-
                                             {% if employee.othername %}
                                             <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Othername</span> <div>{{ employee.othername}} </div>
                                             </a>
@@ -345,15 +344,13 @@ span{
                                    <div class="row">
                                         
                                         {% if family %}
-                                          
-
-                                          
                                           <div class="list-group" id="list-tab" role="tablist">
                                             <a class="list-group-item list-group-item-action" id="list-home-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Status</span> <div>{{ family.status }}</div>
                                             </a>
-
+                                          {% endif %}
+                                   
                                             {% if family.spouse %}
-                                            <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Spouse( Fullname )</span> <div> {{ family.spouse}} </div>
+                                            <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Spouse( Fullname )</span> <div> {{ family.spouse }} </div>
                                             </a>
                                             {% endif %}
 
@@ -372,14 +369,10 @@ span{
                                             </div>
                                             </a>
                                             {% endif %}
-
-                                            <!-- recent added 29/03/19 -->
-                                            {% if family.nextofkin %}
+                                              {% if family.nextofkin %}
                                             <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Next of Kin </span><div>{{ family.nextofkin }} </div>
                                             </a>
                                             {% endif %}
-                                         
-
 
                                             {% if family.contact %}
                                             <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Next of Kin (Contact)</span> <div> {{ family.contact }}</div></a>
@@ -406,9 +399,9 @@ span{
                                             <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Occupation</span> <div>{{ family.moccupation}}</div></a>
                                             {% endif %}
 
-                                            {% if request.user.is_superuser %}
-                                            <span><a href="{% url 'dashboard:familyedit' family.id %}">Edit</a></span>
-                                            {% endif %}
+{#                                            {% if request.user.is_superuser %}#}
+{#                                            <span><a href="{% url 'dashboard:familyedit' family.id %}">Edit</a></span>#}
+{#                                            {% endif %}#}
                                           
                                           </div>
 
@@ -416,16 +409,16 @@ span{
                                             <span>last update - {{family.updated|naturaltime }}</span>
                                           </div>
 
-                                        {% else %}
+{#                                        {% else %}#}
 
-                                        <h4>
-                                          {% if request.user.is_superuser %}No Information found,to add click <a href="{% url 'dashboard:familycreate' %}">here</a>
-                                          {% else%}
-                                          No Information can be found. Check up with your human resource manager.
-                                          {% endif %}
-                                        </h4>
+{#                                        <h4>#}
+{#                                          {% if request.user.is_superuser %}No Information found,to add click <a href="{% url 'dashboard:familycreate' %}">here</a>#}
+{#                                          {% else%}#}
+{#                                          No Information can be found. Check up with your human resource manager.#}
+{#                                          {% endif %}#}
+{#                                        </h4>#}
 
-                                        {% endif %}
+{#                                        {% endif %}#}
 
                                    </div>
                                 </section>
@@ -458,9 +451,9 @@ span{
                                             <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Relationship</span> <div> {{ emergency.relationship }}</div></a>
 
 
-                                            {% if request.user.is_superuser %}
-                                            <span><a href="{% url 'dashboard:emergencyupdate' emergency.id %}">Edit</a></span>
-                                            {% endif %}
+{#                                            {% if request.user.is_superuser %}#}
+{#                                            <span><a href="{% url 'dashboard:emergencyupdate' emergency.id %}">Edit</a></span>#}
+{#                                            {% endif %}#}
                                           </div>
 
                                           <div>
@@ -511,9 +504,9 @@ span{
                                             <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Branch </span><div>{{ bank.branch }}</div></a>
                                             <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Salary (Initial)</span> <div>{{ bank.salary}}</div></a>
 
-                                            {% if request.user.is_superuser %}
-                                            <span><a href="{% url 'dashboard:accountedit' bank.id %}">Edit</a></span>
-                                            {% endif %}
+{#                                            {% if request.user.is_superuser %}#}
+{#                                            <span><a href="{% url 'dashboard:accountedit' bank.id %}">Edit</a></span>#}
+{#                                            {% endif %}#}
 
                                             <div>
                                               <span>last update - {{bank.updated|naturaltime }}</span>

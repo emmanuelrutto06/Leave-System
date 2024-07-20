@@ -1,6 +1,6 @@
 from django.urls import path
 from .import views
-
+from .views import *
 
 app_name = 'dashboard'
 
@@ -14,15 +14,18 @@ urlpatterns = [
     path('employee/profile/edit/<int:id>/',views.employee_edit_data, name='edit'),
 
     # # Emergency
-    # path('emergency/create/',views.dashboard_emergency_create,name='emergencycreate'),
+    path('emergency/create/',views.dashboard_emergency_create,name='emergencycreate'),
     # path('emergency/update/<int:id>',views.dashboard_emergency_update,name='emergencyupdate'),
+    path('emergency/', views.dashboard_emergency, name='emergency'),  # URL for viewing emergency information
 
     # # Family
-    # path('family/create/',views.dashboard_family_create,name='familycreate'),
+    path('family/create/',views.dashboard_family_create,name='familycreate'),
     # path('family/edit/<int:id>',views.dashboard_family_edit,name='familyedit'),
-    
+    path('dashboard/family/', views.dashboard_family, name='family'),
     # #Bank
-    # path('bank/create/',views.dashboard_bank_create,name='bankaccountcreate'),
+    path('bank/create/',views.dashboard_bank_create,name='bankaccountcreate'),
+    path('bank/', dashboard_bank_detail, name='bank'),  # URL pattern for bank details
+    path('dashboard/bank/create/', views.dashboard_bank_create, name='bankcreate'),
 
     #---work-on-edit-view------#
     # path('bank/edit/<int:id>/',views.employee_bank_account_update,name='accountedit'),

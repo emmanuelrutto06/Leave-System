@@ -220,21 +220,28 @@ class Employee(models.Model):
         return self.get_full_name
 
     from datetime import timedelta
-
     @property
     def get_full_name(self):
-        fullname = ''
-        firstname = self.firstname
-        lastname = self.lastname
-        othername = self.othername
+        if self.othername:
+            return f"{self.firstname} {self.lastname} {self.othername}"
+        return f"{self.firstname} {self.lastname}"
 
-        if (firstname and lastname) or othername is None:
-            fullname = firstname + ' ' + lastname
-            return fullname
-        elif othername:
-            fullname = firstname + ' ' + lastname + ' ' + othername
-            return fullname
-        return
+    def __str__(self):
+        return self.get_full_name
+    # @property
+    # def get_full_name(self):
+    #     fullname = ''
+    #     firstname = self.firstname
+    #     lastname = self.lastname
+    #     othername = self.othername
+    #
+    #     if (firstname and lastname) or othername is None:
+    #         fullname = firstname + ' ' + lastname
+    #         return fullname
+    #     elif othername:
+    #         fullname = firstname + ' ' + lastname + ' ' + othername
+    #         return fullname
+    #     return
 
     @property
     def get_age(self):
@@ -254,3 +261,66 @@ class Employee(models.Model):
         self.personal_number = data  # pass the new code to the employee_id as its orifinal or actual code
         super().save(*args, **kwargs)  # call the parent save method
         # print(self.peronal_number)
+from django.db import models
+from django.contrib.auth.models import User
+
+from django.contrib.auth.models import User
+from django.db import models
+
+class Family(models.Model):
+    STATUS_CHOICES = [
+        ('single', 'Single'),
+        ('married', 'Married'),
+        ('widowed', 'Widowed'),
+        ('divorced', 'Divorced'),
+        ('prefer_not_to_say', 'Prefer Not to Say'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES, blank=True)
+    spouse = models.CharField(max_length=100, blank=True)
+    occupation = models.CharField(max_length=100, blank=True)
+    tel = models.CharField(max_length=20, blank=True)
+    children = models.IntegerField(default=0)
+    nextofkin = models.CharField(max_length=100, blank=True)
+    contact = models.CharField(max_length=20, blank=True)
+    relationship = models.CharField(max_length=100, blank=True)
+    father = models.CharField(max_length=100, blank=True)
+    foccupation = models.CharField(max_length=100, blank=True)
+    mother = models.CharField(max_length=100, blank=True)
+    moccupation = models.CharField(max_length=100, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Family information of {self.user.username}"
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class Emergency(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)  # Assuming you have an Employee model
+    fullname = models.CharField(max_length=100, blank=True)
+    tel = models.CharField(max_length=20, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    relationship = models.CharField(max_length=100, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Emergency information of {self.user.username}"
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class Bank(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)  # Assuming you have an Employee model
+    name = models.CharField(max_length=100, blank=True)
+    account = models.CharField(max_length=100, blank=True)
+    branch = models.CharField(max_length=255, blank=True)
+    salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Bank account information of {self.user.username}"

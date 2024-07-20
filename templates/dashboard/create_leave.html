@@ -4,132 +4,109 @@
 
 {% load crispy_forms_tags %}
 
- {% block navheader %}
-    {% include 'includes/navheader_employee_app.html' %}
- {% endblock %}
-
-
-
-  {% block stylesheet %}
-
-   #override-start{
+{% block stylesheet %}
+  #override-start {
     background:none !important;
     top: 35% !important;
     right:13px;
     color:#000;
     font-size: 24px;
+  }
 
-    }
+  .alert-warning {
+    background:#fd7b7b;
+  }
 
-    .alert-warning{
-        background:#fd7b7b;
-    }
+  .alert-success {
+    background-color: #82b72a;
+  }
 
-    .alert-success {
-        background-color: #82b72a;
-    }
+  .alert-success, .alert-warning {
+    font-size:16px;
+  }
 
-    .alert-success,.alert-warning{
-        font-size:16px;
-    }
+  .sec {
+    border:1px solid yellow;
+    background:red;
+  }
 
+  .form-wrapper {
+    -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+    padding: 2%;
+    background:#fff !important;
+    padding-bottom:5%;
+  }
 
+  .btn-lg {
+    padding:8px 30px;
+  }
+    .alert-warning {
+    background: #ffeeba;
+    color: red;
+    border-color: #ffeeba;
+    font-size: 14px; /* Reduce font size */
+    border-radius: 4px; /* Rounded corners for a cleaner look */
+    padding: 8px 12px; /* Smaller padding */
+    margin: 10px 0; /* Margin to ensure it is not flush against the edge */
+    position: absolute; /* Make it float at the top */
+    top: 10px; /* Distance from the top of the page */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center horizontally with margin */
+    width: auto; /* Adjust width automatically based on content */
+    z-index: 1000; /* Ensure it appears on top of other elements */
+}
 
-       .sec{
-       border:1px solid yellow;
-       background:red;
-    }
+{% endblock %}
 
-        .form-wrapper{
-        -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-        box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-        padding: 2%;
-        background:#fff !important;
-        padding-bottom:5%;
-    }
+{% block content %}
+  <section class="content">
+    <section class="container-fluid">
 
-        .btn-lg{
-        padding:8px 30px;
-
-    }
-
-{% comment %}
-    .main-panel > .content {
-    padding: 60px 15px;
-    min-height: calc(100% - 123px); {% endcomment %}
-
-    {% comment %} } {% endcomment %}
-
-
-  {% endblock %}
-
-
-
-
- {% block content %}
-        <section class="content">
-            <section class="container-fluid">
-
-                <section class="form-wrapper">
-                    <section class="row">
-                        <section class="col col-lg-12 col-md-12  col-sm-12">
-
-
-                            {% if  messages %}
-                                    {% for message in messages %}
-                                     <div {% if message.tags %} class="{{ message.tags}}"{% endif %}>
-                                         {{ message }}
-
-                                         <button type="button" class="close" id = "override-start"data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
-                                         </button>
-                                     </div>
-                                    {% endfor %}
-                            {% endif %}
-
-                        </section>
-                    </section>
-
-                    <section class="row">
-                        <section class="col-lg-12 col-md-12 col-sm-12 text-center space-margin">
-                            <h3 class="title-h3">{{ title}}</h3>
-                        </section>
-                    </section>
-
-
-                    <section class="row">
-                        <section class="col-lg-12 col-md-12 col-sm-12">
-                            <form action="{% url 'dashboard:createleave' %}" method="POST">
-                                {% csrf_token %}
-                                {{ form | crispy }}
-                                {{startdate}}
-                                {{enddate}}
-                                <button type="submit" class="btn btn-primary btn-lg btn-block">Request Leave</button>
-
-                                {% comment %} {% if carried_forward_days %}
-                                    <p>Carried Forward Leave Days from Previous Year: {{ carried_forward_days }}</p>
-                                {% endif %}
-                            <form action="{% url 'dashboard:createleave' %}" method="POST">
-                                {% csrf_token %}
-                                <label for="carried_forward_days">Carried Forward Leave Days:</label>
-                                <input type="number" id="carried_forward_days" name="carried_forward_days" min="0" max="15"> {% endcomment %}
-
-                                {% comment %} <button type="submit" class="btn btn-primary btn-lg btn-block">Carry Forward</button> {% endcomment %}
-
-
-                        </section>
-
-                    </section>
-
-                </section>
-
-
-            </section> <!-- /container -->
+      <section class="form-wrapper">
+        <section class="row">
+          <section class="col col-lg-12 col-md-12 col-sm-12">
+            {% if messages %}
+              {% for message in messages %}
+                <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                  {{ message }}
+                  <button type="button" class="close" id="override-start" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+          </section>
         </section>
- {% endblock %}
+
+        <section class="row">
+          <section class="col-lg-12 col-md-12 col-sm-12 text-center space-margin">
+            <h3 class="title-h3">{{ title }}</h3>
+          </section>
+        </section>
+
+        <section class="row">
+          <section class="col-lg-12 col-md-12 col-sm-12">
+            <form action="{% url 'dashboard:createleave' %}" method="POST">
+              {% csrf_token %}
+              {{ form | crispy }}
+              {{ startdate }}
+              {{ enddate }}
+              <button type="submit" class="btn btn-primary btn-lg btn-block" {% if apply_leave_disabled %}disabled{% endif %}>
+                Request Leave
+              </button>
+              {% if apply_leave_disabled %}
+                <p class="alert alert-warning">You have exhausted your leave days. Please contact HR for more information.</p>
+              {% endif %}
+            </form>
+          </section>
+        </section>
+      </section>
+
+    </section> <!-- /container -->
+  </section>
+{% endblock %}
 
 <script type="text/javascript">
-{% block extrajs%}
-
-
+{% block extrajs %}
+// Optional JavaScript for additional checks or functionality
 {% endblock %}
 </script>

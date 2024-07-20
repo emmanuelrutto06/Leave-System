@@ -2,7 +2,12 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="utf-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{#    <title>{% block title %}Default Title{% endblock %}</title>#}
+    {% block head %}{% endblock %}
+    <!-- Other head content, such as CSS files -->
+{#	<meta charset="utf-8" />#}
 	<link rel="icon" type="image/png" href="assets/img/favicon.ico">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
@@ -91,6 +96,10 @@
         font-variant: petite-caps;
     }
 
+    .dropdown-menu {
+        background-color: deepskyblue;
+    }
+
     {% block stylesheet %}
 
 
@@ -126,18 +135,42 @@
                 </li>
 
                 {% if request.user.is_superuser and request.user.is_staff %}
-                <li>
-                    <a href="{% url 'dashboard:employees' %}">
+                <li class="dropdown">
+                    <a href="#employeeDropdown" class="droxpdown-toggle" data-toggle="dropdown">
                         <i class="pe-7s-users"></i>
-                        <p>Employee Dashboard</p>
+                        <p>Employee<b class="caret"></b></p>
                     </a>
+                    <ul class="dropdown-menu">
+{#                                             <i class="fa fa-ambulance"></i>#}
+{#                        <i class="pe-7s-add-user"></i>#}
+
+                        <li>
+                            <a href="{% url 'dashboard:employees' %}">
+                                <i class = "pe-7s-user"></i>Manage Employees</a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'dashboard:familycreate' %}">
+                                <i class = "pe-7s-add-user"></i>Add Family Information</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:emergencycreate' %}">
+                                <i class = "fa fa-ambulance"></i>Add Emergency Information</a>
+                        </li>
+{#                    <i class="fa fa-bank"></i>#}
+                        <li>
+                            <a href="{% url 'dashboard:bankaccountcreate' %}">
+                                <i class="fa fa-bank"></i> Add Bank Information
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 {% endif %}
 
                 <li>
                     {% if request.user.is_superuser %}<a href="{% url 'dashboard:recommendedleavelist' %}">{% else %}<a href="{% url 'dashboard:staffleavetable' %}"> {% endif %}
                         <i class="pe-7s-news-paper"></i>
-                        <p>Leave Dashboard</p>
+                        <p>Leave</p>
                     </a>
                 </li>
 

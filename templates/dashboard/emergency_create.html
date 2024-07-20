@@ -1,0 +1,78 @@
+{% extends '_layout.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block navheader %}
+    {% include 'includes/navheader_employee_app.html' %}
+{% endblock %}
+
+{% block head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Custom CSS to prevent horizontal scrolling */
+        body {
+            overflow-x: hidden;
+        }
+             .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 3px solid #ccc;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        /* Styles for smaller-sized fields */
+        {#select,#}
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            width: 40%;
+            font-size: 14px;
+            border-radius: 5px;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        /* Styles for the submit button */
+        .btn-primary {
+            background-color: dodgerblue;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e90ff;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+<h1 style="color: deepskyblue; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; text-align: center;">Add Emergency Information</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="employee">Select Employee:</label>
+            <select name="employee" id="employee">
+                <option value="">Select Employee</option>
+                {% for employee in employees %}
+                    <option value="{{ employee.id }}">{{ employee.firstname }} {{ employee.lastname }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}
