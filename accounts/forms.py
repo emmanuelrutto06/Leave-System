@@ -1,17 +1,19 @@
 from django import forms
 from employee.models import User
 from django.contrib.auth.forms import UserCreationForm
+from employee.models import UserManager, CustomUser
 
 class UserAddForm(UserCreationForm):
     '''
     Extending UserCreationForm - with email
     '''
     
-    username = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'username'}))
+    # username = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'username'}))
 
     class Meta:
-        model = User  # Use the CustomUser model instead of User
-        fields = ['email', 'username', 'password1', 'password2']
+        model = CustomUser  # Use the CustomUser model instead of User
+        # fields = ['email', 'username', 'password1', 'password2']
+        fields = ['email', 'password1', 'password2']
 
 
 class UserLogin(forms.Form):

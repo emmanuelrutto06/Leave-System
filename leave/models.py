@@ -305,7 +305,8 @@ class Leave(models.Model):
 #
 #
 class CarriedForward(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     financial_year = models.ForeignKey(FinancialYear, on_delete=models.CASCADE)  # Use ForeignKey to FinancialYear model
     leave_days_carried_forward = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(15)])
 

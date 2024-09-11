@@ -11,19 +11,28 @@ urlpatterns = [
     path('employees/all/',views.dashboard_employees, name='employees'),
     path('employee/create/',views.dashboard_employees_create, name='employeecreate'),
     path('employee/profile/<int:id>/',views.dashboard_employee_info, name='employeeinfo'),
-    path('employee/profile/edit/<int:id>/',views.employee_edit_data, name='edit'),
+    path('employee/delete/<int:id>/',views.dashboard_delete_user, name='deleteuser'),
+    # path('employee/profile/edit/<int:id>/',views.employee_edit_data, name='edit'),
+    path('employee/edit/<int:id>/', employee_edit_data, name='employee_edit'),
+
+    path('employee/bank/edit/<int:id>/',views.bank_update, name='accountedit'),
 
     # # Emergency
     path('emergency/create/',views.dashboard_emergency_create,name='emergencycreate'),
+    path('employee/emergency/edit/<int:id>/', views.emergency_update, name='emergencyupdate'),
     # path('emergency/update/<int:id>',views.dashboard_emergency_update,name='emergencyupdate'),
     path('emergency/', views.dashboard_emergency, name='emergency'),  # URL for viewing emergency information
 
     # # Family
     path('family/create/',views.dashboard_family_create,name='familycreate'),
+    path('employee/family/edit/<int:id>/', views.family_edit_data, name='familyedit'),
+
     # path('family/edit/<int:id>',views.dashboard_family_edit,name='familyedit'),
     path('dashboard/family/', views.dashboard_family, name='family'),
     # #Bank
     path('bank/create/',views.dashboard_bank_create,name='bankaccountcreate'),
+    path('employee/profile/update/<int:id>/', views.dashboard_employee_update, name='employeeinfo_update'),
+
     path('bank/', dashboard_bank_detail, name='bank'),  # URL pattern for bank details
     path('dashboard/bank/create/', views.dashboard_bank_create, name='bankcreate'),
 
@@ -38,9 +47,9 @@ urlpatterns = [
 
    
     #Approve Leave
-    path('leave/approve/<int:id>/',views.approve_leave,name='userleaveapprove'),
-    path('leaves/approved/all/',views.leaves_approved_list,name='approvedleaveslist'),
-    path('leave/unapprove/<int:id>/',views.unapprove_leave,name='userleaveunapprove'), 
+    path('leave/approve/<int:id>/', views.approve_leave, name='userleaveapprove'),
+    path('leaves/approved/all/', views.leaves_approved_list, name='approvedleaveslist'),
+    path('leave/unapprove/<int:id>/', views.unapprove_leave, name='userleaveunapprove'),
 
     #used to display the recommended status of the leave
     path('leave/recommend/<int:id>/', views.recommend_leave,name='userleaverecommend'), 

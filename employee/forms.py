@@ -1,7 +1,8 @@
 from django import forms
 from employee.models import Role,Department,Employee
-from django.contrib.auth.models import User
-from .models import User
+# from django.contrib.auth.models import User
+# from .models import User
+from .models import CustomUser
 
 from django import forms
 
@@ -25,18 +26,19 @@ from django import forms
 
 # EMPLoYEE
 class EmployeeCreateForm(forms.ModelForm):
-	employeeid = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'please enter 5 characters without RGL or slashes eg. A0025'}))
-	image = forms.ImageField(widget=forms.FileInput(attrs={'onchange':'previewImage(this);'}))
-	class Meta:
-		model = Employee
-		exclude = ['is_blocked','is_deleted','created','updated']
-		widgets = {
-				'bio':forms.Textarea(attrs={'cols':5,'rows':5})
-		}
+    employeeid = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'please enter 5 characters without RGL or slashes eg. A0025'}))
+    image = forms.ImageField(widget=forms.FileInput(attrs={'onchange': 'previewImage(this);'}))
+    # department = forms.ModelChoiceField(queryset=Department.objects.all(), required=True, widget=forms.Select(attrs={'class': 'form-control'}))
+    # roles = forms.ModelMultipleChoiceField(queryset=Role.objects.all(), widget=forms.CheckboxSelectMultiple())
+    class Meta:
+        model = Employee
+        exclude = ['is_blocked', 'is_deleted', 'created', 'updated',]
+        widgets = {
+            'bio': forms.Textarea(attrs={'cols': 5, 'rows': 5})
+        }
 
 from django import forms
 from .models import Family
-
 class FamilyCreateForm(forms.ModelForm):
     class Meta:
         model = Family

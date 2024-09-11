@@ -9,7 +9,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'https://leave.system.ackstthomasaquinas.com/', 'leave.system.ackstthomasaquinas.com' ]
 
 
 INSTALLED_APPS = [
@@ -66,16 +66,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hrsuit.wsgi.application'
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': config('DB_HOST'),
+#     }
+# }
+#
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-# AUTH_USER_MODEL = 'employee.CustomUser'
+AUTH_USER_MODEL = 'employee.CustomUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

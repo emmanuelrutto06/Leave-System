@@ -1,7 +1,8 @@
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from employee.models import CustomUser
 from django.conf import settings
 from django.db.models import Q
 import datetime
@@ -135,7 +136,7 @@ def dashboard_employees_create(request):
         if form.is_valid():
             instance = form.save(commit=False)
             user = request.POST.get('user')
-            assigned_user = User.objects.get(id=user)
+            assigned_user = CustomUser.objects.get(id=user)
 
             instance.user = assigned_user
 
@@ -208,7 +209,7 @@ def dashboard_family_create(request):
 
     form = FamilyCreateForm()
     employees = Employee.objects.all()
-    users = User.objects.all()
+    users = CustomUser.objects.all()
     dataset = {'form': form, 'title': 'Add Family Information', 'employees': employees, 'users': users}
     return render(request, 'dashboard/family_create.html', dataset)
 
@@ -269,38 +270,68 @@ def dashboard_family(request):
     return render(request, 'dashboard/family.html', context)
 
 
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
+# from Employee.models import Employee, Department, Role, User
+# from .forms import EmployeeCreateForm
+
+
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
+# from dashboard.models import Employee, Department, Role, User
+# from .forms import EmployeeCreateForm
+import logging
+
+logger = logging.getLogger(__name__)
+
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
+from employee.models import Employee, Department, Role, User
+from employee.forms import EmployeeCreateForm
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+logger = logging.getLogger(__name__)
+
+
 def employee_edit_data(request, id):
-    if not (request.user.is_authenticated and request.user.is_superuser or request.user.is_staff):
+    if not (request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff)):
         return redirect('/')
+
     employee = get_object_or_404(Employee, id=id)
+
     if request.method == 'POST':
-        form = EmployeeCreateForm(request.POST or None, request.FILES or None, instance=employee)
+        form = EmployeeCreateForm(request.POST, request.FILES, instance=employee)
         if form.is_valid():
             instance = form.save(commit=False)
 
-            user = request.POST.get('user')
-            assigned_user = User.objects.get(id=user)
-
+            user_id = request.POST.get('user')
+            assigned_user = User.objects.get(id=user_id)
             instance.user = assigned_user
 
             instance.image = request.FILES.get('image')
             instance.firstname = request.POST.get('firstname')
             instance.lastname = request.POST.get('lastname')
             instance.othername = request.POST.get('othername')
-
             instance.birthday = request.POST.get('birthday')
 
-            religion_id = request.POST.get('religion')
-            religion = Religion.objects.get(id=religion_id)
-            instance.religion = religion
-
-            nationality_id = request.POST.get('nationality')
-            nationality = Nationality.objects.get(id=nationality_id)
-            instance.nationality = nationality
-
             department_id = request.POST.get('department')
-            department = Department.objects.get(id=department_id)
-            instance.department = department
+            logger.info(f"Received department ID: {department_id}")
+            try:
+                department = Department.objects.get(id=department_id)
+                instance.department = department
+            except ObjectDoesNotExist:
+                messages.error(request, 'Department does not exist.',
+                               extra_tags='alert alert-danger alert-dismissible show')
+                return redirect('dashboard:employee_edit', id=id)
 
             instance.hometown = request.POST.get('hometown')
             instance.region = request.POST.get('region')
@@ -312,34 +343,120 @@ def employee_edit_data(request, id):
             instance.ssnitnumber = request.POST.get('ssnitnumber')
             instance.tinnumber = request.POST.get('tinnumber')
 
-            role = request.POST.get('role')
-            role_instance = Role.objects.get(id=role)
-            instance.role = role_instance
+            role_id = request.POST.get('role')
+            try:
+                role_instance = Role.objects.get(id=role_id)
+                instance.role = role_instance
+            except ObjectDoesNotExist:
+                messages.error(request, 'Role does not exist.', extra_tags='alert alert-danger alert-dismissible show')
+                return redirect('dashboard:employee_edit', id=id)
 
             instance.startdate = request.POST.get('startdate')
             instance.employeetype = request.POST.get('employeetype')
             instance.employeeid = request.POST.get('employeeid')
             instance.dateissued = request.POST.get('dateissued')
 
-            # now = datetime.datetime.now()
-            # instance.created = now
-            # instance.updated = now
-
             instance.save()
             messages.success(request, 'Account Updated Successfully !!!',
                              extra_tags='alert alert-success alert-dismissible show')
             return redirect('dashboard:employees')
-
         else:
-
             messages.error(request, 'Error Updating account', extra_tags='alert alert-warning alert-dismissible show')
             return HttpResponse("Form data not valid")
 
-    dataset = dict()
-    form = EmployeeCreateForm(request.POST or None, request.FILES or None, instance=employee)
-    dataset['form'] = form
-    dataset['title'] = 'edit - {0}'.format(employee.get_full_name)
-    return render(request, 'dashboard/employee_create.html', dataset)
+    dataset = {
+        'form': EmployeeCreateForm(instance=employee),
+        'title': f'edit - {employee.get_full_name}'
+    }
+    return render(request, 'dashboard/employee_edit_user.html', dataset)
+
+
+def family_edit_data(request, id):
+    if not (request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff)):
+        return redirect('/')
+
+    employee = get_object_or_404(Employee, id=id)
+    family = get_object_or_404(Family, employee=employee)
+
+    if request.method == 'POST':
+        form = FamilyCreateForm(request.POST, request.FILES, instance=family)
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, 'Family Information Updated Successfully !!!',
+                             extra_tags='alert alert-success alert-dismissible show')
+            return redirect('dashboard:employees')
+        else:
+            messages.error(request, 'Error Updating Family Information', extra_tags='alert alert-warning alert-dismissible show')
+            return HttpResponse("Form data not valid")
+
+    else:
+        form = FamilyCreateForm(instance=family)
+
+    dataset = {
+        'form': form,
+        'title': f'Edit Family Information - {employee.get_full_name}'  # Accessing as a property or field
+    }
+
+    return render(request, 'dashboard/employee_family_edit.html', dataset)
+
+
+def emergency_update(request, id):
+    if not (request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff)):
+        return redirect('/')
+
+    employee = get_object_or_404(Employee, id=id)
+    family = get_object_or_404(Emergency, employee=employee)
+
+    if request.method == 'POST':
+        form = EmergencyCreateForm(request.POST, request.FILES, instance=family)
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, 'Emergency Information Updated Successfully !!!',
+                             extra_tags='alert alert-success alert-dismissible show')
+            return redirect('dashboard:employees')
+        else:
+            messages.error(request, 'Error Updating Emergency Information', extra_tags='alert alert-warning alert-dismissible show')
+            return HttpResponse("Form data not valid")
+
+    else:
+        form = EmergencyCreateForm(instance=family)
+
+    dataset = {
+        'form': form,
+        'title': f'Edit Emergency Information - {employee.get_full_name}'  # Accessing as a property or field
+    }
+
+    return render(request, 'dashboard/employee_emergency_edit.html', dataset)
+def bank_update(request, id):
+    if not (request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff)):
+        return redirect('/')
+
+    employee = get_object_or_404(Employee, id=id)
+    family = get_object_or_404(Bank, employee=employee)
+
+    if request.method == 'POST':
+        form = BankCreateForm(request.POST, request.FILES, instance=family)
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, 'Bank Information Updated Successfully !!!',
+                             extra_tags='alert alert-success alert-dismissible show')
+            return redirect('dashboard:employees')
+        else:
+            messages.error(request, 'Error Updating Bank Information', extra_tags='alert alert-warning alert-dismissible show')
+            return HttpResponse("Form data not valid")
+
+    else:
+        form = BankCreateForm(instance=family)
+
+    dataset = {
+        'form': form,
+        'title': f'Edit Bank Information - {employee.get_full_name}'  # Accessing as a property or field
+    }
+
+    return render(request, 'dashboard/employee_bank_edit.html', dataset)
 
 
 from django.shortcuts import render, redirect
@@ -427,34 +544,64 @@ from employee.models import Employee, Family
 
 from django.core.exceptions import ObjectDoesNotExist
 
-def dashboard_employee_info(request, id):
-    if not request.user.is_authenticated:
-        return redirect('/')
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import Http404
+from employee.models import Employee, Family, Emergency, Bank
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+# from .models import Employee, Family, Emergency, Bank
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from employee.models import Employee, Family, Emergency, Bank
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def dashboard_employee_info(request, id):
     employee = get_object_or_404(Employee, id=id)
 
+    # Initialize variables
+    family = None
+    emergency = None
+    bank = None
+
+    # Try to fetch related data
     try:
         family = Family.objects.get(employee=employee)
-    except Family.MultipleObjectsReturned:
-        family = Family.objects.filter(employee=employee).first()
+    except Family.DoesNotExist:
+        family = None
 
     try:
         emergency = Emergency.objects.get(employee=employee)
-    except Emergency.MultipleObjectsReturned:
-        emergency = Emergency.objects.filter(employee=employee).first()
+    except Emergency.DoesNotExist:
+        emergency = None
 
     try:
         bank = Bank.objects.get(employee=employee)
     except Bank.DoesNotExist:
         bank = None
-    except Bank.MultipleObjectsReturned:
-        bank = Bank.objects.filter(employee=employee).first()
 
+    # Redirect to update pages if any data is missing
+    if not family or not emergency or not bank:
+        update_url = reverse('dashboard:employeeinfo_update', args=[id])
+        if not family:
+            update_url += '?missing=family'
+        elif not emergency:
+            update_url += '?missing=emergency'
+        elif not bank:
+            update_url += '?missing=bank'
+        return redirect(update_url)
+
+    # Set title based on employee data
     if hasattr(employee, 'get_full_name') and callable(employee.get_full_name):
         title = 'profile - {}'.format(employee.get_full_name())
+    elif hasattr(employee, 'get_full_name'):
+        title = 'profile - {}'.format(employee.get_full_name)
     else:
         title = 'profile - Unknown'
 
+    # Prepare dataset for rendering
     dataset = {
         'employee': employee,
         'family': family,
@@ -462,7 +609,32 @@ def dashboard_employee_info(request, id):
         'title': title,
         'bank': bank
     }
+
     return render(request, 'dashboard/employee_detail.html', dataset)
+
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+
+def dashboard_delete_user(request, id):
+        if not (request.user.is_authenticated and request.user.is_superuser):
+            return redirect('/')
+
+        employee = get_object_or_404(Employee, id=id)
+
+        # Delete related data
+        Family.objects.filter(employee=employee).delete()
+        Emergency.objects.filter(employee=employee).delete()
+        Bank.objects.filter(employee=employee).delete()
+
+        # Delete employee
+        employee.delete()
+
+        messages.success(request, 'Employee and related data deleted successfully.',
+                         extra_tags='alert alert-success alert-dismissible show')
+        return redirect('dashboard:employees')
+
+
 # def dashboard_employee_info(request,id):
 # 	if not request.user.is_authenticated:
 # 		return redirect('/')
@@ -517,6 +689,21 @@ def dashboard_bank_create(request):
     dataset = {'form': form, 'title': 'Add Bank Account Information', 'employees': employees}
     return render(request, 'dashboard/bank_create.html', dataset)
 
+
+@login_required
+def dashboard_employee_update(request, id):
+    missing_data = request.GET.get('missing')
+
+    if missing_data == 'family':
+        return redirect('dashboard:familycreate')
+    elif missing_data == 'emergency':
+        return redirect('dashboard:emergencycreate')
+    elif missing_data == 'bank':
+        return redirect('dashboard:bankaccountcreate')
+    else:
+        # Handle the case where no specific data is missing
+        return redirect('dashboard:employeeinfo', id=id)
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from employee.models import Bank
@@ -568,11 +755,33 @@ def leave_creation(request):
 
     user = request.user
     financial_year_start, financial_year_end = get_financial_year_start_end(date.today())
-    default_leave_days = 30  # You can adjust this if you have a different default value
+
+    # Default leave days and carried forward days
+    default_leave_days = 30
+    try:
+        carried_forward = CarriedForward.objects.get(user=user)
+        carried_forward_days = carried_forward.leave_days_carried_forward
+    except CarriedForward.DoesNotExist:
+        carried_forward_days = 0
+
+    # Ensure carried_forward_days does not exceed the maximum limit
+    carried_forward_days = min(carried_forward_days, 15)
+
+    # Total leave days available
+    total_leave_days_available = default_leave_days + carried_forward_days
 
     # Get the total leave days taken by the user
     total_days_taken = Leave.get_total_days_taken(user, financial_year_start, financial_year_end)
-    days_remaining = default_leave_days - total_days_taken
+
+    # Calculate remaining leave days
+    days_remaining = total_leave_days_available - total_days_taken
+
+    # Debug statements
+    # print(f"Default Leave Days: {default_leave_days}")
+    # print(f"Carried Forward Days: {carried_forward_days}")
+    # print(f"Total Leave Days Available: {total_leave_days_available}")
+    # print(f"Total Days Taken: {total_days_taken}")
+    # print(f"Days Remaining: {days_remaining}")
 
     # Determine if leave application should be disabled
     apply_leave_disabled = days_remaining <= 0
@@ -617,6 +826,63 @@ def leave_creation(request):
         'apply_leave_disabled': apply_leave_disabled
     }
     return render(request, 'dashboard/create_leave.html', dataset)
+
+
+# def leave_creation(request):
+#     if not request.user.is_authenticated:
+#         return redirect('accounts:login')
+#
+#     user = request.user
+#     financial_year_start, financial_year_end = get_financial_year_start_end(date.today())
+#     default_leave_days = 30  # You can adjust this if you have a different default value
+#
+#     # Get the total leave days taken by the user
+#     total_days_taken = Leave.get_total_days_taken(user, financial_year_start, financial_year_end)
+#     days_remaining = default_leave_days - total_days_taken
+#
+#     # Determine if leave application should be disabled
+#     apply_leave_disabled = days_remaining <= 0
+#
+#     if request.method == 'POST':
+#         form = LeaveCreationForm(data=request.POST)
+#         if form.is_valid():
+#             instance = form.save(commit=False)
+#             instance.user = user
+#
+#             # Calculate the adjusted end date that excludes weekends
+#             adjusted_end_date = adjust_weekend(instance.enddate)
+#
+#             # Calculate the number of weekdays between start date and adjusted end date
+#             weekdays = get_weekdays(instance.startdate, adjusted_end_date)
+#
+#             # Calculate the number of extra days needed to adjust for weekends
+#             extra_days = weekdays - (adjusted_end_date - instance.startdate).days
+#
+#             # Adjust the end date by adding the extra days
+#             instance.enddate += timedelta(days=extra_days)
+#
+#             instance.save()
+#
+#             context = {
+#                 'leave': instance,
+#                 'weekdays': weekdays,
+#                 'adjusted_end_date': instance.enddate,
+#                 'apply_leave_disabled': apply_leave_disabled
+#             }
+#
+#             messages.success(request, 'Leave Request Sent, wait for Admins response',
+#                              extra_tags='alert alert-success alert-dismissible show')
+#             return render(request, 'dashboard/create_leave.html', context)
+#         messages.error(request, 'Failed to request a Leave, please check entry dates',
+#                        extra_tags='alert alert-warning alert-dismissible show')
+#
+#     form = LeaveCreationForm()
+#     dataset = {
+#         'form': form,
+#         'title': 'Apply for Leave',
+#         'apply_leave_disabled': apply_leave_disabled
+#     }
+#     return render(request, 'dashboard/create_leave.html', dataset)
 
 
 
@@ -1204,7 +1470,7 @@ def unapprove_leave(request, id):
     if not (request.user.is_authenticated and request.user.is_superuser or request.user.is_staff):
         return redirect('/')
     leave = get_object_or_404(Leave, id=id)
-    leave.unapprove_leave
+    leave.unapprove_leave()
     return redirect('dashboard:leaveslist')  #redirect to unapproved list
 
 
@@ -1342,7 +1608,23 @@ def view_my_leave_table(request):
     user_leave_data = []
     for emp in users:
         total_days_taken = Leave.get_total_days_taken(emp.user, financial_year_start, financial_year_end)
-        days_remaining = default_leave_days - total_days_taken
+
+        # Fetch carried forward days
+        try:
+            carried_forward = CarriedForward.objects.get(user=emp.user)
+            carried_forward_days = carried_forward.leave_days_carried_forward
+        except CarriedForward.DoesNotExist:
+            carried_forward_days = 0
+
+        # Ensure carried_forward_days does not exceed the maximum limit
+        carried_forward_days = min(carried_forward_days, 15)
+
+        # Calculate total leave days available
+        total_leave_days_available = default_leave_days + carried_forward_days
+
+        # Calculate remaining leave days
+        days_remaining = total_leave_days_available - total_days_taken
+
         leave_details = [{
             'leavetype': leave.leavetype,
             'days_taken': (leave.enddate - leave.startdate).days if leave.is_approved else 0,
@@ -1378,7 +1660,6 @@ def view_my_leave_table(request):
                              extra_tags='alert alert-warning alert-dismissible show')
 
     return render(request, 'dashboard/staff_leaves_table.html', dataset)
-
 
 # def view_my_leave_table(request):
 #     if not request.user.is_authenticated:

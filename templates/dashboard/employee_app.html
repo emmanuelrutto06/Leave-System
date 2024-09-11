@@ -11,6 +11,13 @@
         body {
             overflow-x: hidden;
         }
+ 
+    .btn-sm-custom {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+
     </style>
 {% endblock %}
 
@@ -50,6 +57,7 @@
                                 <th scope="col" class="name-header" style="padding: 10px;">Employee (Full Name)</th>
                                 <th scope="col" class="department-header" style="padding: 10px;">Department</th>
                                 <th scope="col" class="profile-header" style="padding: 10px;">Profile</th>
+                                <th scope="col" class="profile-header" style="padding: 10px;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -59,7 +67,15 @@
                                     <td>{{ emp.get_full_name }}</td>
                                     <td>{{ emp.designation }}</td>
                                     <td><a href="{% url 'dashboard:employeeinfo' emp.id %}" class="btn btn-info btn-sm">View Profile</a></td>
-                                </tr>
+
+                                <td>
+                                    <form action="{% url 'dashboard:deleteuser' emp.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete this employee and all related data?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm btn-sm-custom">Delete Employee</button>
+                                    </form>
+                                </td>
+
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>

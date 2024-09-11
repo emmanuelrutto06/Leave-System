@@ -111,13 +111,13 @@
                                 <td>{{ leave.total_leave_days_remaining }}</td>
                                 <td>
                                     {% if leave.status == 'Approved' %}
-                                        <span class="badge badge-success">{{ leave.status }}</span>
+                                        <span class="badge badge-success" style="background-color: #28a745;">{{ leave.status }}</span>
                                     {% elif leave.status == 'Recommended' %}
-                                        <span class="badge badge-info">{{ leave.status }}</span>
+                                        <span class="badge badge-info" style="background-color: #17a2b8;">{{ leave.status }}</span>
                                     {% elif leave.status == 'Rejected' %}
-                                        <span class="badge badge-danger">{{ leave.status }}</span>
+                                        <span class="badge badge-danger" style="background-color: #dc3545;">{{ leave.status }}</span>
                                     {% else %}
-                                        <span class="badge badge-warning">{{ leave.status }}</span>
+                                        <span class="badge badge-warning" style="background-color: #ffc107;">{{ leave.status }}</span>
                                     {% endif %}
                                 </td>
                                 <td>

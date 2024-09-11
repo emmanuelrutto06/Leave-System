@@ -48,61 +48,70 @@ from .forms import UserAddForm, CarriedForwardForm
 from leave.models import FinancialYear, CarriedForward
 from django.contrib.auth.models import User
 from datetime import date, timedelta
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import UserAddForm, CarriedForwardForm
+from employee.models import CustomUser
+# FinancialYear, CarriedForward)
+from django.db import IntegrityError
+from datetime import date, timedelta
 
-def register_user_view(request):
-    if request.method == 'POST':
-        form = UserAddForm(data=request.POST)
-        carried_forward_form = CarriedForwardForm(request.POST)
 
-        if form.is_valid() and carried_forward_form.is_valid():
-            instance = form.save(commit=False)
-            instance.save()
-            email = form.cleaned_data.get("email")
 
-            # Check if the user is a staff member
-            if request.user.is_staff:
-                carried_forward_days = carried_forward_form.cleaned_data['carried_forward_days']
-
-                # Validate carried forward days
-                if carried_forward_days > 15:
-                    messages.error(request, 'You cannot carry forward more than 15 days.')
-                    return redirect('accounts:register')
-
-                financial_year, created = FinancialYear.objects.get_or_create(
-                    start_date=date.today().replace(month=7, day=1),
-                    end_date=(date.today().replace(month=6, day=30) + timedelta(days=1))
-                )
-
-                carried_forward, created = CarriedForward.objects.get_or_create(
-                    user=instance,
-                    financial_year=financial_year,
-                    defaults={'leave_days_carried_forward': carried_forward_days}
-                )
-                if not created:
-                    carried_forward.leave_days_carried_forward = carried_forward_days
-                    carried_forward.save()
-
-                messages.success(request, f'Account created for {email}!')
-            else:
-                messages.error(request, 'You do not have permission to perform this action.')
-
-            dataset = {
-                'form': form,
-                'carried_forward_form': carried_forward_form,
-                'title': 'register users',
-            }
-            return render(request, 'accounts/register.html', dataset)
-        else:
-            messages.error(request, 'Invalid input. Please check your information.')
-            return redirect('accounts:register')
-
-    form = UserAddForm()
-    carried_forward_form = CarriedForwardForm()
-    dataset = {
-        'form': form,
-        'carried_forward_form': carried_forward_form,
-        'title': 'register users'
-    }
+# def register_user_view(request):
+#     if request.method == 'POST':
+#         form = UserAddForm(data=request.POST)
+#         carried_forward_form = CarriedForwardForm(request.POST)
+#
+#         if form.is_valid() and carried_forward_form.is_valid():
+#             instance = form.save(commit=False)
+#             instance.save()
+#             email = form.cleaned_data.get("email")
+#
+#             # Check if the user is a staff member
+#             if request.user.is_staff:
+#                 carried_forward_days = carried_forward_form.cleaned_data['carried_forward_days']
+#
+#                 # Validate carried forward days
+#                 if carried_forward_days > 15:
+#                     messages.error(request, 'You cannot carry forward more than 15 days.')
+#                     return redirect('accounts:register')
+#
+#                 financial_year, created = FinancialYear.objects.get_or_create(
+#                     start_date=date.today().replace(month=7, day=1),
+#                     end_date=(date.today().replace(month=6, day=30) + timedelta(days=1))
+#                 )
+#
+#                 carried_forward, created = CarriedForward.objects.get_or_create(
+#                     user=instance,
+#                     financial_year=financial_year,
+#                     defaults={'leave_days_carried_forward': carried_forward_days}
+#                 )
+#                 if not created:
+#                     carried_forward.leave_days_carried_forward = carried_forward_days
+#                     carried_forward.save()
+#
+#                 messages.success(request, f'Account created for {email}!')
+#             else:
+#                 messages.error(request, 'You do not have permission to perform this action.')
+#
+#             dataset = {
+#                 'form': form,
+#                 'carried_forward_form': carried_forward_form,
+#                 'title': 'register users',
+#             }
+#             return render(request, 'accounts/register.html', dataset)
+#         else:
+#             messages.error(request, 'Invalid input. Please check your information.')
+#             return redirect('accounts:register')
+#
+#     form = UserAddForm()
+#     carried_forward_form = CarriedForwardForm()
+#     dataset = {
+#         'form': form,
+#         'carried_forward_form': carried_forward_form,
+#         'title': 'register users'
+#     }
     return render(request, 'accounts/register.html', dataset)
 
 def login_view(request):
@@ -165,7 +174,7 @@ def users_list(request):
 	return render(request,'accounts/users_table.html',{'employees':employees,'title':'Users List'})
 
 
-def users_unblock(request,id):
+def users_unblock(request, id):
 	user = get_object_or_404(User,id = id)
 	emp = Employee.objects.filter(user = user).first()
 	emp.is_blocked = False
@@ -177,7 +186,7 @@ def users_unblock(request,id):
 
 
 def users_block(request,id):
-	user = get_object_or_404(User,id = id)#customuser edited
+	user = get_object_or_404(CustomUser,id = id)#customuser edited
 	emp = Employee.objects.filter(user = user).first()
 	emp.is_blocked = True
 	emp.save()
