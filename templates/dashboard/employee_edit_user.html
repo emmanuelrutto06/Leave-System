@@ -11,49 +11,820 @@
 
 {% block stylesheet %}
 <style>
-/* your styles here */
+    :root {
+        --primary-color: #2563eb;
+        --primary-dark: #1d4ed8;
+        --primary-light: #3b82f6;
+        --secondary-color: #64748b;
+        --secondary-dark: #475569;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --background-color: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --text-muted: #94a3b8;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: var(--text-primary);
+    }
+
+    .edit-page-container {
+        background: linear-gradient(135deg, var(--background-color) 0%, #e2e8f0 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+        position: relative;
+    }
+
+    .edit-page-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image:
+            radial-gradient(circle at 25% 25%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .container-fluid {
+        position: relative;
+        z-index: 1;
+    }
+
+    .edit-form-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xl);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        margin-bottom: 2rem;
+        transition: var(--transition);
+    }
+
+    .edit-form-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    .edit-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 50%, #1e40af 100%);
+        color: white;
+        padding: 2rem;
+        margin: 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .edit-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(180deg) scale(1.1); }
+    }
+
+    .edit-header-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .edit-header-icon {
+        font-size: 2rem;
+        opacity: 0.9;
+    }
+
+    .edit-header-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .edit-body {
+        padding: 3rem;
+    }
+
+    .edit-title {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .edit-title h2 {
+        font-weight: 800;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.025em;
+    }
+
+    .edit-title p {
+        color: var(--text-secondary);
+        font-size: 1.125rem;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--card-bg);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+    }
+
+    .back-link:hover {
+        color: var(--primary-color);
+        transform: translateX(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .alert {
+        border-radius: var(--radius-md);
+        border: none;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        box-shadow: var(--shadow-sm);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #065f46;
+        border-left: 4px solid var(--success-color);
+    }
+
+    .alert-warning {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        border-left: 4px solid var(--warning-color);
+    }
+
+    .alert-error {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+        border-left: 4px solid var(--danger-color);
+    }
+
+    .alert .close {
+        margin-left: auto;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+
+    .alert .close:hover {
+        opacity: 1;
+    }
+
+    .form-section {
+        margin-bottom: 3rem;
+    }
+
+    .profile-image-section {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(16, 185, 129, 0.05));
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--border-color);
+    }
+
+    .profile-image-preview {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid white;
+        box-shadow: var(--shadow-lg);
+        margin-bottom: 1rem;
+        transition: var(--transition);
+    }
+
+    .profile-image-preview:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .image-upload-hint {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    /* Tab styling */
+    .nav-tabs {
+        border-bottom: 3px solid var(--primary-color);
+        margin-bottom: 2rem;
+        background: rgba(37, 99, 235, 0.02);
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        padding: 0.5rem 0.5rem 0;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        color: var(--text-secondary);
+        font-weight: 600;
+        padding: 1rem 1.5rem;
+        margin-right: 0.25rem;
+        transition: var(--transition);
+        position: relative;
+        background: transparent;
+    }
+
+    .nav-tabs .nav-link::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 3px;
+        background: var(--primary-color);
+        transition: var(--transition);
+        transform: translateX(-50%);
+    }
+
+    .nav-tabs .nav-link:hover {
+        background-color: rgba(37, 99, 235, 0.1);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+
+    .nav-tabs .nav-link.active {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        color: white;
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .nav-tabs .nav-link.active::before {
+        width: 100%;
+    }
+
+    .tab-content {
+        padding: 2rem 0;
+        background: var(--background-color);
+        border-radius: 0 0 var(--radius-md) var(--radius-md);
+        margin-top: -0.5rem;
+    }
+
+    .tab-pane {
+        animation: fadeInUp 0.4s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-actions {
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-color);
+        margin-top: 3rem;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-update {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 1rem 2.5rem;
+        font-weight: 700;
+        font-size: 1.125rem;
+        color: white;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: var(--shadow-md);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-update::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-update:hover::before {
+        left: 100%;
+    }
+
+    .btn-update:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-update:active {
+        transform: translateY(-1px);
+    }
+
+    .btn-cancel {
+        background: var(--secondary-color);
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 1rem 2rem;
+        font-weight: 600;
+        font-size: 1.125rem;
+        color: white;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-cancel:hover {
+        background: var(--secondary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Loading state */
+    .btn-loading {
+        position: relative;
+        color: transparent !important;
+        pointer-events: none;
+    }
+
+    .btn-loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Form field enhancements */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: var(--radius-sm);
+        border: 2px solid var(--border-color);
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: var(--transition);
+        background: white;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        outline: none;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    /* Responsive design */
+    @media (max-width: 1024px) {
+        .edit-body {
+            padding: 2rem;
+        }
+
+        .edit-title h2 {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .edit-page-container {
+            padding: 1rem 0;
+        }
+
+        .edit-body {
+            padding: 1.5rem;
+        }
+
+        .edit-header {
+            padding: 1.5rem;
+        }
+
+        .edit-header-title {
+            font-size: 1.5rem;
+        }
+
+        .edit-title h2 {
+            font-size: 1.75rem;
+        }
+
+        .edit-title p {
+            font-size: 1rem;
+        }
+
+        .profile-image-preview {
+            width: 120px;
+            height: 120px;
+        }
+
+        .profile-image-section {
+            padding: 1.5rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-update, .btn-cancel {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+
+        .nav-tabs .nav-link {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .back-link {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .edit-title h2 {
+            font-size: 1.5rem;
+        }
+
+        .profile-image-preview {
+            width: 100px;
+            height: 100px;
+        }
+
+        .btn-update, .btn-cancel {
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    /* Accessibility improvements */
+    .btn-update:focus, .btn-cancel:focus, .back-link:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+
+    .nav-tabs .nav-link:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+
+    /* Print styles */
+    @media print {
+        .edit-page-container {
+            background: white;
+        }
+
+        .edit-form-card {
+            box-shadow: none;
+            border: 1px solid #ccc;
+        }
+
+        .btn-update, .btn-cancel, .back-link {
+            display: none;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<section class="content">
-    <section class="container-fluid">
-        <section class="row">
-            <section class="col col-sm-8 offset-sm-2">
-                {% if messages %}
-                    {% for message in messages %}
-                        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                            {{ message }}
-                            <button type="button" class="close" id="override-start" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </section>
-        </section>
+<div class="edit-page-container">
+    <div class="container-fluid">
+        <!-- Back Link -->
+        <a href="{% url 'dashboard:employeeinfo' form.instance.id %}" class="back-link" aria-label="Back to employee profile">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span>Back to Profile</span>
+        </a>
 
-        <section class="form-wrapper">
-            <section class="row">
-                <section class="col-lg-12 col-md-12 col-sm-12 text-center">
-                    <h3 class="title-h3">Edit Employee Family Information To The System</h3>
-                </section>
-            </section>
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}" aria-hidden="true"></i>
+                    <span>{{ message }}</span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
 
-            <section class="row">
-                <section class="col-lg-8 col-md-12 col-sm-12">
-                    <form action="" method="POST" enctype="multipart/form-data">
+        <!-- Main Edit Card -->
+        <div class="edit-form-card">
+            <div class="edit-header">
+                <div class="edit-header-content">
+                    <i class="fas fa-user-edit edit-header-icon" aria-hidden="true"></i>
+                    <h1 class="edit-header-title">Edit Personal Information</h1>
+                </div>
+            </div>
+
+            <div class="edit-body">
+                <div class="edit-title">
+                    <h2>Update Employee Details</h2>
+                    <p>Modify personal information and profile settings with ease</p>
+                </div>
+
+                <!-- Form Section with Tabs -->
+                <div class="form-section">
+                    <form action="" method="POST" enctype="multipart/form-data" id="edit-form" novalidate>
                         {% csrf_token %}
                         {{ form|crispy }}
-                        <button type="submit" class="btn btn-primary btn-lg btn-block">Update Family Information</button>
                     </form>
-                </section>
+                </div>
 
-                <section class="col-lg-4 col-md-12 col-sm-12 text-center">
-                    <section class="prev-holder">
-                        <img src="{% static 'img/default-avatar.png' %}" alt="Profile Image" id="temp-preview-image" class="prev-avatar" />
-                    </section>
-                </section>
-            </section>
-        </section>
-    </section>
-</section>
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" form="edit-form" class="btn-update" id="submit-btn">
+                        <i class="fas fa-save" aria-hidden="true"></i>
+                        <span>Update Information</span>
+                    </button>
+                    <a href="{% url 'dashboard:employeeinfo' form.instance.id %}" class="btn-cancel">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                        <span>Cancel</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Enhanced form handling and user experience
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('edit-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitBtnText = submitBtn.querySelector('span');
+
+        // Form validation and submission
+        if (form && submitBtn) {
+            form.addEventListener('submit', function(e) {
+                // Basic client-side validation
+                const requiredFields = form.querySelectorAll('[required]');
+                let isValid = true;
+
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    showNotification('Please fill in all required fields.', 'warning');
+                    return;
+                }
+
+                // Show loading state
+                submitBtn.classList.add('btn-loading');
+                submitBtn.disabled = true;
+                submitBtnText.textContent = 'Updating...';
+
+                // Add loading class to form for visual feedback
+                form.classList.add('submitting');
+            });
+        }
+
+        // Enhanced image preview with error handling
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+                // Validate file type
+                if (!allowedTypes.includes(file.type)) {
+                    showNotification('Please select a valid image file (JPEG, PNG, GIF, or WebP).', 'error');
+                    input.value = '';
+                    return;
+                }
+
+                // Validate file size
+                if (file.size > maxSize) {
+                    showNotification('Image size must be less than 5MB.', 'error');
+                    input.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.querySelector('.profile-image-preview');
+                    if (preview) {
+                        preview.src = e.target.result;
+                        // Add fade-in animation
+                        preview.style.opacity = '0';
+                        setTimeout(() => {
+                            preview.style.opacity = '1';
+                        }, 50);
+                    }
+                };
+                reader.onerror = function() {
+                    showNotification('Error reading the selected file.', 'error');
+                    input.value = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Attach preview function to file inputs
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                previewImage(this);
+            });
+        });
+
+        // Enhanced tab switching with smooth transitions
+        const tabLinks = document.querySelectorAll('.nav-tabs .nav-link');
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Remove active class from all tabs
+                tabLinks.forEach(tab => tab.classList.remove('active'));
+                // Add active class to clicked tab
+                this.classList.add('active');
+            });
+        });
+
+        // Auto-save draft functionality (optional)
+        let autoSaveTimeout;
+        const formFields = form.querySelectorAll('input, select, textarea');
+        formFields.forEach(field => {
+            field.addEventListener('input', function() {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    // Here you could implement auto-save to localStorage
+                    console.log('Auto-saving draft...');
+                }, 2000);
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + S to save
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                if (!submitBtn.disabled) {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }
+            // Escape to cancel
+            if (e.key === 'Escape') {
+                const cancelBtn = document.querySelector('.btn-cancel');
+                if (cancelBtn) {
+                    cancelBtn.click();
+                }
+            }
+        });
+
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}" aria-hidden="true"></i>
+                <span>${message}</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            `;
+
+            const container = document.querySelector('.container-fluid');
+            container.insertBefore(notification, container.firstChild);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Form field focus/blur enhancements
+        formFields.forEach(field => {
+            field.addEventListener('focus', function() {
+                this.parentNode.classList.add('field-focused');
+            });
+
+            field.addEventListener('blur', function() {
+                this.parentNode.classList.remove('field-focused');
+            });
+        });
+
+        // Initialize tooltips if Bootstrap tooltips are available
+        if (typeof $ !== 'undefined' && $.fn.tooltip) {
+            $('[data-toggle="tooltip"]').tooltip();
+        }
+
+        // Progressive enhancement for modern browsers
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                observer.observe(pane);
+            });
+        }
+    });
+
+    // Service worker registration for offline capability (if needed)
+    if ('serviceWorker' in navigator) {
+        // Register service worker for caching form data
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => console.log('SW registered'))
+            .catch(error => console.log('SW registration failed'));
+    }
+</script>
 {% endblock %}

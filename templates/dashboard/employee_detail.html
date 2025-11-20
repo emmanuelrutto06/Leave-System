@@ -1,550 +1,1248 @@
-
 {% extends '_layout.html' %}
 
-{% block title %} {{ title }} {% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% load humanize %}
 
- {% block navheader %}
- 	{% include 'includes/navheader_employee_app.html' %}
- {% endblock %}
+{% block navheader %}
+    {% include 'includes/navheader_employee_app.html' %}
+{% endblock %}
 
-
- 
-  {% block stylesheet %}
-  	.rounded-circle-image{
-  	border-radius: 50% !important;
-  	width:250px;
-  	height:250px;
-  }
-
-  .profile-wrapper{
-  background:#fff;
-  -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-
-  padding-top: 10px;
-
-}
-
-
-.list-group {
-	margin-top: 10px;
-}
-
-span{
-	color: #c7c7c7;
-  font-weight: lighter;
-  font-size: 14px;
-}
-
-
-.list-group-item {
-    position: relative;
-    display: block;
-    padding: 10px 15px;
-    margin-bottom: -1px;
-    background-color: #fff;
-    border: 1px solid transparent;
-    font-size:17px;
-}
-
-  #override-start{
-    background:none !important;
-    top: 35% !important;
-    right:13px;
-    color:#000;
-    font-size: 24px;
-
+{% block stylesheet %}
+<style>
+    :root {
+        --primary: #1e40af;
+        --primary-light: #3b82f6;
+        --secondary: #64748b;
+        --success: #059669;
+        --warning: #f59e0b;
+        --danger: #dc2626;
+        --info: #0891b2;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --white: #ffffff;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --border-radius: 8px;
+        --border-radius-lg: 12px;
+        --border-radius-xl: 16px;
+        --transition: all 0.2s ease-in-out;
     }
 
-    .alert-warning{
-        background:#fd7b7b;
+    .profile-container {
+        background: var(--gray-50);
+        min-height: -100vh;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .profile-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    /* Profile Header */
+    .profile-header {
+        background: var(--white);
+        border-radius: var(--border-radius-xl);
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .profile-header-content {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    .profile-avatar-section {
+        flex-shrink: 0;
+    }
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--primary);
+    box-shadow: var(--shadow-lg);
+    background: var(--white);
+    transition: var(--transition);
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-xl);
+}
+
+
+    .profile-info-section {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .profile-name {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin: 0 0 0.5rem 0;
+        line-height: 1.2;
+    }
+
+    .profile-role {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: var(--gray-600);
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .profile-role::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--primary);
+        flex-shrink: 0;
+    }
+
+    .profile-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .status-badge.active {
+        background: #dcfce7;
+        color: var(--success);
+        border: 1px solid #bbf7d0;
+    }
+
+    .status-badge.inactive {
+        background: #fef2f2;
+        color: var(--danger);
+        border: 1px solid #fecaca;
+    }
+
+    .employee-id {
+        font-size: 0.875rem;
+        color: var(--gray-500);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .employee-id::before {
+        content: 'ID:';
+        font-weight: 600;
+        color: var(--gray-600);
+    }
+
+    /* Navigation Tabs */
+    .profile-tabs {
+        background: var(--white);
+        border-radius: var(--border-radius-xl);
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .tabs-header {
+        border-bottom: 1px solid var(--gray-200);
+        background: var(--gray-50);
+    }
+
+    .tabs-nav {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        overflow-x: auto;
+    }
+
+    .tab-item {
+        flex-shrink: 0;
+    }
+
+    .tab-link {
+        display: block;
+        padding: 1rem 1.5rem;
+        color: var(--gray-600);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.875rem;
+        border-bottom: 3px solid transparent;
+        transition: var(--transition);
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .tab-link:hover {
+        color: var(--primary);
+        background: rgba(30, 64, 175, 0.05);
+    }
+
+    .tab-link.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background: var(--white);
+    }
+
+    .tab-link i {
+        font-size: 1rem;
+    }
+
+    /* Tab Content */
+    .tab-content {
+        padding: 2rem;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    /* Information Grid */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-card {
+        background: var(--white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--gray-200);
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .info-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .info-card-header {
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-200);
+        padding: 1.25rem 1.5rem;
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--gray-900);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .info-card-header i {
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
+
+    .info-card-body {
+        padding: 1.5rem;
+    }
+
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--gray-100);
+        gap: 1rem;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--gray-600);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        flex: 0 0 35%;
+        line-height: 1.4;
+    }
+
+    .info-value {
+        font-weight: 500;
+        color: var(--gray-900);
+        font-size: 0.875rem;
+        text-align: right;
+        flex: 1;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    /* Actions */
+    .card-actions {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--gray-200);
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--border-radius);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: var(--transition);
+        border: 1px solid var(--gray-300);
+        background: var(--white);
+        color: var(--gray-700);
+    }
+
+    .action-btn:hover {
+        background: var(--gray-50);
+        border-color: var(--gray-400);
+        color: var(--gray-900);
+    }
+
+    .action-btn.primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--white);
+    }
+
+    .action-btn.primary:hover {
+        background: var(--primary-light);
+        border-color: var(--primary-light);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--gray-500);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--gray-400);
+        margin-bottom: 1rem;
+        opacity: 0.6;
+    }
+
+    .empty-state h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .empty-state p {
+        font-size: 0.875rem;
+        margin: 0 0 1.5rem 0;
+        color: var(--gray-500);
+    }
+
+    /* Back Navigation */
+    .back-nav {
+        margin-bottom: 2rem;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--gray-600);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.875rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .back-link:hover {
+        color: var(--primary);
+        background: var(--gray-50);
+        border-color: var(--gray-300);
+        box-shadow: var(--shadow);
+    }
+
+    /* Alerts */
+    .alert {
+        border-radius: var(--border-radius-lg);
+        border: none;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
     }
 
     .alert-success {
-        background-color: #82b72a;
+        background: #dcfce7;
+        color: #166534;
+        border-left: 4px solid var(--success);
     }
 
-    .alert-success,.alert-warning{
-        font-size:16px;
+    .alert-warning {
+        background: #fef3c7;
+        color: #92400e;
+        border-left: 4px solid var(--warning);
     }
 
-    .employee-name-title{
-    color: #3873b1;
-    font-weight: 600;
-    font-variant: petite-caps;
-    font-size: 3.1rem !important;
-  }
+    .alert-error {
+        background: #fef2f2;
+        color: #991b1b;
+        border-left: 4px solid var(--danger);
+    }
 
-  span,.list-group-item > div{
-  font-variant: petite-caps;
+    .alert i {
+        font-size: 1.125rem;
+        flex-shrink: 0;
+        margin-top: 0.125rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .profile-wrapper {
+            padding: 1rem 0.5rem;
+        }
+
+        .profile-header-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+@media (max-width: 768px) {
+    .profile-avatar {
+        width: 90px;
+        height: 90px;
+    }
 }
 
 
-.panel-default>.panel-heading {
-    color: #fff !important;
-    background-color: #2d88a9 !important;
-}
+        .profile-name {
+            font-size: 1.875rem;
+        }
 
-.panel-title a:hover{
-  color:#e6e4e4;
-}
+        .profile-role {
+            font-size: 1rem;
+        }
 
-.panel-title a:active{
-  color:#e6e4e4;
-}
+        .profile-meta {
+            justify-content: center;
+        }
 
-.panel-title a:focus{
-  color:#e6e4e4;
-}
+        .tabs-nav {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
 
+        .tab-link {
+            padding: 0.875rem 1rem;
+            font-size: 0.8125rem;
+        }
 
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
 
+        .info-card-body {
+            padding: 1.25rem;
+        }
 
+        .info-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+            padding: 1rem 0;
+        }
 
-{% endblock %}<!-- STYLESHEETS -->
+        .info-label {
+            flex: none;
+            margin-bottom: 0.25rem;
+        }
 
+        .info-value {
+            text-align: left;
+            font-size: 0.8125rem;
+        }
 
+        .card-actions {
+            flex-direction: column;
+        }
 
+        .action-btn {
+            justify-content: center;
+        }
+    }
 
-        <!--CONTENTS-->
- {% block content %}
-        <section class="content">
-            <section class="container-fluid">
-              <section class="row">
-                <section class="col col-lg-12">
-                  <span><a href="{{request.META.HTTP_REFERER|escape}}" style="color:#565656;">Go Back</a></span>
-                </section>
-              </section>
-                      <section class="row">
-                        <section class="col col-lg-12 col-md-12  col-sm-12">
-                            {% if  messages %}
-                                    {% for message in messages %}
-                                     <div {% if message.tags %} class="{{ message.tags}}"{% endif %}>
-                                         {{ message }}
-                                         <button type="button" class="close" id = "override-start"data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
-                                         </button>
-                                     </div>
-                                    {% endfor %}
-                            {% endif %}
+    @media (max-width: 480px) {
+        .profile-name {
+            font-size: 1.5rem;
+        }
 
-                        </section>
-                    </section>
-            		<section class="row">
-            			<section class="text-center">
-            				<h3><span class="employee-name-title">{{ employee.get_full_name}}</span></h3>
-            			</section>
-            		</section>
+        .profile-avatar {
+            width: 70px;
+            height: 70px;
+        }
 
-                	<section class="row">
-                	<section class="col col-lg-4 col-md-4 col-sm-12 profile-wrapper">
+        .profile-header-content {
+            padding: 1.25rem;
+        }
+
+        .tab-content {
+            padding: 1.25rem;
+        }
+
+        .info-card-header {
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        .info-card-body {
+            padding: 1rem;
+        }
+
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+        }
+    }
+
+    /* Loading States */
+    .loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    .loading::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(2px);
+        z-index: 10;
+        border-radius: inherit;
+    }
+
+    /* Focus States */
+    .tab-link:focus,
+    .action-btn:focus,
+    .back-link:focus {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+    }
+
+    /* Print Styles */
+    @media print {
+        .profile-tabs,
+        .card-actions,
+        .back-nav {
+            display: none;
+        }
+
+        .info-card {
+            box-shadow: none;
+            border: 1px solid #000;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="profile-container">
+    <div class="profile-wrapper">
+        <!-- Back Navigation -->
+        <div class="back-nav">
+            <a href="{% url 'dashboard:employees' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Employees</span>
+            </a>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-header-content">
+                <div class="profile-avatar-section">
                     {% if employee.image %}
-      						  <img src="{{ employee.image.url}}" class="img-fluid rounded-circle-image" >
+                        <img src="{{ employee.image.url }}" alt="Profile Image" class="profile-avatar">
                     {% else %}
-                    <img src="/media/default.png" class="img-fluid rounded-circle-image" />
+                        <img src="/media/default.png" alt="Default Profile" class="profile-avatar">
                     {% endif %}
-        						  <section class="text-centered" style="margin-top: 3px;">
-        						    
-            							<ul class="list-group">
-              					  		<li class="list-group-item"><span>Fullname</span> <div>{{ employee.get_full_name }}</div></li>
-{#              					  		<li class="list-group-item"><span>Nationality</span><div> {{ employee.nationality}}</div></li>#}
-                              {% if employee.email %}
-                              <li class="list-group-item"><span>Email</span> <div>{{ employee.email}}</div></li>
-                              {% endif %}
-                              <li class="list-group-item"><span>Department</span> <div>{{ employee.Department}}</div></li>
-                              <li class="list-group-item"><span>Employee Type</span> <div>{{ employee.employeetype}}</div></li>
-{#                              <li class="list-group-item"><span>Role</span> <div>{{ employee.role}}</div></li>#}
-              					  		<li class="list-group-item"><span>Date of Birth</span> <div>{{ employee.birthday}}</div></li>
-                              <li class="list-group-item"><span>Age </span><div>{{ employee.get_age }}</div></li>
+                </div>
+                <div class="profile-info-section">
+                    <h1 class="profile-name">{{ employee.get_full_name }}</h1>
+                    <p class="profile-role">{{ employee.role|default:"Employee" }}</p>
+                    <div class="profile-meta">
+                        <div class="status-badge {% if employee.is_blocked %}inactive{% else %}active{% endif %}">
+                            <i class="fas {% if employee.is_blocked %}fa-times-circle{% else %}fa-check-circle{% endif %}"></i>
+                            {% if employee.is_blocked %}Inactive{% else %}Active{% endif %}
+                        </div>
+                        {% if employee.employeeid %}
+                            <div class="employee-id">{{ employee.employeeid }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-              					  		{% if employee.is_blocked %}
-              					  		<li class="list-group-item"><span>Status</span> <div>Inactive</div></li>
-              					  		{% else %}
-              					  		<li class="list-group-item"><span>Status</span><div> active</div></li>
-              					  		{% endif %}
-                              <div>
-                                <span style="font-style: italic;">updated - {{employee.updated|naturaltime}}</span>
-                              </div>
-                              
-            							</ul>
-        						  </section>
-						        </section><!-- /profile-wrappper -->
-              			<section class="col col-lg-8" >
-                            <!-- ACCORDIAN - COLLAPSIBLE -->
-                            <!-- 1 Personal Detail -->
-                            <!-- 2 -- Family -->
-                            <!-- 3--  Emergency -->
-                            <!-- 4 -- Bank Account -->
-                     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <!-- Profile Tabs -->
+        <div class="profile-tabs">
+            <div class="tabs-header">
+                <ul class="tabs-nav" role="tablist">
+                    <li class="tab-item">
+                        <a href="#personal" class="tab-link active" data-tab="personal" role="tab">
+                            <i class="fas fa-user"></i>
+                            <span>Personal</span>
+                        </a>
+                    </li>
+                    <li class="tab-item">
+                        <a href="#family" class="tab-link" data-tab="family" role="tab">
+                            <i class="fas fa-users"></i>
+                            <span>Family</span>
+                        </a>
+                    </li>
+                    <li class="tab-item">
+                        <a href="#emergency" class="tab-link" data-tab="emergency" role="tab">
+                            <i class="fas fa-ambulance"></i>
+                            <span>Emergency</span>
+                        </a>
+                    </li>
+                    <li class="tab-item">
+                        <a href="#bank" class="tab-link" data-tab="bank" role="tab">
+                            <i class="fas fa-university"></i>
+                            <span>Banking</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-                        <!-- PERSONAL DATA -->
-                        <div class="panel panel-default">
-                          <div class="panel-heading" role="tab" id="headingOne">
-                            <h4 class="panel-title">
-                              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                PERSONAL INFO
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                            <div class="panel-body">
-                              <div class="container-fluid">
-                                <div class="row">
-                                  <div class="col col-lg-6">
-                                       
-                                        {% if employee %}
-                                          
-                                          <div class="list-group" id="list-tab" role="tablist">
-                                            <a class="list-group-item list-group-item-action" id="list-home-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Role</span> <div>{{ employee.role }}</div>
-                                            </a>
-                                          
-                                          {% if employee.firstname %}
-                                            <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Firstname</span> <div> {{ employee.firstname}} </div>
-                                            </a>
-                                            {% endif %}
-
-                                            {% if employee.lastname %}
-                                            <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Lastname</span> <div> {{ employee.lastname }} </div>
-                                            </a>
-                                            {% endif %}
-                                            {% if employee.othername %}
-                                            <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Othername</span> <div>{{ employee.othername}} </div>
-                                            </a>
-                                            {% endif %}
-
-                                            {% if employee.sex %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Gender</span> <div> {{ employee.sex }}
-                                            </div>
-                                            </a>
-                                            {% endif %}
-
-                                            <!-- recent added 29/03/19 -->
-                                            {% if employee.email %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Email </span><div>{{ employee.email }} </div>
-                                            </a>
-                                            {% endif %}
-                                         
-
-
-                                            {% if employee.tel %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Contact</span> <div> {{ employee.tel  }}</div></a>
-                                            {% endif %}
-
-                                            {% if employee.tel %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Bio</span> <div> {{ employee.bio }} </div></a>
-                                            {% endif %}
-
-
-                                            {% if employee.birthday %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Date of Birth</span><div>{{ employee.birthday}}</div></a>
-                                            {% endif %}
-
-                                            {% if employee.tinnumber %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>TIN</span> <div>{{ employee.tinnumber }}</div></a>
-                                            {% endif %}
-
-                                            {% if employee.employeeid %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Employee ID</span> <div>{{ employee.employeeid }}</div></a>
-                                            {% endif %}
-
-                                            {% if employee.dateissued %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Date Issued(Employee ID)</span> <div>{{ employee.dateissued }}</div></a>
-                                            {% endif %}
-
-                                            {% if request.user.is_superuser %}
-                                            <div>
-                                              <span><a href="{% url 'dashboard:employee_edit' employee.id %}">Edit</a></span>
-                                            </div>
-
-                                            {% endif %}
-
-                                          </div>
-
-                                        {% else %}
-
-                                        <h4>No Information found,to add click <a href="{% url 'dashboard:familycreate' %}">here</a></h4>
-
+            <div class="tab-content">
+                <!-- Personal Information Tab -->
+                <div id="personal" class="tab-pane active" role="tabpanel">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3 class="info-card-header">
+                                <i class="fas fa-id-card"></i>
+                                Basic Information
+                            </h3>
+                            <div class="info-card-body">
+                                {% if employee %}
+                                    <ul class="info-list">
+                                        {% if employee.firstname %}
+                                            <li class="info-item">
+                                                <span class="info-label">First Name</span>
+                                                <span class="info-value">{{ employee.firstname }}</span>
+                                            </li>
                                         {% endif %}
-                                  </div>
-                                  <!-- Here working -->
-                                  <div class="col col-lg-6">
-                                        {% if  employee.religion %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span style="">Religion</span><div>{{  employee.religion }}</div>
-                                            </a>
-                                            {% endif %}
 
-                                            {% if employee.nationality %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Nationality</span><div>{{ employee.nationality }}</div></a>
-                                            {% endif %}
+                                        {% if employee.lastname %}
+                                            <li class="info-item">
+                                                <span class="info-label">Last Name</span>
+                                                <span class="info-value">{{ employee.lastname }}</span>
+                                            </li>
+                                        {% endif %}
 
-                                            {% if employee.hometown %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>HomeTown</span> <div>{{ employee.hometown}}</div></a>
-                                            {% endif %}
+                                        {% if employee.othername %}
+                                            <li class="info-item">
+                                                <span class="info-label">Other Name</span>
+                                                <span class="info-value">{{ employee.othername }}</span>
+                                            </li>
+                                        {% endif %}
 
+                                        {% if employee.sex %}
+                                            <li class="info-item">
+                                                <span class="info-label">Gender</span>
+                                                <span class="info-value">{{ employee.sex }}</span>
+                                            </li>
+                                        {% endif %}
 
-                                            {% if employee.region %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Region</span> <div>{{ employee.region }}</div></a>
-                                            {% endif %}
+                                        {% if employee.birthday %}
+                                            <li class="info-item">
+                                                <span class="info-label">Date of Birth</span>
+                                                <span class="info-value">{{ employee.birthday|date:"M d, Y" }}</span>
+                                            </li>
+                                        {% endif %}
 
-                                            {% if employee.residence %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Residence (current)</span> <div>{{ employee.residence }}</div></a>
-                                            {% endif %}
+                                        {% if employee.role %}
+                                            <li class="info-item">
+                                                <span class="info-label">Role</span>
+                                                <span class="info-value">{{ employee.role }}</span>
+                                            </li>
+                                        {% endif %}
 
-                                            {% if employee.address %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Address (Residence)</span> <div>{{ employee.address }}</div></a>
-                                            {% endif %}
-
-                                            {% if employee.education %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Education (Highest)</span> <div>{{ employee.education }}</div></a>
-                                            {% endif %}
-
-                                            {% if employee.lastwork %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Last Place of Work</span> <div>{{ employee.lastwork }}</div></a>
-                                            {% endif %}
-
-                                            {% if employee.position %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Position (last place of work)</span> <div>{{ employee.position  }}</div></a>
-                                            {% endif %}
-
-                                            {% if employee.ssnitnumber %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>SSNI Number</span> <div>{{ employee.ssnitnumber  }}</div></a>
-                                            {% endif %}
-
-                                            {% if employee.startdate %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Employment Date</span> <div>{{ employee.startdate  }}</div></a>
-                                            {% endif %}
-
-
-                                           <div>
-                                            <span>last update - {{employee.updated|naturaltime }}</span>
-                                          </div>
-                                        
-                                  </div>
+                                        {% if employee.startdate %}
+                                            <li class="info-item">
+                                                <span class="info-label">Employment Date</span>
+                                                <span class="info-value">{{ employee.startdate|date:"M d, Y" }}</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                {% else %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-user-slash"></i>
+                                        <h3>No Personal Information</h3>
+                                        <p>Personal information has not been added for this employee.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% if request.user.is_superuser %}
+                                <div class="card-actions">
+                                    <a href="{% url 'dashboard:employee_edit' employee.id %}" class="action-btn">
+                                        <i class="fas fa-edit"></i>
+                                        <span>Edit Information</span>
+                                    </a>
                                 </div>
-                              </div>
-                            </div>
-                          </div>
+                            {% endif %}
                         </div>
-                        <!-- /PERSONAL INFORMATION -->
 
-                        <!-- FAMILY INFORMATION -->
-                        <div class="panel panel-default">
-                          <div class="panel-heading" role="tab" id="headingTwo">
-                            <h4 class="panel-title">
-                              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                                FAMILY INFORMATIONS 
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-                            <div class="panel-body">
-                                <section class="container-fluid">
-
-                                   <div class="row">
-                                        
-                                    {% if family %}
-                                          <div class="list-group" id="list-tab" role="tablist">
-                                            <a class="list-group-item list-group-item-action" id="list-home-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Status</span> <div>{{ family.status }}</div>
-                                            </a>
-{#                                          {% endif %}#}
-                                   
-                                            {% if family.spouse %}
-                                            <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Spouse( Fullname )</span> <div> {{ family.spouse }} </div>
-                                            </a>
-                                            {% endif %}
-
-                                            {% if family.occupation %}
-                                            <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Spouse( Occupation )</span> <div> {{ family.occupation}} </div>
-                                            </a>
-                                            {% endif %}
-
-                                            {% if family.tel %}
-                                            <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Spouse (Phone Number)</span> <div>{{ family.tel}} </div>
-                                            </a>
-                                            {% endif %}
-
-                                            {% if family.children %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Number of Children</span> <div> {{ family.children }}
-                                            </div>
-                                            </a>
-                                            {% endif %}
-                                              {% if family.nextofkin %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Next of Kin </span><div>{{ family.nextofkin }} </div>
-                                            </a>
-                                            {% endif %}
-
-                                            {% if family.contact %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Next of Kin (Contact)</span> <div> {{ family.contact }}</div></a>
-                                            {% endif %}
-
-                                            {% if family.relationship %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Relationship with Next of Kin</span> <div> {{ family.relationship }} </div></a>
-                                            {% endif %}
-
-
-                                            {% if family.father %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Father </span><div>{{ family.father }}</div></a>
-                                            {% endif %}
-
-                                            {% if family.foccupation %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Occupation </span><div>{{ family.foccupation }}</div></a>
-                                            {% endif %}
-
-                                            {% if family.mother %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Mother</span><div>{{ family.mother }}</div></a>
-                                            {% endif %}
-
-                                            {% if family.moccupation %}
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Occupation</span> <div>{{ family.moccupation}}</div></a>
-                                            {% endif %}
-
-                                            {% if request.user.is_superuser %}
-                                            <span><a href="{% url 'dashboard:familyedit' family.id %}">Edit</a></span>
-                                            {% endif %}
-                                          
-                                          </div>
-
-                                           <div>
-                                            <span>last update - {{family.updated|naturaltime }}</span>
-                                          </div>
-
-                                    {% else %}
-
-                                        <h4>
-                                          {% if request.user.is_superuser %} No Information found,to add click <a href="{% url 'dashboard:familycreate' %}">here</a>
-                                          {% else%}
-                                          No Information can be found. Check up with your human resource manager.
-                                          {% endif %}
-                                        </h4>
-
+                        <div class="info-card">
+                            <h3 class="info-card-header">
+                                <i class="fas fa-address-book"></i>
+                                Contact & Location
+                            </h3>
+                            <div class="info-card-body">
+                                {% if employee %}
+                                    <ul class="info-list">
+                                        {% if employee.email %}
+                                            <li class="info-item">
+                                                <span class="info-label">Email</span>
+                                                <span class="info-value">{{ employee.email }}</span>
+                                            </li>
                                         {% endif %}
 
-                                   </div>
-                                </section>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- /FAMILY INFORMATION -->
-
-
-                        <!-- EMERGENCY -->
-                        <div class="panel panel-default">
-                          <div class="panel-heading" role="tab" id="headingThree">
-                            <h4 class="panel-title">
-                              <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                               EMERGENCY INFORMATION
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-                            <div class="panel-body">
-                                <section class="container-fluid">
-
-                                   <div class="row">
-                                        
-                                        {% if emergency %}
-                                          <div class="list-group" id="list-tab" role="tablist">
-                                            <a class="list-group-item list-group-item-action" id="list-home-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Fullname</span> <div>{{ emergency.fullname }}</div></a>
-                                            <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Telephone</span> <div>{{ emergency.tel}}</div></a>
-                                            <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Residence </span><div> {{ emergency.location}}</div></a>
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Relationship</span> <div> {{ emergency.relationship }}</div></a>
-
-
-                                            {% if request.user.is_superuser %}
-                                            <span><a href="{% url 'dashboard:emergencyupdate' emergency.id %}">Edit</a></span>
-                                            {% endif %}
-                                          </div>
-
-                                          <div>
-                                            <span>last update - {{emergency.updated|naturaltime }}</span>
-                                          </div>
-
-                                        {% else %}
-                                       
-                                        <h4>
-                                          {% if request.user.is_superuser %}No Information found,to add click <a href="{% url 'dashboard:emergencycreate' %}">here</a>
-                                          {% else%}
-                                          No Information can be found. see your human resource manager.
-                                          {% endif %}
-                                        </h4>
-
+                                        {% if employee.tel %}
+                                            <li class="info-item">
+                                                <span class="info-label">Phone</span>
+                                                <span class="info-value">{{ employee.tel }}</span>
+                                            </li>
                                         {% endif %}
 
-
-                                   </div>
-                                </section>
-
-                            </div>
-                              
-                          </div>
-                        </div>
-                        <!-- /EMERGENCY -->
-
-
-                        <!-- BANK ACCOUNT -->
-                        <div class="panel panel-default">
-                          <div class="panel-heading" role="tab" id="headingFour">
-                            <h4 class="panel-title">
-                              <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                                 BANK ACCOUNT INFORMATION
-                              </a>
-                            </h4>
-                          </div>
-                          <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-                            <div class="panel-body">
-                              <section class="container-fluid">
-
-                                   <div class="row">
-                                        
-                                        {% if bank %}
-                                          <div class="list-group" id="list-tab" role="tablist">
-                                            <a class="list-group-item list-group-item-action" id="list-home-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Bank name</span> <div>{{ bank.name }}</div></a>
-                                            <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Account Number</span> <div> {{ bank.account }}</div></a>
-                                            <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Branch </span><div>{{ bank.branch }}</div></a>
-                                            <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="" role="tab" aria-controls=""><span>Salary (Initial)</span> <div>{{ bank.salary}}</div></a>
-
-                                            {% if request.user.is_superuser %}
-                                            <span><a href="{% url 'dashboard:accountedit' bank.id %}">Edit</a></span>
-                                            {% endif %}
-
-                                            <div>
-                                              <span>last update - {{bank.updated|naturaltime }}</span>
-                                            </div>
-
-
-                                          </div>
-                                        {% else %}
-
-                                        <h4>
-                                          {% if request.user.is_superuser %}No Information found,to add click
-                                          <a href="{% url 'dashboard:bankaccountcreate' %}">here</a>
-                                          {% else%}
-                                            No Information can be found. see your human resource manager.
-                                          {% endif %}
-                                        </h4>
-
+                                        {% if employee.nationality %}
+                                            <li class="info-item">
+                                                <span class="info-label">Nationality</span>
+                                                <span class="info-value">{{ employee.nationality }}</span>
+                                            </li>
                                         {% endif %}
 
-                                   </div>
-                                </section>
+                                        {% if employee.hometown %}
+                                            <li class="info-item">
+                                                <span class="info-label">Home Town</span>
+                                                <span class="info-value">{{ employee.hometown }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if employee.region %}
+                                            <li class="info-item">
+                                                <span class="info-label">Region</span>
+                                                <span class="info-value">{{ employee.region }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if employee.residence %}
+                                            <li class="info-item">
+                                                <span class="info-label">Current Residence</span>
+                                                <span class="info-value">{{ employee.residence }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if employee.address %}
+                                            <li class="info-item">
+                                                <span class="info-label">Address</span>
+                                                <span class="info-value">{{ employee.address }}</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                {% else %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <h3>No Contact Information</h3>
+                                        <p>Contact and location details are not available.</p>
+                                    </div>
+                                {% endif %}
                             </div>
-                          </div>
                         </div>
-                        <!-- /BANK ACCOUNT -->
 
-                      </div><!-- /ACCORDION PARENT -->
+                        <div class="info-card">
+                            <h3 class="info-card-header">
+                                <i class="fas fa-graduation-cap"></i>
+                                Education & Background
+                            </h3>
+                            <div class="info-card-body">
+                                {% if employee %}
+                                    <ul class="info-list">
+                                        {% if employee.education %}
+                                            <li class="info-item">
+                                                <span class="info-label">Education</span>
+                                                <span class="info-value">{{ employee.education }}</span>
+                                            </li>
+                                        {% endif %}
 
+                                        {% if employee.lastwork %}
+                                            <li class="info-item">
+                                                <span class="info-label">Previous Employer</span>
+                                                <span class="info-value">{{ employee.lastwork }}</span>
+                                            </li>
+                                        {% endif %}
 
+                                        {% if employee.position %}
+                                            <li class="info-item">
+                                                <span class="info-label">Previous Position</span>
+                                                <span class="info-value">{{ employee.position }}</span>
+                                            </li>
+                                        {% endif %}
 
-                		</section>
-                 	</section><!-- /Row -->
+                                        {% if employee.religion %}
+                                            <li class="info-item">
+                                                <span class="info-label">Religion</span>
+                                                <span class="info-value">{{ employee.religion }}</span>
+                                            </li>
+                                        {% endif %}
 
-            </section> <!-- /container --> 
+                                        {% if employee.bio %}
+                                            <li class="info-item">
+                                                <span class="info-label">Bio</span>
+                                                <span class="info-value">{{ employee.bio }}</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                {% else %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-book"></i>
+                                        <h3>No Background Information</h3>
+                                        <p>Educational and professional background details are not available.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
 
+                        <div class="info-card">
+                            <h3 class="info-card-header">
+                                <i class="fas fa-file-alt"></i>
+                                Identification & Documents
+                            </h3>
+                            <div class="info-card-body">
+                                {% if employee %}
+                                    <ul class="info-list">
+                                        {% if employee.employeeid %}
+                                            <li class="info-item">
+                                                <span class="info-label">Employee ID</span>
+                                                <span class="info-value">{{ employee.employeeid }}</span>
+                                            </li>
+                                        {% endif %}
 
-        </section><!-- /content -->
- {% endblock %}
+                                        {% if employee.tinnumber %}
+                                            <li class="info-item">
+                                                <span class="info-label">TIN Number</span>
+                                                <span class="info-value">{{ employee.tinnumber }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if employee.ssnitnumber %}
+                                            <li class="info-item">
+                                                <span class="info-label">SSNIT Number</span>
+                                                <span class="info-value">{{ employee.ssnitnumber }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if employee.dateissued %}
+                                            <li class="info-item">
+                                                <span class="info-label">Date Issued</span>
+                                                <span class="info-value">{{ employee.dateissued|date:"M d, Y" }}</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                {% else %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-id-card"></i>
+                                        <h3>No Identification Details</h3>
+                                        <p>Identification and document information is not available.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Family Information Tab -->
+                <div id="family" class="tab-pane" role="tabpanel">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3 class="info-card-header">
+                                <i class="fas fa-heart"></i>
+                                Marital Information
+                            </h3>
+                            <div class="info-card-body">
+                                {% if family %}
+                                    <ul class="info-list">
+                                        {% if family.status %}
+                                            <li class="info-item">
+                                                <span class="info-label">Marital Status</span>
+                                                <span class="info-value">{{ family.status }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if family.spouse %}
+                                            <li class="info-item">
+                                                <span class="info-label">Spouse Name</span>
+                                                <span class="info-value">{{ family.spouse }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if family.occupation %}
+                                            <li class="info-item">
+                                                <span class="info-label">Spouse Occupation</span>
+                                                <span class="info-value">{{ family.occupation }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if family.tel %}
+                                            <li class="info-item">
+                                                <span class="info-label">Spouse Phone</span>
+                                                <span class="info-value">{{ family.tel }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if family.children %}
+                                            <li class="info-item">
+                                                <span class="info-label">Number of Children</span>
+                                                <span class="info-value">{{ family.children }}</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                {% else %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-heart"></i>
+                                        <h3>No Marital Information</h3>
+                                        <p>Marital and spouse information has not been added.</p>
+                                        {% if request.user.is_superuser %}
+                                            <a href="{% url 'dashboard:familycreate' %}" class="action-btn primary">
+                                                <i class="fas fa-plus"></i>
+                                                <span>Add Family Information</span>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <h3 class="info-card-header">
+                                <i class="fas fa-user-friends"></i>
+                                Next of Kin
+                            </h3>
+                            <div class="info-card-body">
+                                {% if family %}
+                                    <ul class="info-list">
+                                        {% if family.nextofkin %}
+                                            <li class="info-item">
+                                                <span class="info-label">Next of Kin</span>
+                                                <span class="info-value">{{ family.nextofkin }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if family.contact %}
+                                            <li class="info-item">
+                                                <span class="info-label">Contact Number</span>
+                                                <span class="info-value">{{ family.contact }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if family.relationship %}
+                                            <li class="info-item">
+                                                <span class="info-label">Relationship</span>
+                                                <span class="info-value">{{ family.relationship }}</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                {% else %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-user-friends"></i>
+                                        <h3>No Next of Kin Information</h3>
+                                        <p>Emergency contact person details are not available.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <h3 class="info-card-header">
+                                <i class="fas fa-users"></i>
+                                Parents Information
+                            </h3>
+                            <div class="info-card-body">
+                                {% if family %}
+                                    <ul class="info-list">
+                                        {% if family.father %}
+                                            <li class="info-item">
+                                                <span class="info-label">Father's Name</span>
+                                                <span class="info-value">{{ family.father }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if family.foccupation %}
+                                            <li class="info-item">
+                                                <span class="info-label">Father's Occupation</span>
+                                                <span class="info-value">{{ family.foccupation }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if family.mother %}
+                                            <li class="info-item">
+                                                <span class="info-label">Mother's Name</span>
+                                                <span class="info-value">{{ family.mother }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if family.moccupation %}
+                                            <li class="info-item">
+                                                <span class="info-label">Mother's Occupation</span>
+                                                <span class="info-value">{{ family.moccupation }}</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                {% else %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-users"></i>
+                                        <h3>No Parents Information</h3>
+                                        <p>Parents' details have not been provided.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if request.user.is_superuser and family %}
+                        <div class="card-actions">
+                            <a href="{% url 'dashboard:familyedit' family.id %}" class="action-btn">
+                                <i class="fas fa-edit"></i>
+                                <span>Edit Family Information</span>
+                            </a>
+                            <small class="text-muted">Last updated: {{ family.updated|naturaltime }}</small>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Emergency Contact Tab -->
+                <div id="emergency" class="tab-pane" role="tabpanel">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3 class="info-card-header">
+                                <i class="fas fa-ambulance"></i>
+                                Emergency Contact Details
+                            </h3>
+                            <div class="info-card-body">
+                                {% if emergency %}
+                                    <ul class="info-list">
+                                        {% if emergency.fullname %}
+                                            <li class="info-item">
+                                                <span class="info-label">Full Name</span>
+                                                <span class="info-value">{{ emergency.fullname }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if emergency.tel %}
+                                            <li class="info-item">
+                                                <span class="info-label">Phone Number</span>
+                                                <span class="info-value">{{ emergency.tel }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if emergency.location %}
+                                            <li class="info-item">
+                                                <span class="info-label">Residence</span>
+                                                <span class="info-value">{{ emergency.location }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if emergency.relationship %}
+                                            <li class="info-item">
+                                                <span class="info-label">Relationship</span>
+                                                <span class="info-value">{{ emergency.relationship }}</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                {% else %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-ambulance"></i>
+                                        <h3>No Emergency Contact</h3>
+                                        <p>Emergency contact information has not been provided for this employee.</p>
+                                        {% if request.user.is_superuser %}
+                                            <a href="{% url 'dashboard:emergencycreate' %}" class="action-btn primary">
+                                                <i class="fas fa-plus"></i>
+                                                <span>Add Emergency Contact</span>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% if request.user.is_superuser and emergency %}
+                                <div class="card-actions">
+                                    <a href="{% url 'dashboard:emergencyupdate' emergency.id %}" class="action-btn">
+                                        <i class="fas fa-edit"></i>
+                                        <span>Edit Emergency Contact</span>
+                                    </a>
+                                    <small class="text-muted">Last updated: {{ emergency.updated|naturaltime }}</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banking Information Tab -->
+                <div id="bank" class="tab-pane" role="tabpanel">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3 class="info-card-header">
+                                <i class="fas fa-university"></i>
+                                Bank Account Details
+                            </h3>
+                            <div class="info-card-body">
+                                {% if bank %}
+                                    <ul class="info-list">
+                                        {% if bank.name %}
+                                            <li class="info-item">
+                                                <span class="info-label">Bank Name</span>
+                                                <span class="info-value">{{ bank.name }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if bank.account %}
+                                            <li class="info-item">
+                                                <span class="info-label">Account Number</span>
+                                                <span class="info-value">{{ bank.account }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if bank.branch %}
+                                            <li class="info-item">
+                                                <span class="info-label">Branch</span>
+                                                <span class="info-value">{{ bank.branch }}</span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if bank.salary %}
+                                            <li class="info-item">
+                                                <span class="info-label">Initial Salary</span>
+                                                <span class="info-value">${{ bank.salary }}</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                {% else %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-university"></i>
+                                        <h3>No Bank Information</h3>
+                                        <p>Bank account details have not been added for this employee.</p>
+                                        {% if request.user.is_superuser %}
+                                            <a href="{% url 'dashboard:bankaccountcreate' %}" class="action-btn primary">
+                                                <i class="fas fa-plus"></i>
+                                                <span>Add Bank Information</span>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% if request.user.is_superuser and bank %}
+                                <div class="card-actions">
+                                    <a href="{% url 'dashboard:accountedit' bank.id %}" class="action-btn">
+                                        <i class="fas fa-edit"></i>
+                                        <span>Edit Bank Information</span>
+                                    </a>
+                                    <small class="text-muted">Last updated: {{ bank.updated|naturaltime }}</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Remove active class from all tabs
+            tabLinks.forEach(l => l.classList.remove('active'));
+            tabPanes.forEach(p => p.classList.remove('active'));
+
+            // Add active class to clicked tab
+            this.classList.add('active');
+            const targetTab = this.getAttribute('data-tab');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}
 
 <script type="text/javascript">
 {% block extrajs%}

@@ -10,104 +10,266 @@
 {% endblock %}
 
 {% block stylesheet %}
-.sec {
-    border: 1px solid yellow;
-    background: red;
-}
+<style>
+    :root {
+        --edit-primary: #2563eb;
+        --edit-secondary: #64748b;
+        --edit-success: #10b981;
+        --edit-warning: #f59e0b;
+        --edit-danger: #ef4444;
+        --edit-card-bg: #ffffff;
+        --edit-border: #e2e8f0;
+        --edit-text-primary: #1e293b;
+        --edit-text-secondary: #64748b;
+        --edit-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
 
-.form-wrapper {
-    -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-    padding: 2%;
-    background: #fff !important;
-    padding-bottom: 5%;
-}
+    .edit-page-container {
+        background-color: #f8fafc;
+        min-height: 100vh;
+        padding: 20px 0;
+    }
 
-.btn-lg {
-    padding: 8px 30px;
-}
+    .edit-form-card {
+        background: var(--edit-card-bg);
+        border-radius: 16px;
+        box-shadow: var(--edit-shadow);
+        border: 1px solid var(--edit-border);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
 
-.main-panel > .content {
-    padding: 60px 15px;
-    min-height: calc(100% - 123px);
-}
+    .edit-header {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        color: white;
+        padding: 24px;
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-#override-start {
-    background: none !important;
-    top: 35% !important;
-    right: 13px;
-    color: #000;
-    font-size: 24px;
-}
+    .edit-body {
+        padding: 32px;
+    }
 
-.alert-warning {
-    background: #fd7b7b;
-}
+    .edit-title {
+        text-align: center;
+        margin-bottom: 30px;
+        color: var(--edit-text-primary);
+    }
 
-.alert-success {
-    background-color: #82b72a;
-}
+    .edit-title h2 {
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 8px;
+        color: #dc2626;
+    }
 
-.alert-success, .alert-warning {
-    font-size: 16px;
-}
+    .edit-title p {
+        color: var(--edit-text-secondary);
+        font-size: 1.1rem;
+        margin: 0;
+    }
 
-.prev-holder .prev-avatar {
-    border-radius: 50%;
-    width: 250px;
-    height: 250px;
-    -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-}
+    .form-section {
+        margin-bottom: 40px;
+    }
 
-.avatar {
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-family: sans-serif;
-    color: #0000FF;
-}
+    .form-section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--edit-text-primary);
+        margin-bottom: 20px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #dc2626;
+        display: inline-block;
+    }
+
+    .emergency-alert {
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        border: 1px solid #fca5a5;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .emergency-alert i {
+        font-size: 2rem;
+        color: #dc2626;
+        margin-bottom: 10px;
+    }
+
+    .emergency-alert h4 {
+        color: #991b1b;
+        margin-bottom: 5px;
+    }
+
+    .emergency-alert p {
+        color: #7f1d1d;
+        margin: 0;
+    }
+
+    .form-actions {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid var(--edit-border);
+    }
+
+    .btn-update {
+        background: #dc2626;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 40px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: white;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    }
+
+    .btn-update:hover {
+        background: #b91c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+    }
+
+    .btn-cancel {
+        background: var(--edit-secondary);
+        border: none;
+        border-radius: 12px;
+        padding: 14px 30px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: white;
+        margin-left: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+        background: #475569;
+        transform: translateY(-1px);
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--edit-text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        margin-bottom: 20px;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #dc2626;
+    }
+
+    .alert {
+        border-radius: 12px;
+        border: none;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .alert-warning {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    @media (max-width: 768px) {
+        .edit-body {
+            padding: 24px 20px;
+        }
+
+        .edit-title h2 {
+            font-size: 1.6rem;
+        }
+
+        .btn-update, .btn-cancel {
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<section class="content">
-    <section class="container-fluid">
-        <section class="row">
-            <section class="col col-sm-8 offset-sm-2">
-                {% if messages %}
-                    {% for message in messages %}
-                        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                            {{ message }}
-                            <button type="button" class="close" id="override-start" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </section>
-        </section>
+<div class="edit-page-container">
+    <div class="container-fluid">
+        <!-- Back Link -->
+        <a href="{% url 'dashboard:employeeinfo' form.instance.employee.id %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Profile
+        </a>
 
-        <section class="form-wrapper">
-            <section class="row">
-                <section class="col-lg-12 col-md-12 col-sm-12 text-center">
-                    <h3 class="title-h3">Edit Emergency Family Information To The System</h3>
-                </section>
-            </section>
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
 
-            <section class="row">
-                <section class="col-lg-8 col-md-12 col-sm-12">
-                    <form action="" method="POST" enctype="multipart/form-data">
+        <!-- Emergency Alert -->
+        <div class="emergency-alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h4>Important Contact Information</h4>
+            <p>Ensure emergency contact details are accurate and up-to-date</p>
+        </div>
+
+        <!-- Main Edit Card -->
+        <div class="edit-form-card">
+            <h2 class="edit-header">
+                <i class="fas fa-ambulance"></i> Edit Emergency Contact
+            </h2>
+
+            <div class="edit-body">
+                <div class="edit-title">
+                    <h2>Update Emergency Contact</h2>
+                    <p>Modify emergency contact information for critical situations</p>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="form-section-title">Emergency Contact Details</h3>
+                    <form action="" method="POST" enctype="multipart/form-data" id="edit-form">
                         {% csrf_token %}
                         {{ form|crispy }}
-                        <button type="submit" class="btn btn-primary btn-lg btn-block">Update Emergency Information</button>
                     </form>
-                </section>
+                </div>
 
-                <section class="col-lg-4 col-md-12 col-sm-12 text-center">
-                    <section class="prev-holder">
-                        <img src="{% static 'img/default-avatar.png' %}" alt="" id="temp-preview-image" class="prev-avatar" style="filter: hue-rotate(180deg);" />
-                    </section>
-                </section>
-            </section>
-        </section>
-    </section>
-</section>
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" form="edit-form" class="btn-update">
+                        <i class="fas fa-save"></i> Update Emergency Contact
+                    </button>
+                    <a href="{% url 'dashboard:employeeinfo' form.instance.employee.id %}" class="btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

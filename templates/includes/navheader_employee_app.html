@@ -1,153 +1,567 @@
- {% load static %}
+{% load static %}
 
-<nav class="navbar navbar-default navbar-fixed shadow">
+<style>
+    :root {
+        --nav-primary: #2563eb;
+        --nav-primary-dark: #1d4ed8;
+        --nav-primary-light: #3b82f6;
+        --nav-secondary: #64748b;
+        --nav-accent: #f59e0b;
+        --nav-background: rgba(15, 23, 42, 0.95);
+        --nav-border: rgba(255, 255, 255, 0.1);
+        --nav-text: #ffffff;
+        --nav-text-secondary: #cbd5e1;
+        --nav-text-muted: #94a3b8;
+        --nav-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --nav-radius: 8px;
+    }
+
+    .navbar-professional {
+        background: var(--nav-background);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--nav-border);
+        box-shadow: var(--nav-shadow);
+        padding: 0.75rem 0;
+        transition: var(--nav-transition);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1030;
+    }
+
+    .navbar-professional.scrolled {
+        background: rgba(15, 23, 42, 0.98);
+        box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar-brand-professional {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--nav-primary-light) !important;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: var(--nav-radius);
+        transition: var(--nav-transition);
+    }
+
+    .navbar-brand-professional:hover {
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--nav-text) !important;
+        transform: scale(1.02);
+    }
+
+    .navbar-brand-professional i {
+        font-size: 1.75rem;
+        color: var(--nav-accent);
+    }
+
+    .navbar-toggler-professional {
+        border: none;
+        background: transparent;
+        color: var(--nav-text);
+        padding: 0.5rem;
+        border-radius: var(--nav-radius);
+        transition: var(--nav-transition);
+    }
+
+    .navbar-toggler-professional:hover,
+    .navbar-toggler-professional:focus {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--nav-text);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+    }
+
+    .navbar-toggler-professional .icon-bar {
+        background: var(--nav-text);
+        width: 22px;
+        height: 2px;
+        border-radius: 1px;
+        transition: var(--nav-transition);
+        display: block;
+        margin: 4px 0;
+    }
+
+    .navbar-collapse-professional {
+        background: var(--nav-background);
+        border-radius: 0 0 var(--nav-radius) var(--nav-radius);
+        margin-top: 1rem;
+        padding: 1rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar-nav-professional {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .navbar-nav-professional .nav-item {
+        margin-bottom: 0.25rem;
+    }
+
+    .navbar-nav-professional .nav-link-professional {
+        color: var(--nav-text-secondary) !important;
+        font-weight: 500;
+        font-size: 0.95rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--nav-radius);
+        transition: var(--nav-transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        position: relative;
+    }
+
+    .navbar-nav-professional .nav-link-professional:hover,
+    .navbar-nav-professional .nav-link-professional:focus {
+        color: var(--nav-text) !important;
+        background: rgba(37, 99, 235, 0.1);
+        transform: translateX(4px);
+    }
+
+    .navbar-nav-professional .nav-link-professional i {
+        font-size: 1rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    .navbar-nav-professional .dropdown {
+        position: relative;
+    }
+
+    .navbar-nav-professional .dropdown-toggle {
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: var(--nav-text-secondary);
+        font-weight: 500;
+        font-size: 0.95rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--nav-radius);
+        transition: var(--nav-transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-align: left;
+        justify-content: space-between;
+    }
+
+    .navbar-nav-professional .dropdown-toggle:hover,
+    .navbar-nav-professional .dropdown-toggle:focus {
+        color: var(--nav-text);
+        background: rgba(37, 99, 235, 0.1);
+        outline: none;
+    }
+
+    .navbar-nav-professional .dropdown-toggle .caret {
+        font-size: 0.8rem;
+        transition: var(--nav-transition);
+        margin-left: auto;
+    }
+
+    .navbar-nav-professional .dropdown.open .dropdown-toggle .caret {
+        transform: rotate(180deg);
+    }
+
+    .dropdown-menu-professional {
+        background: rgba(30, 41, 59, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--nav-border);
+        border-radius: var(--nav-radius);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        min-width: 220px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: var(--nav-transition);
+        position: static;
+        float: none;
+        list-style: none;
+    }
+
+    .navbar-nav-professional .dropdown.open .dropdown-menu-professional {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .dropdown-menu-professional li a {
+        color: var(--nav-text-secondary) !important;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        transition: var(--nav-transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .dropdown-menu-professional li a:hover,
+    .dropdown-menu-professional li a:focus {
+        color: var(--nav-text) !important;
+        background: rgba(37, 99, 235, 0.1);
+        transform: translateX(4px);
+    }
+
+    .dropdown-menu-professional li a i {
+        font-size: 0.9rem;
+        width: 16px;
+        text-align: center;
+    }
+
+    .dropdown-menu-professional .divider {
+        height: 1px;
+        background: var(--nav-border);
+        margin: 0.5rem 0;
+    }
+
+    .navbar-nav-professional.navbar-right-professional {
+        border-top: 1px solid var(--nav-border);
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+
+    .navbar-nav-professional.navbar-right-professional .nav-item {
+        margin-bottom: 0.5rem;
+    }
+
+    .user-menu-professional {
+        background: linear-gradient(135deg, var(--nav-primary), var(--nav-primary-light));
+        border-radius: var(--nav-radius);
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .user-menu-professional .user-info-professional {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .user-avatar-professional {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .user-details-professional h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+    }
+
+    .user-details-professional p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .navbar-nav-professional .nav-link-professional.btn-apply-professional {
+        background: linear-gradient(135deg, var(--nav-accent), #d97706);
+        color: white !important;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        border: none;
+        animation: pulse 2s infinite;
+    }
+
+    .navbar-nav-professional .nav-link-professional.btn-apply-professional:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        animation: none;
+    }
+
+    @keyframes pulse {
+        0%, 100% { box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+        50% { box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5); }
+    }
+
+    .navbar-nav-professional .nav-link-professional.disabled-professional {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: rgba(239, 68, 68, 0.1);
+        color: #fca5a5 !important;
+    }
+
+    .navbar-nav-professional .nav-link-professional.disabled-professional:hover {
+        transform: none;
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Mobile Styles */
+    @media (max-width: 768px) {
+        .navbar-professional {
+            padding: 0.5rem 0;
+        }
+
+        .navbar-brand-professional {
+            font-size: 1.25rem;
+            padding: 0.5rem;
+        }
+
+        .navbar-collapse-professional {
+            margin-top: 0.5rem;
+        }
+
+        .navbar-nav-professional .nav-link-professional,
+        .navbar-nav-professional .dropdown-toggle-professional {
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        .dropdown-menu-professional {
+            margin-top: 0.25rem;
+            min-width: 200px;
+        }
+    }
+
+    /* Desktop Styles */
+    @media (min-width: 769px) {
+        .navbar-collapse-professional {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
+            box-shadow: none;
+            margin-top: 0;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .navbar-nav-professional {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-nav-professional.navbar-right-professional {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+        .dropdown-menu-professional {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+        }
+
+        .navbar-toggler-professional {
+            display: none;
+        }
+    }
+</style>
+
+<nav class="navbar-professional" id="main-navbar">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example-2">
+            <button type="button" class="navbar-toggler-professional" data-toggle="collapse" data-target="#navbar-collapse-professional" aria-expanded="false">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <!-- <a class="navbar-brand" href="">Dashboard </a> -->
+            <a class="navbar-brand-professional" href="{% url 'dashboard:dashboard' %}">
+                <i class="fas fa-calendar-check"></i>
+                <span>KeFS LMS</span>
+            </a>
         </div>
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav navbar-left">
-                <li>
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <i class=""></i>
-                        <p class="hidden-lg hidden-md">Dashboard</p>
+
+        <div class="collapse navbar-collapse-professional" id="navbar-collapse-professional">
+            <!-- Left Navigation -->
+            <ul class="navbar-nav-professional">
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:dashboard' %}" class="nav-link-professional">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
                     </a>
                 </li>
 
+                <!-- Leave Dropdown -->
                 <li class="dropdown hoverable">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <p>
-                            Leave
-                            <b class="caret"></b>
-                        </p>
+                        <i class="fas fa-calendar-alt"></i>
+                        <p>Leave</p>
+                        <b class="caret"></b>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu-professional">
                         {% if request.user.is_superuser or request.user.is_staff %}
-                        <li><a href="{% url 'dashboard:leaveslist' %}">Pending Leaves</a></li>
-                        <li><a href="{% url 'dashboard:approvedleaveslist' %}">Approved Leaves</a></li>
-                        <li><a href="{% url 'dashboard:recommendedleavelist' %}">Recommended Leaves</a></li>
+                        <li><a href="{% url 'dashboard:leaveslist' %}"><i class="fas fa-clock"></i>Pending Leaves</a></li>
+                        <li><a href="{% url 'dashboard:approvedleaveslist' %}"><i class="fas fa-check-circle"></i>Approved Leaves</a></li>
+                        <li><a href="{% url 'dashboard:recommendedleavelist' %}"><i class="fas fa-thumbs-up"></i>Recommended Leaves</a></li>
                         {% endif %}
-                        {% if request.user.is_superuser%}
-                        <li><a href="{% url 'dashboard:canceleaveslist' %}">Cancelled Leaves</a></li>
-                        <li><a href="{% url 'dashboard:leavesrejected' %}">Rejected Leaves</a></li>
-                        <li class="divider"></li>
-                        <li><a href="{% url 'dashboard:createleave' %}">Apply for Leave</a></li>
-                        {% else %}
-                                {% if not apply_leave_disabled %}
-                                        <!-- If the user has leave days remaining, render a clickable "Apply Leave" button -->
-                                        <li><a href="{% url 'dashboard:createleave' %}"  class="btn btn-primary">Apply for Leave</a></li>
-
-                                        {% comment %} <a href="{% url 'dashboard:createleave' %}" class="btn btn-primary">Apply Leave</a> {% endcomment %}
-                                {% else %}
-                                        {% comment %} <li><a href="{% url 'dashboard:createleave' %}">Apply for Leave</a></li> {% endcomment %}
-                                        <p class="text-danger">You cannot apply for more leave.</p>
-
-                                        <!-- If the user has no leave days remaining, render a disabled "Apply Leave" button and display a message -->
-                                        {% comment %} <button class="btn btn-primary" disabled>Apply Leave</button> {% endcomment %}
-                            {% endif %}
-                    {% endif %}
                         {% if request.user.is_superuser %}
-
+                        <li><a href="{% url 'dashboard:canceleaveslist' %}"><i class="fas fa-times-circle"></i>Cancelled Leaves</a></li>
+                        <li><a href="{% url 'dashboard:leavesrejected' %}"><i class="fas fa-exclamation-triangle"></i>Rejected Leaves</a></li>
                         <li class="divider"></li>
-                        <li><a href="{% url 'dashboard:staffleavetable' %}">All Leaves</a></li>
+                        {% endif %}
+                        {% if not apply_leave_disabled %}
+                        <li><a class="btn-apply-professional" href="{% url 'dashboard:createleave' %}"><i class="fas fa-plus-circle"></i>Apply for Leave</a></li>
+                        {% else %}
+                        <li><span class="disabled-professional"><i class="fas fa-ban"></i>Leave Application Disabled</span></li>
+                        {% endif %}
+                        {% if request.user.is_superuser %}
+                        <li class="divider"></li>
+                        <li><a href="{% url 'dashboard:staffleavetable' %}"><i class="fas fa-table"></i>All Leaves</a></li>
                         {% endif %}
                     </ul>
                 </li>
 
                 {% if request.user.is_superuser or request.user.is_staff %}
+                <!-- Users Dropdown -->
                 <li class="dropdown hoverable">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <p>
-                            Users
-                            <b class="caret"></b>
-                        </p>
+                        <i class="fas fa-users"></i>
+                        <p>Users</p>
+                        <b class="caret"></b>
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'accounts:register' %}">Create Users</a></li>
-                        <li><a href="{% url 'accounts:users' %}">All Users</a></li>
+                    <ul class="dropdown-menu-professional">
+                        <li><a href="{% url 'accounts:register' %}"><i class="fas fa-user-plus"></i>Create Users</a></li>
+                        <li><a href="{% url 'accounts:users' %}"><i class="fas fa-list"></i>All Users</a></li>
                     </ul>
                 </li>
-                {% endif %}
 
-                {% if request.user.is_superuser or request.user.is_staff %}
+                <!-- Employee Dropdown -->
                 <li class="dropdown hoverable">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <p>
-                            Employee
-                            <b class="caret"></b>
-                        </p>
+                        <i class="fas fa-building"></i>
+                        <p>Employee</p>
+                        <b class="caret"></b>
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'dashboard:employeecreate' %}">Add Employee</a></li>
-                        <li><a href="{% url 'dashboard:employees' %}">All Employees</a></li>
+                    <ul class="dropdown-menu-professional">
+                        <li><a href="{% url 'dashboard:employeecreate' %}"><i class="fas fa-user-plus"></i>Add Employee</a></li>
+                        <li><a href="{% url 'dashboard:employees' %}"><i class="fas fa-users"></i>All Employees</a></li>
                         <li class="divider"></li>
-                        <li><a href="{% url 'accounts:erasedusers' %}">Deleted Employees</a></li>
+                        <li><a href="{% url 'accounts:erasedusers' %}"><i class="fas fa-trash"></i>Deleted Employees</a></li>
                     </ul>
                 </li>
                 {% endif %}
             </ul>
 
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle refresh-page" data-toggle="dropdown" title="Refresh Current Page">
-                        <i class="pe-7s-refresh-2"></i>
-                        <b class="hidden-lg hidden-md"></b>
-                        <p class="hidden-lg hidden-md">
-                            refresh
-                        </p>
-                    </a>
+            <!-- Right Navigation -->
+            <ul class="navbar-nav-professional navbar-right-professional">
+                <!-- Refresh Button -->
+                <li class="nav-item">
+                    <button class="nav-link-professional refresh-page" title="Refresh Current Page" onclick="location.reload()">
+                        <i class="fas fa-sync-alt"></i>
+                        <span class="hidden-lg hidden-md">Refresh</span>
+                    </button>
                 </li>
 
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <p>
-                            <i class="fa fa-user"></i> {{ request.user}}
-                            <b class="caret"></b>
-                        </p>
-                    </a>
-                    <ul class="dropdown-menu">
+                <!-- User Menu -->
+                <li class="nav-item dropdown-professional" id="user-dropdown">
+                    <button class="dropdown-toggle-professional" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i>
+                        <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+                        <i class="fas fa-chevron-down caret-professional"></i>
+                    </button>
+                    <div class="user-menu-professional">
+                        <div class="user-info-professional">
+                            <div class="user-avatar-professional">
+                                {{ request.user.get_full_name|default:request.user.username|slice:":1"|upper }}
+                            </div>
+                            <div class="user-details-professional">
+                                <h5>{{ request.user.get_full_name|default:request.user.username }}</h5>
+                                <p>{{ request.user.email|default:"No email" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu-professional">
                         {% if request.user.is_authenticated %}
-                        <li><a href="{% url 'accounts:logout'  %}">Logout</a></li>
+                        <li><a class="dropdown-item-professional" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
                         {% else %}
-                        <li><a href="{% url 'accounts:login'  %}">Login</a></li>
+                        <li><a class="dropdown-item-professional" href="{% url 'accounts:login' %}"><i class="fas fa-sign-in-alt"></i>Login</a></li>
                         {% endif %}
-                        <li><a href="{% url 'accounts:changepassword' %}">Change Password</a></li>
+                        <li><a class="dropdown-item-professional" href="{% url 'accounts:changepassword' %}"><i class="fas fa-key"></i>Change Password</a></li>
                     </ul>
                 </li>
-
-                <li class="separator hidden-lg"></li>
             </ul>
         </div>
     </div>
 </nav>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const navbar = document.getElementById('main-navbar');
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Mobile menu toggle
+    const navbarToggler = document.querySelector('.navbar-toggler-professional');
+    const navbarCollapse = document.getElementById('navbar-collapse-professional');
+
+    if (navbarToggler && navbarCollapse) {
+        navbarToggler.addEventListener('click', function() {
+            navbarCollapse.classList.toggle('show');
+        });
+    }
+
+    // Add ripple effect to buttons
+    const buttons = document.querySelectorAll('.navbar-nav-professional a, .dropdown-menu-professional a');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple-effect';
+            ripple.style.left = (e.offsetX - 10) + 'px';
+            ripple.style.top = (e.offsetY - 10) + 'px';
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+
+    // Initialize Bootstrap dropdowns if available
+    if (typeof $ !== 'undefined' && $.fn.dropdown) {
+        $('.dropdown-toggle').dropdown();
+    }
+});
+</script>
+
 <style>
-    .navbar-default .navbar-nav > .active > a,
-    .navbar-default .navbar-nav > .active > a:not(.btn):hover,
-    .navbar-default .navbar-nav > .active > a:not(.btn):focus,
-    .navbar-default .navbar-nav > li > a:not(.btn):hover,
-    .navbar-default .navbar-nav > li > a:not(.btn):focus {
-        color: #d04247;
-    }
+.ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
 
-    .navbar-default .navbar-nav > .open > a,
-    .navbar-default .navbar-nav > .open > a:hover,
-    .navbar-default .navbar-nav > .open > a:focus {
-        color: #d04247;
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
     }
-
-    .navbar-default .navbar-nav > .dropdown.hoverable:hover > a.dropdown-toggle,
-    .navbar-default .navbar-nav > .dropdown.hoverable:hover > a.dropdown-toggle > p,
-    .navbar-default .navbar-nav > .dropdown.hoverable:hover > a.dropdown-toggle > p > .caret {
-        background-color: #f8f8f8;
-        color: #d04247;
-        border-bottom-color: #d04247;
-        border-top-color: #d04247;
-    }
+}
 </style>

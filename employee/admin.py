@@ -20,12 +20,12 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ['email', 'first_name', 'last_name']
     ordering = ['email']
     filter_horizontal = []  # Remove default filters
+    readonly_fields = ['date_joined', 'last_login']
 
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'phone_number', 'role')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
     add_fieldsets = (
         (None, {

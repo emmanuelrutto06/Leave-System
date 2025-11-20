@@ -1,167 +1,1012 @@
-
 {% extends '_layout.html' %}
 
-{% block title %} {{ title }} {% endblock %}
-<style>
-  {% block stylesheet %}
-     .sec-box{
-     <!-- width:400px; --><!-- dont uncomment this code - line -->
-     height:160px;
-     max-width:100%;
-     line-height:160px;
-     text-align:center;
-     position:relative;
+{% block title %}Dashboard - {{ title }}{% endblock %}
 
-     font-size:1.9rem;
+{% block page_title %}Dashboard{% endblock %}
 
-    -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-    transition: all 400ms ease-in;
+{% block page_subtitle %}Welcome to your KeFS Leave Management System{% endblock %}
 
-    font-variant: petite-caps;
- }
-
-.sec-box a{
- color:#fff;
- text-decoration:none;
-
-}
-
-
- .employee-box{
-    background: #5a4747;
-    background: rgb(2,0,36);
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
-
-}
-
-
- .leave-box{
-    background: #5a4747; 
-    background: rgb(2,0,36);
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
-
-}
-
-.leave-box a{
-	color:white !important;
-}
-
-
- .birthday-box{
- 	background:#8664ad;
-}
-
-.company-box{
-	background:#868686;
-}
-
-
-
-
-.count-object {
-    position: absolute;
-    top: 40%;
-    right: 12px;
-    font-size: 29px;
-    font-weight: 100;
-    font-variant: petite-caps;
-    color: #f5f5f5;
-    text-shadow:1px 1px rgba(8, 8, 8, 0.23);
-}
-
-.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:not(.btn):hover, .navbar-default .navbar-nav > .active > a:not(.btn):focus, .navbar-default .navbar-nav > li > a:not(.btn):hover, .navbar-default .navbar-nav > li > a:not(.btn):focus { color: #f44336 }
-
-{% comment %} .navbar-default .navbar-nav > .dropdown > a:hover .caret, .navbar-default .navbar-nav > .dropdown > a:focus .caret { border-bottom-color:  #d04247; border-top-color:  #d04247; } {% endcomment %}
-     
-  {% endblock %}
-
-
-</style>
- <!--CONTENTS-->
- {% block content %}
-        <section class="content">
-            <section class="container-fluid">
-            	<section class="row">
-            		{% if request.user.is_superuser or request.user.is_staff or request.user.is_supervisor %}
-            		<section class="col col-lg-4">
-            			<div class="employee-box sec-box">
-            				<a href="">
-            				<span style="font-size: 21px;">Total Registered Employees: {{ employees.count }}</span>
-            				</a>
-            			 {% comment %} <span class="count-object"></span> {% endcomment %}
-            			</div>
-            		</section>
-            		<section class="col col-lg-4">
-            			<div class="leave-box sec-box">
-            				<a href="">
-                                {% if request.user.is_staff and not request.user.is_superuser %}
-            				<span style="font-size: 24px;"></span>Total Leaves Requested: {{ leaves.count }}</span>
-                            <!-- <span class="count-object" style="color:#41b6d6;"></span>  -->
-                                    {% endif %}
-                                {% if request.user.is_superuser %}
-            				<span style="font-size: 24px;"></span>Total Leaves Requested: {{ leavey.count }}</span>
-                            <!-- <span class="count-object" style="color:#41b6d6;"></span>  -->
-                                    {% endif %}
-
-            			</div>
-            		</section>
-            		
-            		{% else %}
-                    <section class="col col-lg-6">
-                        <div class="leave-box sec-box">
-                            <a href="">
-                            <span>Your Total Leaves: {{ staff_leaves.count }}</span>
-                            </a>
-                          {% comment %} <span class="count-object" style="color:#41b6d6;"></span> {% endcomment %}
-                        </div>
-                    </section>
-                    
-
-                    
-                    
-                    {% endif %}
-
-                    
-
-                </section>
-                
-                
-
-                
-
-
-            </section> <!-- /container --> 
-                     
-        </section>
-
-        
-{# {% endblock %}#}
-
- 
-    <script>
-
-
-{% block extrajs%}
-    
-
-    $(document).ready(function(){
-          var get_login_user = '{{request.user.username}}'
-          
-          console.log(get_login_user);
-
-          demo.initChartist();
-
-          $.notify({
-              icon: 'fa fa-user fa-fade',
-              message: "Welcome to the KeFS Leave Management System, " +get_login_user
-
-            },{
-                type: 'info',
-                timer: 4000
-            });
-
-      });
-</script>
+{% block page_actions %}
+{% if request.user.is_superuser or request.user.is_staff %}
+<a href="{% url 'dashboard:employeecreate' %}" class="btn btn-primary">
+    <i class="fas fa-user-plus"></i> Add Employee
+</a>
+<a href="{% url 'dashboard:createleave' %}" class="btn btn-success">
+    <i class="fas fa-calendar-plus"></i> Request Leave
+</a>
+{% else %}
+<a href="{% url 'dashboard:createleave' %}" class="btn btn-success">
+    <i class="fas fa-calendar-plus"></i> Request Leave
+</a>
+{% endif %}
 {% endblock %}
+
+{% block content %}
+<style>
+/* Modern Dashboard Enhancements */
+:root {
+    --dashboard-primary: #1e293b;
+    --dashboard-primary-dark: #0f172a;
+    --dashboard-primary-light: #334155;
+    --dashboard-secondary: #64748b;
+    --dashboard-accent: #f59e0b;
+    --dashboard-accent-light: #fbbf24;
+    --dashboard-success: #10b981;
+    --dashboard-warning: #f59e0b;
+    --dashboard-danger: #ef4444;
+    --dashboard-info: #06b6d4;
+
+    --dashboard-bg-primary: #f8fafc;
+    --dashboard-bg-secondary: #f1f5f9;
+    --dashboard-bg-tertiary: #e2e8f0;
+    --dashboard-card-bg: #ffffff;
+    --dashboard-border: #cbd5e1;
+    --dashboard-border-light: #e2e8f0;
+
+    --dashboard-text-primary: #0f172a;
+    --dashboard-text-secondary: #475569;
+    --dashboard-text-muted: #64748b;
+    --dashboard-text-white: #ffffff;
+
+    --dashboard-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --dashboard-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --dashboard-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --dashboard-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+    --dashboard-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+    --dashboard-radius-sm: 8px;
+    --dashboard-radius-md: 12px;
+    --dashboard-radius-lg: 16px;
+    --dashboard-radius-xl: 20px;
+    --dashboard-radius-2xl: 24px;
+
+    --dashboard-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --dashboard-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --dashboard-transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --dashboard-transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Enhanced Welcome Section */
+.welcome-hero-card {
+    background: linear-gradient(135deg, var(--dashboard-card-bg) 0%, rgba(59, 130, 246, 0.02) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    border-radius: var(--dashboard-radius-xl);
+    box-shadow: var(--dashboard-shadow-lg);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+}
+
+.welcome-hero-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--dashboard-primary), var(--dashboard-accent), var(--dashboard-success));
+    background-size: 200% 100%;
+    animation: gradientShift 8s ease-in-out infinite;
+}
+
+.welcome-icon-modern {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--dashboard-primary), var(--dashboard-primary-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    box-shadow: var(--dashboard-shadow-xl);
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-icon-modern::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--dashboard-accent), var(--dashboard-success), var(--dashboard-info));
+    background-size: 400% 400%;
+    animation: rotateGlow 8s ease-in-out infinite;
+    z-index: -1;
+    filter: blur(8px) opacity(0.3);
+}
+
+@keyframes rotateGlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.welcome-title-modern {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--dashboard-primary) 0%, var(--dashboard-accent) 50%, var(--dashboard-primary-light) 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientFlow 6s ease-in-out infinite;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.welcome-subtitle-modern {
+    font-size: 1.1rem;
+    color: var(--dashboard-text-secondary);
+    line-height: 1.6;
+    max-width: 600px;
+}
+
+/* Modern Stats Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card-modern {
+    background: linear-gradient(135deg, var(--dashboard-card-bg) 0%, rgba(255, 255, 255, 0.8) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.08);
+    border-radius: var(--dashboard-radius-xl);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--dashboard-shadow-lg);
+    transition: var(--dashboard-transition-bounce);
+    cursor: pointer;
+}
+
+.stat-card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--dashboard-primary), var(--dashboard-accent), var(--dashboard-success));
+    background-size: 200% 100%;
+    animation: gradientShift 6s ease-in-out infinite;
+}
+
+.stat-card-modern::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(40px, -40px);
+    pointer-events: none;
+}
+
+.stat-card-modern:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: var(--dashboard-shadow-2xl);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.stat-card-modern:hover::after {
+    transform: translate(20px, -60px);
+    opacity: 0.6;
+}
+
+.stat-icon-modern {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1.5rem;
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--dashboard-shadow-lg);
+}
+
+.stat-icon-modern.primary { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+.stat-icon-modern.success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+.stat-icon-modern.warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.stat-icon-modern.danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+.stat-icon-modern.info { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; }
+
+.stat-value-modern {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--dashboard-primary), var(--dashboard-accent));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientFlow 4s ease-in-out infinite;
+    line-height: 1;
+}
+
+.stat-label-modern {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dashboard-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+}
+
+.stat-trend-modern {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-trend-modern.success { background: rgba(16, 185, 129, 0.1); color: var(--dashboard-success); }
+.stat-trend-modern.warning { background: rgba(245, 158, 11, 0.1); color: var(--dashboard-warning); }
+.stat-trend-modern.danger { background: rgba(239, 68, 68, 0.1); color: var(--dashboard-danger); }
+
+/* Quick Actions Enhancement */
+.quick-actions-modern {
+    background: linear-gradient(135deg, var(--dashboard-card-bg) 0%, rgba(59, 130, 246, 0.02) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.08);
+    border-radius: var(--dashboard-radius-xl);
+    padding: 3rem;
+    margin-bottom: 3rem;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--dashboard-shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-actions-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--dashboard-accent), var(--dashboard-success), var(--dashboard-info));
+    background-size: 200% 100%;
+    animation: gradientShift 10s ease-in-out infinite;
+}
+
+.quick-actions-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--dashboard-text-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.quick-actions-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--dashboard-accent), var(--dashboard-primary));
+    border-radius: 2px;
+}
+
+.action-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.action-btn-modern {
+    background: linear-gradient(135deg, var(--dashboard-primary), var(--dashboard-primary-light));
+    background-size: 200% 200%;
+    border: none;
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: var(--dashboard-radius-lg);
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: var(--dashboard-transition-bounce);
+    box-shadow: var(--dashboard-shadow-lg);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.action-btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.action-btn-modern:hover::before {
+    left: 100%;
+}
+
+.action-btn-modern:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--dashboard-shadow-2xl);
+    background-position: right center;
+}
+
+.action-btn-modern.primary { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.action-btn-modern.success { background: linear-gradient(135deg, #10b981, #059669); }
+.action-btn-modern.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.action-btn-modern.info { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+.action-btn-modern.secondary {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--dashboard-text-primary);
+    border: 2px solid var(--dashboard-border);
+}
+
+.action-btn-modern.secondary:hover {
+    background: var(--dashboard-text-primary);
+    color: white;
+    border-color: var(--dashboard-text-primary);
+}
+
+/* Professional Widgets */
+.widget-modern {
+    background: linear-gradient(135deg, var(--dashboard-card-bg) 0%, rgba(255, 255, 255, 0.8) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.08);
+    border-radius: var(--dashboard-radius-xl);
+    padding: 2.5rem;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--dashboard-shadow-lg);
+    transition: var(--dashboard-transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.widget-modern:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--dashboard-shadow-xl);
+    border-color: rgba(59, 130, 246, 0.15);
+}
+
+.widget-header-modern {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+}
+
+.widget-icon-modern {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, var(--dashboard-primary), var(--dashboard-accent));
+    color: white;
+    box-shadow: var(--dashboard-shadow-md);
+}
+
+.widget-title-modern {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dashboard-text-primary);
+    margin: 0;
+}
+
+/* Animations */
+@keyframes gradientFlow {
+    0%, 100% { background-position: 0% 50%; }
+    25% { background-position: 100% 50%; }
+    50% { background-position: 50% 100%; }
+    75% { background-position: 50% 0%; }
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.fade-in-modern {
+    animation: fadeInUpModern 0.8s ease-out;
+}
+
+@keyframes fadeInUpModern {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .action-buttons-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-hero-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .welcome-title-modern {
+        font-size: 2rem;
+    }
+
+    .stat-card-modern {
+        padding: 2rem 1.5rem;
+    }
+
+    .quick-actions-modern {
+        padding: 2rem 1.5rem;
+    }
+}
+
+/* Activity Status Icons */
+.activity-status-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    box-shadow: var(--dashboard-shadow-md);
+    transition: var(--dashboard-transition);
+}
+
+.activity-status-icon.status-approved {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.activity-status-icon.status-rejected {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.activity-status-icon.status-pending {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+@media (max-width: 480px) {
+    .welcome-title-modern {
+        font-size: 1.75rem;
+    }
+
+    .stat-value-modern {
+        font-size: 2.5rem;
+    }
+
+    .action-btn-modern {
+        padding: 1.25rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+<div class="content-wrapper">
+    <!-- Modern Welcome Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="welcome-hero-card fade-in-modern">
+                <div class="card-body p-4 p-md-5">
+                    <div class="row align-items-center">
+                        <div class="col-lg-2 col-md-3 text-center mb-4 mb-md-0">
+                            <div class="welcome-icon-modern">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                        </div>
+                        <div class="col-lg-10 col-md-9">
+                            <h1 class="welcome-title-modern">Welcome back, {{ request.user.get_full_name|default:request.user.username }}!</h1>
+                            <p class="welcome-subtitle-modern">Access your comprehensive leave management dashboard. Track requests, manage approvals, and maintain optimal workforce productivity with our advanced analytics and streamlined workflows.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modern Statistics Cards -->
+    <div class="stats-grid">
+        {% if request.user.is_superuser or request.user.is_staff or request.user.role == CustomUser.SUPERVISOR %}
+        <!-- Total Employees -->
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern primary">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value-modern">{{ total_employees }}</div>
+            <div class="stat-label-modern">Total Employees</div>
+            <p class="text-muted small mb-3">Active employees in the system</p>
+            <div class="stat-trend-modern success">
+                <i class="fas fa-arrow-up"></i>
+                <span>+12% this month</span>
+            </div>
+        </div>
+
+        <!-- Total Leave Requests -->
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern info">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-value-modern">{{ total_leave_requests }}</div>
+            <div class="stat-label-modern">Leave Requests</div>
+            <p class="text-muted small mb-3">Total applications this year</p>
+            <div class="stat-trend-modern success">
+                <i class="fas fa-arrow-up"></i>
+                <span>+8% this month</span>
+            </div>
+        </div>
+
+        <!-- Pending Approvals -->
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern warning">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-value-modern">{{ pending_leaves.count }}</div>
+            <div class="stat-label-modern">Pending Approvals</div>
+            <p class="text-muted small mb-3">Require immediate attention</p>
+            {% if pending_leaves.count > 10 %}
+            <div class="stat-trend-modern danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>{{ pending_leaves.count }} urgent</span>
+            </div>
+            {% else %}
+            <div class="stat-trend-modern warning">
+                <i class="fas fa-clock"></i>
+                <span>{{ pending_leaves.count }} pending</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Approved Today -->
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-value-modern">{{ approved_today }}</div>
+            <div class="stat-label-modern">Approved Today</div>
+            <p class="text-muted small mb-3">Processed in last 24 hours</p>
+            <div class="stat-trend-modern success">
+                <i class="fas fa-check"></i>
+                <span>Processed</span>
+            </div>
+        </div>
+
+        <!-- Departments -->
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern info">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="stat-value-modern">{{ departments.count }}</div>
+            <div class="stat-label-modern">Departments</div>
+            <p class="text-muted small mb-3">Active departments</p>
+            <div class="stat-trend-modern info">
+                <i class="fas fa-building"></i>
+                <span>All active</span>
+            </div>
+        </div>
+
+        <!-- Rejected -->
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern danger">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-value-modern">{{ rejected_leaves_count }}</div>
+            <div class="stat-label-modern">Rejected</div>
+            <p class="text-muted small mb-3">Applications not approved</p>
+            <div class="stat-trend-modern danger">
+                <i class="fas fa-chart-line"></i>
+                <span>{{ rejected_leaves_count|floatformat:1 }}% of total</span>
+            </div>
+        </div>
+        {% else %}
+        <!-- Employee View -->
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern info">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-value-modern">{{ staff_leaves.count }}</div>
+            <div class="stat-label-modern">Your Leaves</div>
+            <p class="text-muted small mb-3">Total requests submitted</p>
+            <div class="stat-trend-modern info">
+                <i class="fas fa-calendar"></i>
+                <span>This year</span>
+            </div>
+        </div>
+
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern warning">
+                <i class="fas fa-user-clock"></i>
+            </div>
+            <div class="stat-value-modern">{{ pending_staff_leaves.count }}</div>
+            <div class="stat-label-modern">Pending</div>
+            <p class="text-muted small mb-3">Awaiting approval</p>
+            {% if pending_staff_leaves.count > 0 %}
+            <div class="stat-trend-modern warning">
+                <i class="fas fa-clock"></i>
+                <span>{{ pending_staff_leaves.count }} active</span>
+            </div>
+            {% else %}
+            <div class="stat-trend-modern success">
+                <i class="fas fa-check"></i>
+                <span>All clear</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern success">
+                <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="stat-value-modern">{{ approved_staff_leaves.count }}</div>
+            <div class="stat-label-modern">Approved</div>
+            <p class="text-muted small mb-3">Successfully approved</p>
+            <div class="stat-trend-modern success">
+                <i class="fas fa-check"></i>
+                <span>{{ approved_staff_leaves.count }} approved</span>
+            </div>
+        </div>
+
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern danger">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+            <div class="stat-value-modern">{{ rejected_staff_leaves.count }}</div>
+            <div class="stat-label-modern">Rejected</div>
+            <p class="text-muted small mb-3">Not approved</p>
+            <div class="stat-trend-modern danger">
+                <i class="fas fa-times"></i>
+                <span>{{ rejected_staff_leaves.count }} total</span>
+            </div>
+        </div>
+
+        <!-- Employee Leave Balance -->
+        <div class="stat-card-modern fade-in-modern">
+            <div class="stat-icon-modern success">
+                <i class="fas fa-balance-scale"></i>
+            </div>
+            <div class="stat-value-modern">{{ remaining_leave_days }}</div>
+            <div class="stat-label-modern">Leave Balance</div>
+            <p class="text-muted small mb-3">Days remaining this year</p>
+            <div class="stat-trend-modern info">
+                <i class="fas fa-calendar-alt"></i>
+                <span>of {{ annual_leave_days }} days</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Modern Quick Actions -->
+    <div class="quick-actions-modern fade-in-modern">
+        <h2 class="quick-actions-title">
+            <i class="fas fa-bolt me-2"></i>
+            Quick Actions
+        </h2>
+        <div class="action-buttons-grid">
+            {% if request.user.is_superuser or request.user.is_staff %}
+            <a href="{% url 'dashboard:employeecreate' %}" class="action-btn-modern primary">
+                <i class="fas fa-user-plus"></i>
+                <span>Add Employee</span>
+            </a>
+            <a href="{% url 'dashboard:createleave' %}" class="action-btn-modern success">
+                <i class="fas fa-calendar-plus"></i>
+                <span>Create Leave</span>
+            </a>
+            <a href="{% url 'dashboard:employees' %}" class="action-btn-modern info">
+                <i class="fas fa-list"></i>
+                <span>View Employees</span>
+            </a>
+            <a href="{% url 'dashboard:leaveslist' %}" class="action-btn-modern warning">
+                <i class="fas fa-calendar-check"></i>
+                <span>Manage Leaves</span>
+            </a>
+            {% else %}
+            <a href="{% url 'dashboard:createleave' %}" class="action-btn-modern success">
+                <i class="fas fa-calendar-plus"></i>
+                <span>Request Leave</span>
+            </a>
+            <a href="{% url 'dashboard:staffleavetable' %}" class="action-btn-modern info">
+                <i class="fas fa-history"></i>
+                <span>My Leave History</span>
+            </a>
+            {% if request.user.employee %}
+            <a href="{% url 'dashboard:employeeinfo' request.user.employee.id %}" class="action-btn-modern primary">
+                <i class="fas fa-user-edit"></i>
+                <span>Edit Profile</span>
+            </a>
+            {% else %}
+            <button class="action-btn-modern secondary" disabled>
+                <i class="fas fa-user-edit"></i>
+                <span>Profile Not Available</span>
+            </button>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modern Professional Widgets -->
+    <div class="row g-4">
+        {% if request.user.is_superuser or request.user.is_staff or request.user.role == CustomUser.SUPERVISOR %}
+        <!-- Department Overview -->
+        <div class="col-lg-6">
+            <div class="widget-modern fade-in-modern">
+                <div class="widget-header-modern">
+                    <div class="widget-icon-modern">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3 class="widget-title-modern">Department Overview</h3>
+                </div>
+                <div class="card-body">
+                    {% for dept_stat in department_stats|slice:":4" %}
+                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 border rounded" style="background: rgba(59, 130, 246, 0.02); border-color: rgba(59, 130, 246, 0.1); transition: var(--dashboard-transition);">
+                        <div>
+                            <h6 class="mb-1 fw-bold" style="color: var(--dashboard-text-primary);">{{ dept_stat.department.name }}</h6>
+                            <small class="text-muted">{{ dept_stat.employee_count }} employees</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold text-primary">{{ dept_stat.leave_count }} leaves</div>
+                            {% if dept_stat.pending_count > 0 %}
+                            <small class="text-warning fw-semibold">{{ dept_stat.pending_count }} pending</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Employee Leave Balance Chart -->
+        <div class="col-lg-6">
+            <div class="widget-modern fade-in-modern">
+                <div class="widget-header-modern">
+                    <div class="widget-icon-modern">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3 class="widget-title-modern">Leave Balance Overview</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="position-relative d-inline-block">
+                            <svg width="140" height="140" viewBox="0 0 140 140" class="mb-3">
+                                <circle cx="70" cy="70" r="55" fill="none" stroke="rgba(59, 130, 246, 0.1)" stroke-width="10"/>
+                                <circle cx="70" cy="70" r="55" fill="none" stroke="url(#leaveGradient)" stroke-width="10"
+                                        stroke-dasharray="{{ leave_balance_remaining_dash }} {{ leave_balance_used_dash }}"
+                                        stroke-dashoffset="0" transform="rotate(-90 70 70)"/>
+                                <defs>
+                                    <linearGradient id="leaveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="position-absolute top-50 start-50 translate-middle text-center">
+                                <div class="h3 mb-0 text-success fw-bold">{{ remaining_leave_days }}</div>
+                                <small class="text-muted fw-semibold">days left</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center g-3">
+                        <div class="col-4">
+                            <div class="p-3 rounded" style="background: rgba(245, 158, 11, 0.1);">
+                                <i class="fas fa-circle mb-2 text-warning"></i>
+                                <div class="small fw-semibold text-muted">Used</div>
+                                <div class="fw-bold text-warning">{{ used_leave_days }}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 rounded" style="background: rgba(16, 185, 129, 0.1);">
+                                <i class="fas fa-circle mb-2 text-success"></i>
+                                <div class="small fw-semibold text-muted">Remaining</div>
+                                <div class="fw-bold text-success">{{ remaining_leave_days }}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 rounded" style="background: rgba(59, 130, 246, 0.1);">
+                                <i class="fas fa-circle mb-2 text-primary"></i>
+                                <div class="small fw-semibold text-muted">Total</div>
+                                <div class="fw-bold text-primary">{{ annual_leave_days }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Leaves -->
+        {% if upcoming_leaves %}
+        <div class="col-lg-6">
+            <div class="widget-modern fade-in-modern">
+                <div class="widget-header-modern">
+                    <div class="widget-icon-modern">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="widget-title-modern">Upcoming Leaves</h3>
+                </div>
+                <div class="card-body">
+                    {% for leave in upcoming_leaves %}
+                    <div class="d-flex align-items-center mb-3 p-3 border rounded" style="background: rgba(59, 130, 246, 0.02); border-color: rgba(59, 130, 246, 0.1); transition: var(--dashboard-transition);">
+                        <div class="text-center me-3" style="min-width: 70px;">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                {{ leave.startdate|date:"d" }}
+                            </div>
+                            <div class="text-muted small mt-1 fw-semibold">{{ leave.startdate|date:"M" }}</div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 fw-bold" style="color: var(--dashboard-text-primary);">{{ leave.leavetype }}</h6>
+                            <small class="text-muted">{{ leave.startdate|date:"M d" }} - {{ leave.enddate|date:"M d, Y" }}</small>
+                            <div class="mt-2">
+                                <span class="badge {% if leave.status == 'approved' %}bg-success{% else %}bg-warning{% endif %} fw-semibold">
+                                    <i class="fas {% if leave.status == 'approved' %}fa-check-circle{% else %}fa-clock{% endif %} me-1"></i>
+                                    {{ leave.status|title }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <!-- Recent Activity -->
+        <div class="{% if request.user.is_superuser or request.user.is_staff or request.user.role == CustomUser.SUPERVISOR %}col-lg-6{% else %}col-lg-12{% endif %}">
+            <div class="widget-modern fade-in-modern">
+                <div class="widget-header-modern d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div class="widget-icon-modern">
+                            <i class="fas fa-activity"></i>
+                        </div>
+                        <h3 class="widget-title-modern mb-0">Recent Activity</h3>
+                    </div>
+                    <span class="badge" style="background: linear-gradient(135deg, var(--dashboard-danger), var(--dashboard-warning)); color: white; font-weight: 600;">{{ recent_leaves|length }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="btn-group btn-group-sm w-100" role="group" style="border-radius: 12px; overflow: hidden; box-shadow: var(--dashboard-shadow-sm);">
+                            <button type="button" class="btn active fw-semibold" style="background: var(--dashboard-primary); color: white; border: none;" data-filter="all">All</button>
+                            <button type="button" class="btn fw-semibold" style="background: rgba(16, 185, 129, 0.1); color: var(--dashboard-success); border: none;" data-filter="approved">Approved</button>
+                            <button type="button" class="btn fw-semibold" style="background: rgba(245, 158, 11, 0.1); color: var(--dashboard-warning); border: none;" data-filter="pending">Pending</button>
+                            <button type="button" class="btn fw-semibold" style="background: rgba(239, 68, 68, 0.1); color: var(--dashboard-danger); border: none;" data-filter="rejected">Rejected</button>
+                        </div>
+                    </div>
+                    <div class="activity-list">
+                        {% for leave in recent_leaves|slice:":8" %}
+                        <div class="d-flex align-items-start mb-3 p-3 border rounded activity-item" style="background: rgba(59, 130, 246, 0.02); border-color: rgba(59, 130, 246, 0.1); transition: var(--dashboard-transition);" data-status="{{ leave.status }}">
+                            <div class="me-3">
+                                <div class="activity-status-icon {% if leave.status == 'approved' %}status-approved{% elif leave.status == 'rejected' %}status-rejected{% else %}status-pending{% endif %}">
+                                    <i class="fas {% if leave.status == 'approved' %}fa-check{% elif leave.status == 'rejected' %}fa-times{% else %}fa-clock{% endif %}"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 fw-bold" style="color: var(--dashboard-text-primary);">{{ leave.employee.firstname }} {{ leave.employee.lastname }}</h6>
+                                <p class="mb-2 text-muted small">{{ leave.leavetype }} from {{ leave.startdate|date:"M d" }} to {{ leave.enddate|date:"M d, Y" }}</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge fw-semibold" style="background: rgba(59, 130, 246, 0.1); color: var(--dashboard-primary);">{{ leave.leavetype }}</span>
+                                    <span class="badge fw-semibold" style="background: rgba(100, 116, 139, 0.1); color: var(--dashboard-text-secondary);">{{ leave.get_days|default:0 }} days</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted fw-semibold">{{ leave.created|timesince }} ago</small>
+                                {% if request.user.is_superuser or request.user.is_staff %}
+                                <a href="{% url 'dashboard:userleaveview' leave.id %}" class="btn btn-sm ms-2 fw-semibold" style="background: rgba(59, 130, 246, 0.1); color: var(--dashboard-primary); border: 1px solid rgba(59, 130, 246, 0.2); transition: var(--dashboard-transition);">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-info-circle text-muted mb-3" style="font-size: 3rem;"></i>
+                            <h6 class="text-muted fw-bold">No Recent Activity</h6>
+                            <p class="text-muted small">Leave requests will appear here as they are submitted</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if recent_leaves %}
+                    <div class="text-center mt-4">
+                        <a href="{% url 'dashboard:leaveslist' %}" class="btn fw-semibold px-4 py-2" style="background: linear-gradient(135deg, var(--dashboard-primary), var(--dashboard-primary-light)); color: white; border: none; border-radius: 12px; box-shadow: var(--dashboard-shadow-md); transition: var(--dashboard-transition);">
+                            <i class="fas fa-list me-2"></i>
+                            View All Activities
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+$(document).ready(function() {
+    // Ensure page starts from top
+    window.scrollTo(0, 0);
+
+    // Activity filtering functionality
+    $('.btn-group .btn').on('click', function() {
+        const filterType = $(this).data('filter');
+
+        // Update active button
+        $('.btn-group .btn').removeClass('active');
+        $(this).addClass('active');
+
+        // Filter activities
+        const activities = $('.activity-item');
+        activities.each(function() {
+            if (filterType === 'all' || $(this).data('status') === filterType) {
+                $(this).fadeIn();
+            } else {
+                $(this).fadeOut();
+            }
+        });
+
+        // Update activity count
+        const visibleActivities = $('.activity-item:visible').length;
+        $('.badge.bg-primary').text(visibleActivities);
+    });
+
+    // Add loading states to action buttons
+    $('.premium-hover').on('click', function(e) {
+        if ($(this).attr('href') && !$(this).attr('href').startsWith('#')) {
+            const originalHTML = $(this).html();
+            $(this).html('<i class="fas fa-spinner fa-spin me-2"></i>Processing...');
+            $(this).addClass('disabled');
+
+            // Revert after timeout (in case of slow loading)
+            setTimeout(() => {
+                if ($(this).hasClass('disabled')) {
+                    $(this).html(originalHTML);
+                    $(this).removeClass('disabled');
+                }
+            }, 5000);
+        }
+    });
+
+    // Enhanced card hover effects
+    $('.premium-hover').hover(
+        function() {
+            $(this).addClass('pulse-subtle');
+        },
+        function() {
+            $(this).removeClass('pulse-subtle');
+        }
+    );
+});
+</script>
 {% endblock %}

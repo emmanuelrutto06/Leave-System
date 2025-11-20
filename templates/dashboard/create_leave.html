@@ -5,108 +5,1229 @@
 {% load crispy_forms_tags %}
 
 {% block stylesheet %}
-  #override-start {
-    background:none !important;
-    top: 35% !important;
-    right:13px;
-    color:#000;
-    font-size: 24px;
-  }
+<style>
+:root {
+  --leave-primary: #1e40af;
+  --leave-primary-dark: #1e3a8a;
+  --leave-primary-light: #3b82f6;
+  --leave-secondary: #64748b;
+  --leave-accent: #f59e0b;
+  --leave-accent-light: #fbbf24;
+  --leave-success: #059669;
+  --leave-warning: #d97706;
+  --leave-danger: #dc2626;
+  --leave-info: #0891b2;
 
-  .alert-warning {
-    background:#fd7b7b;
-  }
+  --leave-background: #f8fafc;
+  --leave-background-secondary: #f1f5f9;
+  --leave-background-tertiary: #e2e8f0;
+  --leave-card-bg: #ffffff;
+  --leave-border: #cbd5e1;
+  --leave-border-light: #e2e8f0;
 
-  .alert-success {
-    background-color: #82b72a;
-  }
+  --leave-text-primary: #0f172a;
+  --leave-text-secondary: #475569;
+  --leave-text-muted: #64748b;
+  --leave-text-white: #ffffff;
 
-  .alert-success, .alert-warning {
-    font-size:16px;
-  }
+  --leave-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --leave-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --leave-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --leave-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
 
-  .sec {
-    border:1px solid yellow;
-    background:red;
-  }
+  --leave-radius-sm: 6px;
+  --leave-radius-md: 8px;
+  --leave-radius-lg: 12px;
+  --leave-radius-xl: 16px;
+  --leave-radius-2xl: 20px;
 
-  .form-wrapper {
-    -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-    padding: 2%;
-    background:#fff !important;
-    padding-bottom:5%;
-  }
-
-  .btn-lg {
-    padding:8px 30px;
-  }
-    .alert-warning {
-    background: #ffeeba;
-    color: red;
-    border-color: #ffeeba;
-    font-size: 14px; /* Reduce font size */
-    border-radius: 4px; /* Rounded corners for a cleaner look */
-    padding: 8px 12px; /* Smaller padding */
-    margin: 10px 0; /* Margin to ensure it is not flush against the edge */
-    position: absolute; /* Make it float at the top */
-    top: 10px; /* Distance from the top of the page */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Center horizontally with margin */
-    width: auto; /* Adjust width automatically based on content */
-    z-index: 1000; /* Ensure it appears on top of other elements */
+  --leave-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --leave-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --leave-transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --leave-transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
+/* Ultra-Modern Leave Application Page */
+.leave-application-page {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, var(--leave-background) 0%, var(--leave-background-secondary) 25%, var(--leave-background-tertiary) 50%, var(--leave-background-secondary) 75%, var(--leave-background) 100%),
+    radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.03) 0%, transparent 80%),
+    radial-gradient(ellipse at 80% 80%, rgba(245, 158, 11, 0.02) 0%, transparent 80%),
+    radial-gradient(ellipse at 40% 60%, rgba(16, 185, 129, 0.02) 0%, transparent 80%);
+  background-blend-mode: multiply, screen, overlay, difference;
+  position: relative;
+  overflow: hidden;
+}
+
+.leave-application-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    conic-gradient(from 0deg at 50% 50%, rgba(59, 130, 246, 0.01) 0deg, transparent 60deg, rgba(245, 158, 11, 0.01) 120deg, transparent 180deg, rgba(16, 185, 129, 0.01) 240deg, transparent 300deg, rgba(139, 92, 246, 0.01) 360deg),
+    radial-gradient(circle at 30% 70%, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(245, 158, 11, 0.02) 0%, transparent 50%);
+  background-size: 100% 100%, 800px 800px, 600px 600px;
+  animation: backgroundShift 20s ease-in-out infinite, pulse 15s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes backgroundShift {
+  0%, 100% {
+    background-position: 0% 50%, 0% 0%, 0% 0%;
+    filter: hue-rotate(0deg) saturate(1);
+  }
+  25% {
+    background-position: 100% 50%, 100px 100px, 200px 200px;
+    filter: hue-rotate(90deg) saturate(1.1);
+  }
+  50% {
+    background-position: 50% 100%, 200px 200px, 100px 100px;
+    filter: hue-rotate(180deg) saturate(0.9);
+  }
+  75% {
+    background-position: 50% 0%, 100px 200px, 200px 100px;
+    filter: hue-rotate(270deg) saturate(1.1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Leave Balance Overview */
+.leave-balance-overview {
+  background: linear-gradient(135deg, var(--leave-card-bg) 0%, rgba(59, 130, 246, 0.02) 100%);
+  border-radius: var(--leave-radius-xl);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--leave-shadow-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.leave-balance-overview::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(50px, -50px);
+}
+
+.balance-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.balance-stat {
+  text-align: center;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: var(--leave-radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: var(--leave-transition-bounce);
+}
+
+.balance-stat:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--leave-shadow-lg);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, var(--leave-primary), var(--leave-primary-light));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--leave-text-primary);
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--leave-primary), var(--leave-accent));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientFlow 3s ease-in-out infinite;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--leave-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes gradientFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Progress Bar */
+.leave-progress {
+  margin-top: 1.5rem;
+}
+
+.progress-container {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  height: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--leave-success), var(--leave-accent));
+  border-radius: 20px;
+  transition: width 1s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: progressShine 2s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+  0%, 100% { left: -100%; }
+  50% { left: 100%; }
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--leave-text-secondary);
+  font-weight: 500;
+}
+
+/* Main Application Form */
+.leave-application-form {
+  background: linear-gradient(135deg, var(--leave-card-bg) 0%, rgba(245, 158, 11, 0.02) 100%);
+  border-radius: var(--leave-radius-2xl);
+  padding: 3rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(25px);
+  box-shadow: var(--leave-shadow-2xl);
+  position: relative;
+  overflow: hidden;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.leave-application-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    var(--leave-primary),
+    var(--leave-accent),
+    var(--leave-success),
+    var(--leave-primary-light));
+  background-size: 200% 100%;
+  animation: gradientShift 8s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Form Header */
+.form-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.form-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, var(--leave-primary), var(--leave-accent));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2.5rem;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  position: relative;
+}
+
+.form-icon::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+    var(--leave-primary),
+    var(--leave-accent),
+    var(--leave-success),
+    var(--leave-primary-light));
+  background-size: 400% 400%;
+  animation: iconGlow 8s ease-in-out infinite;
+  border-radius: 50%;
+  z-index: -1;
+  filter: blur(8px) opacity(0.3);
+}
+
+@keyframes iconGlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.form-title {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 800;
+  color: var(--leave-text-primary);
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg,
+    var(--leave-primary) 0%,
+    var(--leave-accent) 50%,
+    var(--leave-primary-light) 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: titleShimmer 6s ease-in-out infinite;
+}
+
+@keyframes titleShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 50% 100%; }
+  75% { background-position: 50% 0%; }
+}
+
+.form-subtitle {
+  color: var(--leave-text-secondary);
+  font-size: 1.1rem;
+  font-weight: 500;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Enhanced Form Fields */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-label {
+  display: block;
+  font-weight: 700;
+  color: var(--leave-text-primary);
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-label i {
+  color: var(--leave-accent);
+  font-size: 1rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--leave-border);
+  border-radius: var(--leave-radius-lg);
+  font-size: 1rem;
+  font-weight: 500;
+  transition: var(--leave-transition-bounce);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--leave-accent);
+  background: white;
+  box-shadow:
+    0 0 0 4px rgba(245, 158, 11, 0.1),
+    0 8px 25px rgba(245, 158, 11, 0.15);
+  transform: translateY(-2px);
+}
+
+.form-control:hover {
+  border-color: var(--leave-primary-light);
+}
+
+/* Date Input Enhancement */
+.date-input-container {
+  position: relative;
+}
+
+.date-input-container .form-control {
+  padding-right: 3.5rem;
+}
+
+.date-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--leave-text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: var(--leave-transition);
+  padding: 0.5rem;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+.date-icon:hover {
+  color: var(--leave-accent);
+  background: rgba(245, 158, 11, 0.1);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Enhanced Datepicker */
+.ui-datepicker {
+  background: var(--leave-card-bg);
+  border: 2px solid var(--leave-border);
+  border-radius: var(--leave-radius-xl);
+  box-shadow: var(--leave-shadow-2xl);
+  font-family: 'Inter', sans-serif;
+  padding: 1rem;
+  backdrop-filter: blur(20px);
+}
+
+.ui-datepicker-header {
+  background: linear-gradient(135deg, var(--leave-primary), var(--leave-primary-light));
+  color: white;
+  border: none;
+  border-radius: var(--leave-radius-lg);
+  padding: 1rem;
+  margin: -1rem -1rem 1rem -1rem;
+}
+
+.ui-datepicker-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.ui-datepicker-prev,
+.ui-datepicker-next {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  transition: var(--leave-transition);
+  top: 1rem;
+}
+
+.ui-datepicker-prev:hover,
+.ui-datepicker-next:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.ui-datepicker-calendar {
+  border-collapse: separate;
+  border-spacing: 2px;
+}
+
+.ui-datepicker-calendar th {
+  background: var(--leave-background-secondary);
+  color: var(--leave-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.75rem 0.5rem;
+  border-radius: var(--leave-radius-md);
+}
+
+.ui-datepicker-calendar td {
+  padding: 2px;
+}
+
+.ui-datepicker-calendar td a {
+  display: block;
+  padding: 0.75rem;
+  text-align: center;
+  border-radius: var(--leave-radius-md);
+  color: var(--leave-text-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--leave-transition-bounce);
+  position: relative;
+  overflow: hidden;
+}
+
+.ui-datepicker-calendar td a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+  transition: left 0.4s ease;
+}
+
+.ui-datepicker-calendar td a:hover::before {
+  left: 100%;
+}
+
+.ui-datepicker-calendar td a:hover {
+  background: var(--leave-primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+.ui-datepicker-today a {
+  background: var(--leave-accent-light);
+  color: var(--leave-text-primary);
+  font-weight: 700;
+}
+
+.ui-datepicker-current-day a {
+  background: var(--leave-accent);
+  color: white;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+}
+
+/* Enhanced Submit Button */
+.submit-section {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, var(--leave-accent), var(--leave-warning));
+  background-size: 200% 200%;
+  border: none;
+  color: white;
+  padding: 1.25rem 3rem;
+  border-radius: var(--leave-radius-xl);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--leave-transition-bounce);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.submit-btn:hover::before {
+  left: 100%;
+}
+
+.submit-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 35px rgba(245, 158, 11, 0.4);
+  background-position: right center;
+}
+
+.submit-btn:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.submit-btn:disabled:hover {
+  transform: none;
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.submit-btn:hover .btn-icon {
+  transform: translateX(4px);
+}
+
+/* Enhanced Alerts */
+.alert {
+  border-radius: var(--leave-radius-lg);
+  padding: 1.25rem 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.alert::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: currentColor;
+}
+
+.alert-success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+  color: var(--leave-success);
+  border-left: 4px solid var(--leave-success);
+}
+
+.alert-warning {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+  color: var(--leave-warning);
+  border-left: 4px solid var(--leave-warning);
+}
+
+.alert-danger {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(185, 28, 28, 0.05));
+  color: var(--leave-danger);
+  border-left: 4px solid var(--leave-danger);
+}
+
+.alert-info {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(2, 132, 199, 0.05));
+  color: var(--leave-info);
+  border-left: 4px solid var(--leave-info);
+}
+
+/* Form Validation */
+.invalid-feedback {
+  display: block;
+  color: var(--leave-danger);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  padding-left: 0.5rem;
+  border-left: 3px solid var(--leave-danger);
+}
+
+.form-text {
+  color: var(--leave-text-muted);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Loading States */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--leave-border);
+  border-top: 4px solid var(--leave-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .leave-application-form {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .form-header {
+    margin-bottom: 2rem;
+  }
+
+  .form-title {
+    font-size: 2rem;
+  }
+
+  .balance-stats {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .leave-application-form {
+    padding: 1.5rem 1rem;
+  }
+
+  .form-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+
+  .form-title {
+    font-size: 1.75rem;
+  }
+
+  .balance-stat {
+    padding: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.leave-balance-overview,
+.leave-application-form,
+.balance-stat {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.balance-stat:nth-child(1) { animation-delay: 0.1s; }
+.balance-stat:nth-child(2) { animation-delay: 0.2s; }
+.balance-stat:nth-child(3) { animation-delay: 0.3s; }
+.balance-stat:nth-child(4) { animation-delay: 0.4s; }
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus States */
+.form-control:focus,
+.submit-btn:focus {
+  outline: 2px solid var(--leave-accent);
+  outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .leave-application-page {
+    background: white;
+  }
+
+  .leave-application-form,
+  .leave-balance-overview {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
+</style>
 {% endblock %}
 
 {% block content %}
-  <section class="content">
-    <section class="container-fluid">
+<div class="leave-application-page">
+  <div class="container-fluid">
+    <!-- Leave Balance Overview -->
+    <div class="leave-balance-overview">
+      <div class="balance-stats">
+        <div class="balance-stat">
+          <div class="stat-icon">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="stat-value">{{ annual_leave_days|default:30 }}</div>
+          <div class="stat-label">Total Leave Days</div>
+        </div>
 
-      <section class="form-wrapper">
-        <section class="row">
-          <section class="col col-lg-12 col-md-12 col-sm-12">
-            {% if messages %}
-              {% for message in messages %}
-                <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                  {{ message }}
-                  <button type="button" class="close" id="override-start" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="balance-stat">
+          <div class="stat-icon">
+            <i class="fas fa-calendar-minus"></i>
+          </div>
+          <div class="stat-value">{{ used_leave_days|default:0 }}</div>
+          <div class="stat-label">Days Used</div>
+        </div>
+
+        <div class="balance-stat">
+          <div class="stat-icon">
+            <i class="fas fa-calendar-plus"></i>
+          </div>
+          <div class="stat-value">{{ remaining_leave_days|default:30 }}</div>
+          <div class="stat-label">Days Remaining</div>
+        </div>
+
+        <div class="balance-stat">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-value">{{ pending_staff_leaves.count|default:0 }}</div>
+          <div class="stat-label">Pending Requests</div>
+        </div>
+      </div>
+
+      <!-- Leave Balance Progress -->
+      <div class="leave-progress">
+        <div class="progress-container">
+          <div class="progress-bar" id="leave-progress-bar"></div>
+        </div>
+        <div class="progress-text">
+          <span>Used: {{ used_leave_days|default:0 }} days</span>
+          <span>Remaining: {{ remaining_leave_days|default:30 }} days</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Application Form -->
+    <div class="leave-application-form">
+      <!-- Form Header -->
+      <div class="form-header">
+        <div class="form-icon">
+          <i class="fas fa-calendar-plus"></i>
+        </div>
+        <h1 class="form-title">{{ title }}</h1>
+        <p class="form-subtitle">Submit your leave request with ease. Select your dates and provide any additional information needed.</p>
+      </div>
+
+      <!-- Messages -->
+      {% if messages %}
+        {% for message in messages %}
+          <div {% if message.tags %}class="alert alert-{{ message.tags|cut:'alert-' }}"{% endif %}>
+            <i class="fas fa-{% if message.tags == 'alert-success' %}check-circle{% elif message.tags == 'alert-error' or message.tags == 'alert-danger' %}exclamation-circle{% elif message.tags == 'alert-warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+            <span>{{ message }}</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Application Form -->
+      <form action="{% url 'dashboard:createleave' %}" method="POST" id="leave-form">
+        {% csrf_token %}
+
+        <!-- Non-field errors -->
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            {% for error in form.non_field_errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Form Fields -->
+        <div class="form-grid">
+          {% for field in form.visible_fields %}
+            {% if field.name == "startdate" %}
+              <div class="form-group">
+                <label for="{{ field.id_for_label }}" class="form-label">
+                  <i class="fas fa-calendar-day"></i>
+                  Leave Start Date
+                </label>
+                <div class="date-input-container">
+                  {{ field|as_crispy_field }}
+                  <i class="fas fa-calendar-alt date-icon" onclick="$(this).prev().datepicker('show')"></i>
                 </div>
-              {% endfor %}
+                {% if field.errors %}
+                  <div class="invalid-feedback">{{ field.errors }}</div>
+                {% endif %}
+                {% if field.help_text %}
+                  <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+              </div>
+
+            {% elif field.name == "enddate" %}
+              <div class="form-group">
+                <label for="{{ field.id_for_label }}" class="form-label">
+                  <i class="fas fa-calendar-week"></i>
+                  Leave End Date
+                </label>
+                <div class="date-input-container">
+                  {{ field|as_crispy_field }}
+                  <i class="fas fa-calendar-alt date-icon" onclick="$(this).prev().datepicker('show')"></i>
+                </div>
+                {% if field.errors %}
+                  <div class="invalid-feedback">{{ field.errors }}</div>
+                {% endif %}
+                {% if field.help_text %}
+                  <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+              </div>
+
+            {% else %}
+              <div class="form-group">
+                <label for="{{ field.id_for_label }}" class="form-label">
+                  <i class="fas fa-{% if field.name == 'leavetype' %}list{% elif field.name == 'reason' %}comment{% else %}info-circle{% endif %}"></i>
+                  {{ field.label }}
+                </label>
+                {{ field|as_crispy_field }}
+                {% if field.errors %}
+                  <div class="invalid-feedback">{{ field.errors }}</div>
+                {% endif %}
+                {% if field.help_text %}
+                  <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+              </div>
             {% endif %}
-          </section>
-        </section>
+          {% endfor %}
+        </div>
 
-        <section class="row">
-          <section class="col-lg-12 col-md-12 col-sm-12 text-center space-margin">
-            <h3 class="title-h3">{{ title }}</h3>
-          </section>
-        </section>
+        <!-- Submit Section -->
+        <div class="submit-section">
+          <button type="submit" class="submit-btn" {% if apply_leave_disabled %}disabled{% endif %}>
+            <i class="fas fa-paper-plane btn-icon"></i>
+            <span>Submit Leave Request</span>
+          </button>
 
-        <section class="row">
-          <section class="col-lg-12 col-md-12 col-sm-12">
-            <form action="{% url 'dashboard:createleave' %}" method="POST">
-              {% csrf_token %}
-              {{ form | crispy }}
-              {{ startdate }}
-              {{ enddate }}
-              <button type="submit" class="btn btn-primary btn-lg btn-block" {% if apply_leave_disabled %}disabled{% endif %}>
-                Request Leave
-              </button>
-              {% if apply_leave_disabled %}
-                <p class="alert alert-warning">You have exhausted your leave days. Please contact HR for more information.</p>
-              {% endif %}
-            </form>
-          </section>
-        </section>
-      </section>
-
-    </section> <!-- /container -->
-  </section>
+          {% if apply_leave_disabled %}
+            <div class="alert alert-warning" style="margin-top: 2rem;">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>You have exhausted your leave days. Please contact HR for more information.</span>
+            </div>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
-<script type="text/javascript">
 {% block extrajs %}
-// Optional JavaScript for additional checks or functionality
-{% endblock %}
+<script>
+$(document).ready(function() {
+  // Calculate and set progress bar width
+  function updateProgressBar() {
+    const totalDays = parseInt('{{ annual_leave_days|default:30 }}') || 30;
+    const remainingDays = parseInt('{{ remaining_leave_days|default:30 }}') || 30;
+    const percentage = totalDays > 0 ? (remainingDays / totalDays) * 100 : 100;
+    $('#leave-progress-bar').css('width', Math.min(percentage, 100) + '%');
+  }
+
+  // Initialize progress bar
+  updateProgressBar();
+
+  // Enhanced date input interactions
+  $(".date-icon").on("click", function() {
+    $(this).siblings("input").datepicker("show");
+  });
+
+  // Custom datepicker initialization with enhanced styling
+  $("#id_startdate").datepicker({
+    dateFormat: 'yy-mm-dd',
+    minDate: 0,
+    beforeShow: function(input, inst) {
+      // Add custom class to datepicker
+      setTimeout(function() {
+        inst.dpDiv.addClass('leave-datepicker');
+      }, 0);
+    },
+    onSelect: function(selectedDate) {
+      $("#id_enddate").datepicker("option", "minDate", selectedDate);
+      // Calculate days when start date is selected
+      calculateLeaveDays();
+    }
+  });
+
+  $("#id_enddate").datepicker({
+    dateFormat: 'yy-mm-dd',
+    minDate: 0,
+    beforeShow: function(input, inst) {
+      setTimeout(function() {
+        inst.dpDiv.addClass('leave-datepicker');
+      }, 0);
+    },
+    onSelect: function(selectedDate) {
+      // Calculate days when end date is selected
+      calculateLeaveDays();
+    }
+  });
+
+  // Calculate leave days function
+  function calculateLeaveDays() {
+    const startDate = $("#id_startdate").val();
+    const endDate = $("#id_enddate").val();
+
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const timeDiff = end.getTime() - start.getTime();
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end dates
+
+      // Count weekdays only
+      let weekdays = 0;
+      const currentDate = new Date(start);
+      while (currentDate <= end) {
+        const dayOfWeek = currentDate.getDay();
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Not Sunday (0) or Saturday (6)
+          weekdays++;
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      // Show calculated days (you can add this to the UI if needed)
+      console.log(`Total days: ${daysDiff}, Weekdays: ${weekdays}`);
+    }
+  }
+
+  // Enhanced form validation
+  $('#leave-form').on('submit', function(e) {
+    const startDate = $("#id_startdate").val();
+    const endDate = $("#id_enddate").val();
+
+    if (!startDate || !endDate) {
+      e.preventDefault();
+      showNotification('Please select both start and end dates.', 'warning');
+      return false;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+      e.preventDefault();
+      showNotification('End date must be after start date.', 'danger');
+      return false;
+    }
+
+    // Show loading state
+    const submitBtn = $('.submit-btn');
+    const originalText = submitBtn.html();
+    submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Submitting...').prop('disabled', true);
+
+    // Revert after timeout (in case of slow response)
+    setTimeout(function() {
+      submitBtn.html(originalText).prop('disabled', false);
+    }, 10000);
+  });
+
+  // Notification system
+  function showNotification(message, type = 'info') {
+    const notification = $(`
+      <div class="alert alert-${type} notification-toast" style="position: fixed; top: 20px; right: 20px; z-index: 10000; min-width: 300px;">
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+        <button type="button" class="close" onclick="$(this).parent().fadeOut()">&times;</button>
+      </div>
+    `);
+
+    $('body').append(notification);
+    setTimeout(() => notification.fadeOut(() => notification.remove()), 5000);
+  }
+
+  // Enhanced form field interactions
+  $('.form-control').on('focus', function() {
+    $(this).parent().addClass('focused');
+  }).on('blur', function() {
+    $(this).parent().removeClass('focused');
+  });
+
+  // Auto-resize textarea if present
+  $('textarea').on('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+  });
+
+  // Keyboard shortcuts
+  $(document).on('keydown', function(e) {
+    // Ctrl/Cmd + Enter to submit form
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      $('#leave-form').submit();
+    }
+
+    // Escape to clear date fields
+    if (e.key === 'Escape') {
+      $('.ui-datepicker').hide();
+    }
+  });
+
+  // Enhanced select dropdowns (if any)
+  $('select').on('change', function() {
+    $(this).addClass('changed');
+    setTimeout(() => $(this).removeClass('changed'), 300);
+  });
+
+  // Form field validation feedback
+  $('.form-control').on('input', function() {
+    const field = $(this);
+    const value = field.val().trim();
+
+    // Remove previous validation classes
+    field.removeClass('is-valid is-invalid');
+
+    // Basic validation
+    if (field.attr('required') && value === '') {
+      field.addClass('is-invalid');
+    } else if (value !== '') {
+      field.addClass('is-valid');
+    }
+  });
+
+  // Initialize tooltips for help text
+  $('[title], [data-toggle="tooltip"]').tooltip({
+    placement: 'top',
+    trigger: 'hover focus'
+  });
+
+  // Add loading animation to date inputs
+  $('.date-input-container').on('click', function() {
+    $(this).addClass('loading');
+    setTimeout(() => $(this).removeClass('loading'), 500);
+  });
+
+  // Enhanced alert close functionality
+  $('.alert .close').on('click', function() {
+    $(this).parent().fadeOut(300, function() {
+      $(this).remove();
+    });
+  });
+
+  // Add ripple effect to buttons
+  $('.submit-btn').on('click', function(e) {
+    const btn = $(this);
+    const ripple = $('<div class="ripple"></div>');
+
+    const rect = btn[0].getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+
+    ripple.css({
+      width: size,
+      height: size,
+      left: x,
+      top: y
+    });
+
+    btn.append(ripple);
+
+    setTimeout(() => ripple.remove(), 600);
+  });
+
+  // Add CSS for ripple effect
+  if (!$('#ripple-styles').length) {
+    $('head').append(`
+      <style id="ripple-styles">
+        .ripple {
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.6);
+          transform: scale(0);
+          animation: ripple-animation 0.6s linear;
+          pointer-events: none;
+        }
+        @keyframes ripple-animation {
+          to {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+      </style>
+    `);
+  }
+
+  // Initialize any existing alerts with enhanced styling
+  $('.alert').each(function() {
+    const alert = $(this);
+    if (!alert.find('.close').length) {
+      alert.append('<button type="button" class="close" onclick="$(this).parent().fadeOut()">&times;</button>');
+    }
+  });
+});
 </script>
+{% endblock %}
+

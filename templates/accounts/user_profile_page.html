@@ -1,6 +1,1145 @@
-<img src="{{ emp.image.url}}"/>
+{% extends '_layout.html' %}
 
-{{user.username}}<br>
-{{user.email}}<br>
-{{emp.department}}<br>
-{{emp.role}}
+{% block title %}User Profile - KeFS Leave Management System{% endblock %}
+
+{% block navheader %}
+    {% include 'includes/navheader_employee_app.html' %}
+{% endblock %}
+
+{% block stylesheet %}
+    <style>
+        :root {
+            --profile-primary: #0f172a;
+            --profile-primary-dark: #020617;
+            --profile-primary-light: #1e293b;
+            --profile-primary-gradient: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+            --profile-secondary: #334155;
+            --profile-accent: #f59e0b;
+            --profile-accent-light: #fbbf24;
+            --profile-accent-gradient: linear-gradient(135deg, #f59e0b, #fbbf24, #fcd34d);
+            --profile-success: #059669;
+            --profile-success-light: #10b981;
+            --profile-success-gradient: linear-gradient(135deg, #059669, #10b981, #34d399);
+            --profile-warning: #d97706;
+            --profile-warning-light: #f59e0b;
+            --profile-warning-gradient: linear-gradient(135deg, #d97706, #f59e0b, #fbbf24);
+            --profile-danger: #dc2626;
+            --profile-danger-light: #ef4444;
+            --profile-danger-gradient: linear-gradient(135deg, #dc2626, #ef4444, #f87171);
+            --profile-info: #0891b2;
+            --profile-info-light: #06b6d4;
+            --profile-info-gradient: linear-gradient(135deg, #0891b2, #06b6d4, #22d3ee);
+
+            --profile-background: #ffffff;
+            --profile-background-secondary: #f8fafc;
+            --profile-background-tertiary: #f1f5f9;
+            --profile-background-gradient: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+            --profile-card-bg: rgba(255, 255, 255, 0.95);
+            --profile-card-bg-glass: rgba(255, 255, 255, 0.85);
+            --profile-border: rgba(226, 232, 240, 0.8);
+            --profile-border-light: rgba(241, 245, 249, 0.6);
+            --profile-border-accent: rgba(245, 158, 11, 0.3);
+
+            --profile-text-primary: #0f172a;
+            --profile-text-secondary: #475569;
+            --profile-text-muted: #64748b;
+            --profile-text-accent: #f59e0b;
+            --profile-text-white: #ffffff;
+            --profile-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+            --profile-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --profile-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --profile-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --profile-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --profile-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --profile-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --profile-shadow-3xl: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+            --profile-shadow-glow: 0 0 20px rgba(245, 158, 11, 0.3);
+            --profile-shadow-glow-primary: 0 0 30px rgba(15, 23, 42, 0.2);
+
+            --profile-radius-sm: 8px;
+            --profile-radius-md: 12px;
+            --profile-radius-lg: 16px;
+            --profile-radius-xl: 20px;
+            --profile-radius-2xl: 24px;
+            --profile-radius-3xl: 32px;
+
+            --profile-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --profile-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --profile-transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --profile-transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --profile-transition-spring: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            --profile-z-index-base: 1;
+            --profile-z-index-overlay: 10;
+            --profile-z-index-modal: 50;
+            --profile-z-index-tooltip: 100;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            background: var(--profile-background-gradient);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.06) 0%, transparent 70%),
+                radial-gradient(ellipse at 80% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 70%),
+                radial-gradient(ellipse at 40% 60%, rgba(16, 185, 129, 0.04) 0%, transparent 70%),
+                radial-gradient(ellipse at 60% 30%, rgba(139, 92, 246, 0.03) 0%, transparent 70%),
+                conic-gradient(from 45deg at 50% 50%,
+                    rgba(59, 130, 246, 0.02) 0deg,
+                    rgba(245, 158, 11, 0.02) 120deg,
+                    rgba(16, 185, 129, 0.02) 240deg,
+                    rgba(59, 130, 246, 0.02) 360deg);
+            background-blend-mode: multiply, screen, overlay, difference;
+            pointer-events: none;
+            z-index: var(--profile-z-index-base);
+            animation: backgroundMorph 25s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.03) 0%, transparent 60%),
+                radial-gradient(circle at 75% 75%, rgba(245, 158, 11, 0.03) 0%, transparent 60%),
+                radial-gradient(circle at 50% 10%, rgba(16, 185, 129, 0.02) 0%, transparent 60%),
+                radial-gradient(circle at 10% 90%, rgba(139, 92, 246, 0.02) 0%, transparent 60%);
+            background-size: 500px 500px, 700px 700px, 900px 900px, 600px 600px;
+            animation: particleFlow 30s ease-in-out infinite, shimmer 15s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: var(--profile-z-index-base);
+        }
+
+        @keyframes backgroundMorph {
+            0%, 100% {
+                background-position: 0% 50%, 0% 0%, 0% 0%, 0% 0%, 0% 50%;
+                filter: hue-rotate(0deg) saturate(1) brightness(1);
+            }
+            25% {
+                background-position: 100% 50%, 100px 100px, 200px 200px, 150px 150px, 50% 100%;
+                filter: hue-rotate(90deg) saturate(1.1) brightness(1.05);
+            }
+            50% {
+                background-position: 50% 100%, 200px 200px, 100px 100px, 300px 300px, 100% 50%;
+                filter: hue-rotate(180deg) saturate(0.9) brightness(0.95);
+            }
+            75% {
+                background-position: 50% 0%, 150px 250px, 250px 150px, 200px 200px, 50% 0%;
+                filter: hue-rotate(270deg) saturate(1.1) brightness(1.05);
+            }
+        }
+
+        @keyframes particleFlow {
+            0%, 100% {
+                background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+                transform: scale(1) rotate(0deg);
+            }
+            33% {
+                background-position: 100px 100px, 200px 200px, 150px 150px, 300px 300px;
+                transform: scale(1.05) rotate(120deg);
+            }
+            66% {
+                background-position: 200px 200px, 100px 100px, 300px 300px, 150px 150px;
+                transform: scale(0.95) rotate(240deg);
+            }
+        }
+
+        @keyframes shimmer {
+            0%, 100% {
+                opacity: 0.6;
+                filter: blur(0px);
+            }
+            50% {
+                opacity: 1;
+                filter: blur(1px);
+            }
+        }
+
+        /* Enhanced Particle Effects */
+        .profile-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: var(--profile-z-index-base);
+            overflow: hidden;
+        }
+
+        .profile-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle,
+                rgba(59, 130, 246, 0.6),
+                rgba(245, 158, 11, 0.4),
+                rgba(16, 185, 129, 0.3),
+                rgba(139, 92, 246, 0.2));
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+            animation: particleDrift 15s ease-in-out infinite;
+        }
+
+        .profile-particle.large {
+            width: 8px;
+            height: 8px;
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+            animation-duration: 20s;
+        }
+
+        .profile-particle.medium {
+            width: 6px;
+            height: 6px;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+            animation-duration: 18s;
+        }
+
+        .profile-particle.small {
+            width: 3px;
+            height: 3px;
+            box-shadow: 0 0 6px rgba(139, 92, 246, 0.2);
+            animation-duration: 12s;
+        }
+
+        .profile-particle:nth-child(2n) {
+            width: 6px;
+            height: 6px;
+            animation-delay: 2s;
+            animation-duration: 20s;
+            background: radial-gradient(circle,
+                rgba(245, 158, 11, 0.6),
+                rgba(16, 185, 129, 0.4),
+                rgba(139, 92, 246, 0.3),
+                rgba(59, 130, 246, 0.2));
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .profile-particle:nth-child(3n) {
+            width: 3px;
+            height: 3px;
+            animation-delay: 4s;
+            animation-duration: 18s;
+            background: radial-gradient(circle,
+                rgba(16, 185, 129, 0.6),
+                rgba(139, 92, 246, 0.4),
+                rgba(59, 130, 246, 0.3),
+                rgba(245, 158, 11, 0.2));
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
+        }
+
+        .profile-particle:nth-child(4n) {
+            width: 5px;
+            height: 5px;
+            animation-delay: 6s;
+            animation-duration: 25s;
+            background: radial-gradient(circle,
+                rgba(139, 92, 246, 0.6),
+                rgba(59, 130, 246, 0.4),
+                rgba(245, 158, 11, 0.3),
+                rgba(16, 185, 129, 0.2));
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+        }
+
+        .profile-particle:nth-child(5n) {
+            width: 2px;
+            height: 2px;
+            animation-delay: 8s;
+            animation-duration: 22s;
+            background: radial-gradient(circle,
+                rgba(59, 130, 246, 0.8),
+                rgba(245, 158, 11, 0.6),
+                rgba(16, 185, 129, 0.4),
+                rgba(139, 92, 246, 0.2));
+            box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+        }
+
+        @keyframes particleDrift {
+            0%, 100% {
+                transform: translateY(100vh) translateX(0) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(50vh) translateX(30px) scale(1) rotate(180deg);
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Profile Container */
+        .profile-container {
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: var(--profile-card-bg-glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: var(--profile-radius-3xl);
+            box-shadow:
+                var(--profile-shadow-3xl),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            margin-bottom: 3rem;
+            position: relative;
+            transform: translateY(0);
+            transition: var(--profile-transition-bounce);
+        }
+
+        .profile-header:hover {
+            transform: translateY(-8px);
+            box-shadow:
+                0 40px 80px -20px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(245, 158, 11, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--profile-accent-gradient);
+            background-size: 300% 100%;
+            animation: headerGlow 8s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .profile-header-content {
+            padding: 3rem;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .profile-avatar-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 6px solid var(--profile-primary);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+            transition: var(--profile-transition);
+            background: var(--profile-card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 30px 60px rgba(59, 130, 246, 0.4);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar-placeholder {
+            font-size: 4rem;
+            color: var(--profile-accent);
+            font-weight: 700;
+        }
+
+        .profile-status {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--profile-success);
+            border: 4px solid var(--profile-card-bg);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+        }
+
+        .profile-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--profile-text-primary);
+            margin-bottom: 0.5rem;
+            background: var(--profile-primary-gradient);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.05em;
+            line-height: 1.1;
+            text-shadow: var(--profile-text-shadow);
+            animation: titleShimmer 12s ease-in-out infinite;
+            position: relative;
+            z-index: var(--profile-z-index-base);
+        }
+
+        .profile-name::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: var(--profile-accent-gradient);
+            filter: blur(30px) opacity(0.3);
+            z-index: -1;
+            animation: titleGlow 8s ease-in-out infinite alternate;
+            border-radius: var(--profile-radius-2xl);
+        }
+
+        @keyframes titleShimmer {
+            0%, 100% { background-position: 0% 50%; }
+            25% { background-position: 100% 50%; }
+            50% { background-position: 50% 100%; }
+            75% { background-position: 50% 0%; }
+        }
+
+        @keyframes titleGlow {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        @keyframes headerGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .profile-role {
+            color: var(--profile-text-secondary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .profile-details {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .profile-detail-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--profile-radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            min-width: 140px;
+            transition: var(--profile-transition-spring);
+        }
+
+        .profile-detail-item:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: var(--profile-shadow-lg);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-detail-icon {
+            font-size: 1.5rem;
+            color: var(--profile-accent);
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .profile-detail-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--profile-text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-detail-label {
+            font-size: 0.875rem;
+            color: var(--profile-text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Profile Content Grid */
+        .profile-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Profile Information Card */
+        .profile-info-card {
+            background: var(--profile-card-bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--profile-radius-2xl);
+            padding: 2.5rem;
+            box-shadow:
+                var(--profile-shadow-xl),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: var(--profile-transition-bounce);
+        }
+
+        .profile-info-card:hover {
+            transform: translateY(-4px);
+            box-shadow:
+                var(--profile-shadow-2xl),
+                0 0 0 1px rgba(59, 130, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-info-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--profile-text-primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .profile-info-card h3 i {
+            color: var(--profile-accent);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--profile-text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            font-weight: 700;
+            color: var(--profile-text-primary);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-value i {
+            color: var(--profile-accent);
+            font-size: 0.9rem;
+        }
+
+        /* Profile Actions Card */
+        .profile-actions-card {
+            background: var(--profile-card-bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--profile-radius-2xl);
+            padding: 2.5rem;
+            box-shadow:
+                var(--profile-shadow-xl),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: var(--profile-transition-bounce);
+        }
+
+        .profile-actions-card:hover {
+            transform: translateY(-4px);
+            box-shadow:
+                var(--profile-shadow-2xl),
+                0 0 0 1px rgba(245, 158, 11, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-actions-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--profile-text-primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .profile-actions-card h3 i {
+            color: var(--profile-accent);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1.25rem 2rem;
+            background: var(--profile-card-bg-glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid var(--profile-border);
+            border-radius: var(--profile-radius-xl);
+            text-decoration: none;
+            color: var(--profile-text-primary);
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.025em;
+            text-transform: uppercase;
+            transition: var(--profile-transition-spring);
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                var(--profile-shadow-md),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+            transform-style: preserve-3d;
+            z-index: var(--profile-z-index-base);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--profile-accent-gradient);
+            transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .action-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(245, 158, 11, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.8s, height 0.8s;
+            z-index: -1;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn:hover::after {
+            width: 250px;
+            height: 250px;
+        }
+
+        .action-btn:hover {
+            background: var(--profile-accent-gradient);
+            color: var(--profile-text-white);
+            transform: translateY(-8px) scale(1.05) rotateX(5deg);
+            box-shadow:
+                var(--profile-shadow-2xl),
+                var(--profile-shadow-glow),
+                0 0 0 1px rgba(245, 158, 11, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: var(--profile-accent);
+        }
+
+        .action-btn:active {
+            transform: translateY(-4px) scale(1.02) rotateX(2deg);
+            transition: var(--profile-transition-fast);
+        }
+
+        .action-btn i {
+            font-size: 1.25rem;
+            transition: var(--profile-transition);
+            z-index: 1;
+            position: relative;
+        }
+
+        .action-btn:hover i {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .action-btn span {
+            z-index: 1;
+            position: relative;
+        }
+
+        /* Statistics Cards */
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--profile-card-bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--profile-radius-2xl);
+            padding: 2rem;
+            box-shadow:
+                var(--profile-shadow-xl),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: var(--profile-transition-spring);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transform-style: preserve-3d;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-16px) scale(1.03) rotateX(2deg);
+            box-shadow:
+                var(--profile-shadow-3xl),
+                var(--profile-shadow-glow),
+                0 0 0 1px rgba(245, 158, 11, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: var(--profile-accent-gradient);
+            background-size: 400% 100%;
+            animation: gradientFlow 10s ease-in-out infinite;
+            z-index: 2;
+            border-radius: var(--profile-radius-2xl) var(--profile-radius-2xl) 0 0;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: var(--profile-primary-gradient);
+            background-size: 500% 500%;
+            border-radius: calc(var(--profile-radius-2xl) + 4px);
+            z-index: -1;
+            animation: morphingAura 15s ease-in-out infinite;
+            filter: blur(4px) opacity(0.4);
+            transition: var(--profile-transition);
+        }
+
+        .stat-card:hover::after {
+            filter: blur(6px) opacity(0.6);
+            animation-duration: 8s;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes morphingAura {
+            0%, 100% {
+                background-position: 0% 50%;
+                filter: blur(2px) opacity(0.3);
+            }
+            25% {
+                background-position: 100% 50%;
+                filter: blur(3px) opacity(0.5);
+            }
+            50% {
+                background-position: 50% 100%;
+                filter: blur(2px) opacity(0.3);
+            }
+            75% {
+                background-position: 50% 0%;
+                filter: blur(3px) opacity(0.5);
+            }
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--profile-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--profile-text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .stat-description {
+            font-size: 0.875rem;
+            color: var(--profile-text-muted);
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .profile-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 1rem;
+            }
+
+            .profile-header-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .profile-name {
+                font-size: 2rem;
+            }
+
+            .profile-details {
+                gap: 1rem;
+            }
+
+            .profile-detail-item {
+                min-width: 120px;
+                padding: 1rem;
+            }
+
+            .profile-content {
+                gap: 2rem;
+            }
+
+            .profile-info-card,
+            .profile-actions-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .profile-stats {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-header-content {
+                padding: 1.5rem 1rem;
+            }
+
+            .profile-name {
+                font-size: 1.75rem;
+            }
+
+            .profile-avatar {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-avatar-placeholder {
+                font-size: 3rem;
+            }
+
+            .profile-detail-item {
+                min-width: 100px;
+                padding: 0.875rem;
+            }
+
+            .profile-detail-value {
+                font-size: 1rem;
+            }
+
+            .profile-info-card,
+            .profile-actions-card {
+                padding: 1.5rem 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-header,
+        .profile-info-card,
+        .profile-actions-card,
+        .stat-card {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Focus Styles for Accessibility */
+        .action-btn:focus,
+        .stat-card:focus {
+            outline: 2px solid var(--profile-primary);
+            outline-offset: 2px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<!-- Premium Particle Effects -->
+<div class="profile-particles">
+    <div class="profile-particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="profile-particle" style="left: 20%; animation-delay: 1s;"></div>
+    <div class="profile-particle" style="left: 30%; animation-delay: 2s;"></div>
+    <div class="profile-particle" style="left: 40%; animation-delay: 3s;"></div>
+    <div class="profile-particle" style="left: 50%; animation-delay: 4s;"></div>
+    <div class="profile-particle" style="left: 60%; animation-delay: 5s;"></div>
+    <div class="profile-particle" style="left: 70%; animation-delay: 6s;"></div>
+    <div class="profile-particle" style="left: 80%; animation-delay: 7s;"></div>
+    <div class="profile-particle" style="left: 90%; animation-delay: 8s;"></div>
+</div>
+
+<div class="profile-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-header-content">
+            <div class="profile-avatar-container">
+                <div class="profile-avatar">
+                    {% if emp.image %}
+                        <img src="{{ emp.image.url }}" alt="Profile Picture" />
+                    {% else %}
+                        <div class="profile-avatar-placeholder">
+                            {{ user.get_full_name|slice:":1"|default:user.username|slice:":1"|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="profile-status">
+                    <i class="fas fa-circle"></i>
+                </div>
+            </div>
+
+            <h1 class="profile-name">{{ user.get_full_name|default:user.username }}</h1>
+            <p class="profile-role">
+                {% if user.is_superuser %}Administrator{% elif user.is_staff %}Staff Member{% else %}Employee{% endif %}
+            </p>
+
+            <div class="profile-details">
+                <div class="profile-detail-item">
+                    <i class="fas fa-envelope profile-detail-icon"></i>
+                    <span class="profile-detail-value">{{ user.email }}</span>
+                    <span class="profile-detail-label">Email</span>
+                </div>
+                <div class="profile-detail-item">
+                    <i class="fas fa-building profile-detail-icon"></i>
+                    <span class="profile-detail-value">{{ emp.department.name|default:"N/A" }}</span>
+                    <span class="profile-detail-label">Department</span>
+                </div>
+                <div class="profile-detail-item">
+                    <i class="fas fa-user-tag profile-detail-icon"></i>
+                    <span class="profile-detail-value">{{ emp.role|default:"N/A" }}</span>
+                    <span class="profile-detail-label">Role</span>
+                </div>
+                <div class="profile-detail-item">
+                    <i class="fas fa-calendar-alt profile-detail-icon"></i>
+                    <span class="profile-detail-value">{{ emp.date_joined|date:"M d, Y"|default:"N/A" }}</span>
+                    <span class="profile-detail-label">Joined</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Statistics -->
+    <div class="profile-stats">
+        <div class="stat-card">
+            <i class="fas fa-calendar-check stat-icon" style="color: #059669;"></i>
+            <div class="stat-title">Total Leaves</div>
+            <div class="stat-value">{{ emp.leave_requests.count|default:0 }}</div>
+            <p class="stat-description">Leave requests submitted</p>
+        </div>
+
+        <div class="stat-card">
+            <i class="fas fa-clock stat-icon" style="color: #d97706;"></i>
+            <div class="stat-title">Pending</div>
+            <div class="stat-value">{{ emp.leave_requests.filter(status='pending').count|default:0 }}</div>
+            <p class="stat-description">Awaiting approval</p>
+        </div>
+
+        <div class="stat-card">
+            <i class="fas fa-check-circle stat-icon" style="color: #059669;"></i>
+            <div class="stat-title">Approved</div>
+            <div class="stat-value">{{ emp.leave_requests.filter(status='approved').count|default:0 }}</div>
+            <p class="stat-description">Successfully approved</p>
+        </div>
+
+        <div class="stat-card">
+            <i class="fas fa-balance-scale stat-icon" style="color: #0891b2;"></i>
+            <div class="stat-title">Leave Balance</div>
+            <div class="stat-value">{{ emp.remaining_leave_days|default:0 }}</div>
+            <p class="stat-description">Days remaining</p>
+        </div>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="profile-content">
+        <!-- Profile Information -->
+        <div class="profile-info-card">
+            <h3>
+                <i class="fas fa-user"></i>
+                Personal Information
+            </h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Full Name</span>
+                    <span class="info-value">
+                        <i class="fas fa-user"></i>
+                        {{ emp.firstname|default:"N/A" }} {{ emp.lastname|default:"N/A" }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Username</span>
+                    <span class="info-value">
+                        <i class="fas fa-at"></i>
+                        {{ user.username }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Email Address</span>
+                    <span class="info-value">
+                        <i class="fas fa-envelope"></i>
+                        {{ user.email }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Phone</span>
+                    <span class="info-value">
+                        <i class="fas fa-phone"></i>
+                        {{ emp.mobile|default:"N/A" }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Department</span>
+                    <span class="info-value">
+                        <i class="fas fa-building"></i>
+                        {{ emp.department.name|default:"N/A" }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Role</span>
+                    <span class="info-value">
+                        <i class="fas fa-user-tag"></i>
+                        {{ emp.role|default:"N/A" }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Actions -->
+        <div class="profile-actions-card">
+            <h3>
+                <i class="

@@ -3,6 +3,9 @@ from employee.models import Role,Department,Employee
 # from django.contrib.auth.models import User
 # from .models import User
 from .models import CustomUser
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, HTML
+from crispy_forms.bootstrap import TabHolder, Tab
 
 from django import forms
 
@@ -12,14 +15,15 @@ from django import forms
 #     class Meta:
 #         model = CustomUser
 #         fields = ('first_name', 'last_name', 'email', 'password', 'username',)
-        
-     
+
+
+
 #     def clean(self):
 #         cleaned_data = super(EmployeeCreateForm, self).clean()
 #         password = cleaned_data.get('password')
 #         confirm_password = cleaned_data.get('confirm_password')
-        
-#         if password != confirm_password:   
+
+#         if password != confirm_password:
 #             raise forms.ValidationError(
 #                 "Passwords do not match"
 #             )
@@ -30,13 +34,50 @@ class EmployeeCreateForm(forms.ModelForm):
     image = forms.ImageField(widget=forms.FileInput(attrs={'onchange': 'previewImage(this);'}))
     # department = forms.ModelChoiceField(queryset=Department.objects.all(), required=True, widget=forms.Select(attrs={'class': 'form-control'}))
     # roles = forms.ModelMultipleChoiceField(queryset=Role.objects.all(), widget=forms.CheckboxSelectMultiple())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            TabHolder(
+                Tab('Personal Information',
+                    'firstname', 'lastname', 'othername', 'sex', 'email', 'tel', 'birthday', 'bio'
+                ),
+                Tab('Employment Details',
+                    'role', 'employeeid', 'startdate', 'employeetype', 'dateissued'
+                ),
+                Tab('Address & Location',
+                    'hometown', 'region', 'residence', 'address'
+                ),
+                Tab('Education & Experience',
+                    'education', 'lastwork', 'position'
+                ),
+                Tab('Identification',
+                    'ssnitnumber', 'tinnumber', 'religion', 'nationality'
+                ),
+                Tab('Profile Image',
+                    HTML("""
+                    <div class="profile-image-section">
+                        <h4>Current Profile Picture</h4>
+                        {% if form.instance.image %}
+                            <img src="{{ form.instance.image.url }}" alt="Current Profile Image" class="profile-image-preview">
+                        {% else %}
+                            <img src="{% static 'img/default-avatar.png' %}" alt="Default Profile Image" class="profile-image-preview">
+                        {% endif %}
+                        <p class="image-upload-hint">Select a new image below to preview and upload</p>
+                    </div>
+                    """),
+                    'image'
+                )
+            )
+        )
+
     class Meta:
         model = Employee
-        exclude = ['is_blocked', 'is_deleted', 'created', 'updated',]
+        exclude = ['is_blocked', 'is_deleted', 'created', 'updated', 'Department']
         widgets = {
             'bio': forms.Textarea(attrs={'cols': 5, 'rows': 5})
         }
-
 from django import forms
 from .models import Family
 class FamilyCreateForm(forms.ModelForm):

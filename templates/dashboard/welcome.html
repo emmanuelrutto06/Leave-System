@@ -1,0 +1,1567 @@
+{% extends '_layout.html' %}
+
+{% block title %}Welcome - KeFS Leave Management System{% endblock %}
+
+{% block stylesheet %}
+<style>
+    :root {
+        --welcome-primary: #0f172a;
+        --welcome-primary-dark: #020617;
+        --welcome-primary-light: #1e293b;
+        --welcome-secondary: #334155;
+        --welcome-accent: #f59e0b;
+        --welcome-accent-light: #fbbf24;
+        --welcome-success: #059669;
+        --welcome-warning: #d97706;
+        --welcome-danger: #dc2626;
+        --welcome-info: #0891b2;
+
+        --welcome-background: #ffffff;
+        --welcome-background-secondary: #f8fafc;
+        --welcome-background-tertiary: #f1f5f9;
+        --welcome-card-bg: #ffffff;
+        --welcome-border: #e2e8f0;
+        --welcome-border-light: #f1f5f9;
+
+        --welcome-text-primary: #0f172a;
+        --welcome-text-secondary: #475569;
+        --welcome-text-muted: #64748b;
+        --welcome-text-white: #ffffff;
+
+        --welcome-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --welcome-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        --welcome-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --welcome-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        --welcome-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        --welcome-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        --welcome-shadow-3xl: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+
+        --welcome-radius-sm: 6px;
+        --welcome-radius-md: 8px;
+        --welcome-radius-lg: 12px;
+        --welcome-radius-xl: 16px;
+        --welcome-radius-2xl: 20px;
+
+        --welcome-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        --welcome-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --welcome-transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        --welcome-transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+    
+        /* Premium Navigation */
+        .welcome-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: var(--welcome-transition);
+        }
+    
+        .welcome-navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    
+        .welcome-navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--welcome-primary);
+            text-decoration: none;
+            transition: var(--welcome-transition);
+        }
+    
+        .welcome-navbar-brand:hover {
+            transform: scale(1.05);
+        }
+    
+        .welcome-navbar-brand i {
+            font-size: 2rem;
+            color: var(--welcome-accent);
+        }
+    
+        .welcome-navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .welcome-navbar-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--welcome-radius-md);
+            transition: var(--welcome-transition);
+        }
+
+        .welcome-navbar-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .welcome-navbar-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--welcome-text-white);
+            margin: 3px 0;
+            transition: var(--welcome-transition);
+            border-radius: 2px;
+        }
+
+        .welcome-navbar-menu.active {
+            display: flex;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--welcome-card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 0 0 var(--welcome-radius-xl) var(--welcome-radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            flex-direction: column;
+            gap: 0;
+            padding: 1rem 0;
+            box-shadow: var(--welcome-shadow-xl);
+        }
+
+        .welcome-navbar-menu.active .welcome-nav-link,
+        .welcome-navbar-menu.active .welcome-nav-dropdown,
+        .welcome-navbar-menu.active .welcome-user-greeting {
+            width: 100%;
+            text-align: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .welcome-navbar-menu.active .welcome-nav-link:last-child,
+        .welcome-navbar-menu.active .welcome-nav-dropdown:last-child,
+        .welcome-navbar-menu.active .welcome-user-greeting:last-child {
+            border-bottom: none;
+        }
+
+        .welcome-nav-dropdown {
+            position: relative;
+        }
+
+        .welcome-nav-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--welcome-radius-lg);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--welcome-transition);
+            position: relative;
+            overflow: hidden;
+            color: var(--welcome-text-secondary);
+            cursor: pointer;
+        }
+
+        .welcome-nav-dropdown-toggle:hover {
+            color: var(--welcome-primary);
+            transform: translateY(-2px);
+        }
+
+        .welcome-nav-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--welcome-card-bg);
+            border-radius: var(--welcome-radius-lg);
+            box-shadow: var(--welcome-shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--welcome-transition);
+            z-index: 1001;
+        }
+
+        .welcome-nav-dropdown:hover .welcome-nav-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .welcome-nav-dropdown-item {
+            display: block;
+            padding: 0.75rem 1.25rem;
+            color: var(--welcome-text-secondary);
+            text-decoration: none;
+            transition: var(--welcome-transition);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .welcome-nav-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .welcome-nav-dropdown-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--welcome-primary);
+            transform: translateX(4px);
+        }
+
+        .welcome-nav-dropdown-item i {
+            margin-right: 0.5rem;
+            width: 16px;
+        }
+    
+        .welcome-user-greeting {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--welcome-text-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+    
+        .welcome-user-greeting i {
+            color: var(--welcome-primary);
+            font-size: 1.25rem;
+        }
+    
+        .welcome-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--welcome-radius-lg);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--welcome-transition-bounce);
+            position: relative;
+            overflow: hidden;
+        }
+    
+        .welcome-nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(59, 130, 246, 0.1),
+                transparent);
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    
+        .welcome-nav-link:hover::before {
+            left: 100%;
+        }
+    
+        .welcome-nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--welcome-shadow-lg);
+        }
+    
+        .welcome-nav-primary {
+            background: linear-gradient(135deg, var(--welcome-primary), var(--welcome-primary-light));
+            color: var(--welcome-text-white);
+            box-shadow: var(--welcome-shadow-md);
+        }
+    
+        .welcome-nav-primary:hover {
+            background: linear-gradient(135deg, var(--welcome-primary-dark), var(--welcome-primary));
+            box-shadow: var(--welcome-shadow-xl);
+            color: var(--welcome-text-white);
+        }
+
+    .welcome-hero {
+        background:
+            linear-gradient(135deg, var(--welcome-background) 0%, var(--welcome-background-secondary) 25%, var(--welcome-background-tertiary) 50%, var(--welcome-background-secondary) 75%, var(--welcome-background) 100%),
+            radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 80%),
+            radial-gradient(ellipse at 80% 80%, rgba(245, 158, 11, 0.08) 0%, transparent 80%),
+            radial-gradient(ellipse at 40% 60%, rgba(16, 185, 129, 0.06) 0%, transparent 80%),
+            radial-gradient(ellipse at 60% 30%, rgba(139, 92, 246, 0.04) 0%, transparent 80%);
+        background-blend-mode: multiply, screen, overlay, difference;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .welcome-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+            conic-gradient(from 0deg at 50% 50%, rgba(59, 130, 246, 0.02) 0deg, transparent 60deg, rgba(245, 158, 11, 0.02) 120deg, transparent 180deg, rgba(16, 185, 129, 0.02) 240deg, transparent 300deg, rgba(139, 92, 246, 0.02) 360deg),
+            radial-gradient(circle at 30% 70%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 70% 30%, rgba(245, 158, 11, 0.03) 0%, transparent 50%);
+        background-size: 100% 100%, 800px 800px, 600px 600px;
+        animation: backgroundShift 20s ease-in-out infinite, pulse 15s ease-in-out infinite alternate;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .welcome-hero::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image:
+            radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.01) 0%, transparent 60%),
+            radial-gradient(circle at 75% 75%, rgba(245, 158, 11, 0.01) 0%, transparent 60%),
+            radial-gradient(circle at 50% 10%, rgba(16, 185, 129, 0.01) 0%, transparent 60%);
+        background-size: 400px 400px, 600px 600px, 800px 800px;
+        animation: float 25s ease-in-out infinite reverse, rotate 30s linear infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    @keyframes backgroundShift {
+        0%, 100% {
+            background-position: 0% 50%, 0% 0%, 0% 0%;
+            filter: hue-rotate(0deg) saturate(1);
+        }
+        25% {
+            background-position: 100% 50%, 100px 100px, 200px 200px;
+            filter: hue-rotate(90deg) saturate(1.1);
+        }
+        50% {
+            background-position: 50% 100%, 200px 200px, 100px 100px;
+            filter: hue-rotate(180deg) saturate(0.9);
+        }
+        75% {
+            background-position: 50% 0%, 100px 200px, 200px 100px;
+            filter: hue-rotate(270deg) saturate(1.1);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 0.6;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px) rotate(0deg) scale(1);
+            filter: blur(0px);
+        }
+        33% {
+            transform: translateY(-30px) rotate(120deg) scale(1.1);
+            filter: blur(1px);
+        }
+        66% {
+            transform: translateY(15px) rotate(240deg) scale(0.9);
+            filter: blur(0.5px);
+        }
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .welcome-particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    .welcome-particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.6), rgba(245, 158, 11, 0.4), rgba(16, 185, 129, 0.3));
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        animation: welcomeParticleFloat 20s ease-in-out infinite;
+    }
+
+    .welcome-particle:nth-child(2n) {
+        width: 6px;
+        height: 6px;
+        animation-delay: 2s;
+        animation-duration: 25s;
+        background: radial-gradient(circle, rgba(245, 158, 11, 0.6), rgba(16, 185, 129, 0.4), rgba(139, 92, 246, 0.3));
+        box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+    }
+
+    .welcome-particle:nth-child(3n) {
+        width: 3px;
+        height: 3px;
+        animation-delay: 4s;
+        animation-duration: 18s;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.6), rgba(139, 92, 246, 0.4), rgba(59, 130, 246, 0.3));
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .welcome-particle:nth-child(4n) {
+        width: 5px;
+        height: 5px;
+        animation-delay: 6s;
+        animation-duration: 22s;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.6), rgba(59, 130, 246, 0.4), rgba(245, 158, 11, 0.3));
+        box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+    }
+
+    .welcome-particle:nth-child(5n) {
+        width: 2px;
+        height: 2px;
+        animation-delay: 8s;
+        animation-duration: 28s;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.8), rgba(245, 158, 11, 0.6), rgba(16, 185, 129, 0.4));
+        box-shadow: 0 0 6px rgba(59, 130, 246, 0.5);
+    }
+
+    /* Elite floating geometric shapes */
+    .welcome-geometric {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    .geometric-shape {
+        position: absolute;
+        opacity: 0.03;
+        animation: geometricFloat 30s ease-in-out infinite;
+    }
+
+    .geometric-shape.circle {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--welcome-primary), var(--welcome-accent));
+        left: 10%;
+        top: 20%;
+    }
+
+    .geometric-shape.triangle {
+        width: 0;
+        height: 0;
+        border-left: 100px solid transparent;
+        border-right: 100px solid transparent;
+        border-bottom: 173px solid var(--welcome-success);
+        left: 70%;
+        top: 60%;
+    }
+
+    .geometric-shape.square {
+        width: 150px;
+        height: 150px;
+        background: linear-gradient(135deg, var(--welcome-info), var(--welcome-warning));
+        left: 80%;
+        top: 10%;
+        transform: rotate(45deg);
+    }
+
+    .geometric-shape.hexagon {
+        width: 120px;
+        height: 104px;
+        background: var(--welcome-danger);
+        left: 5%;
+        top: 70%;
+        clip-path: polygon(50% 0%, 93.3% 25%, 93.3% 75%, 50% 100%, 6.7% 75%, 6.7% 25%);
+    }
+
+    @keyframes welcomeParticleFloat {
+        0%, 100% {
+            transform: translateY(100vh) translateX(0) scale(0) rotate(0deg);
+            opacity: 0;
+            filter: blur(2px);
+        }
+        5% {
+            opacity: 0.2;
+            filter: blur(1px);
+        }
+        10% {
+            opacity: 0.8;
+            filter: blur(0px);
+        }
+        25% {
+            transform: translateY(75vh) translateX(40px) scale(0.8) rotate(90deg);
+            opacity: 1;
+        }
+        50% {
+            transform: translateY(50vh) translateX(80px) scale(1.2) rotate(180deg);
+            opacity: 0.9;
+        }
+        75% {
+            transform: translateY(25vh) translateX(60px) scale(0.9) rotate(270deg);
+            opacity: 0.8;
+        }
+        90% {
+            opacity: 0.6;
+            filter: blur(0px);
+        }
+        95% {
+            opacity: 0.2;
+            filter: blur(1px);
+        }
+    }
+
+    @keyframes geometricFloat {
+        0%, 100% {
+            transform: translateY(0px) rotate(0deg) scale(1);
+            opacity: 0.02;
+        }
+        25% {
+            transform: translateY(-50px) rotate(90deg) scale(1.1);
+            opacity: 0.04;
+        }
+        50% {
+            transform: translateY(-100px) rotate(180deg) scale(0.9);
+            opacity: 0.03;
+        }
+        75% {
+            transform: translateY(-50px) rotate(270deg) scale(1.05);
+            opacity: 0.04;
+        }
+    }
+
+    .welcome-content {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .welcome-logo {
+        width: 140px;
+        height: 140px;
+        margin: 0 auto 2rem;
+        border-radius: 50%;
+        border: 5px solid transparent;
+        background:
+            linear-gradient(var(--welcome-card-bg), var(--welcome-card-bg)) padding-box,
+            linear-gradient(135deg, var(--welcome-primary), var(--welcome-accent), var(--welcome-success)) border-box;
+        box-shadow:
+            var(--welcome-shadow-3xl),
+            0 0 0 1px rgba(59, 130, 246, 0.1),
+            inset 0 2px 0 rgba(255, 255, 255, 0.1);
+        transition: var(--welcome-transition-bounce);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        color: var(--welcome-primary);
+        backdrop-filter: blur(20px);
+    }
+
+    .welcome-logo::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        border-radius: 50%;
+        background: linear-gradient(45deg,
+            var(--welcome-primary),
+            var(--welcome-accent),
+            var(--welcome-success),
+            var(--welcome-info));
+        background-size: 400% 400%;
+        animation: logoGlow 8s ease-in-out infinite;
+        z-index: -1;
+        filter: blur(8px) opacity(0.3);
+    }
+
+    .welcome-logo::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.4), transparent 50%);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        animation: logoPulse 4s ease-in-out infinite;
+    }
+
+    .welcome-logo:hover {
+        transform: scale(1.15) rotate(10deg);
+        box-shadow:
+            0 40px 80px -20px rgba(59, 130, 246, 0.4),
+            0 0 0 1px rgba(59, 130, 246, 0.2),
+            inset 0 2px 0 rgba(255, 255, 255, 0.15);
+        animation-play-state: paused;
+    }
+
+    .welcome-logo:hover::before {
+        animation-play-state: paused;
+        filter: blur(12px) opacity(0.5);
+    }
+
+    @keyframes logoGlow {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+
+    @keyframes logoPulse {
+        0%, 100% {
+            width: 0;
+            height: 0;
+            opacity: 0.8;
+        }
+        50% {
+            width: 200px;
+            height: 200px;
+            opacity: 0;
+        }
+    }
+
+    .welcome-title {
+        font-size: clamp(3rem, 6vw, 5rem);
+        font-weight: 900;
+        color: var(--welcome-text-primary);
+        margin-bottom: 1rem;
+        line-height: 1.1;
+        background: linear-gradient(135deg,
+            var(--welcome-primary) 0%,
+            var(--welcome-accent) 25%,
+            var(--welcome-primary-light) 50%,
+            var(--welcome-success) 75%,
+            var(--welcome-primary) 100%);
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.05em;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        animation: titleShimmer 10s ease-in-out infinite;
+        position: relative;
+    }
+
+    .welcome-title::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg,
+            rgba(59, 130, 246, 0.1),
+            rgba(245, 158, 11, 0.1),
+            rgba(16, 185, 129, 0.1));
+        filter: blur(25px);
+        z-index: -1;
+        animation: titleGlow 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleShimmer {
+        0%, 100% { background-position: 0% 50%; }
+        25% { background-position: 100% 50%; }
+        50% { background-position: 50% 100%; }
+        75% { background-position: 50% 0%; }
+    }
+
+    @keyframes titleGlow {
+        0% { opacity: 0.4; transform: scale(1); }
+        100% { opacity: 0.8; transform: scale(1.05); }
+    }
+
+    .welcome-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+        color: var(--welcome-text-secondary);
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        font-weight: 500;
+        line-height: 1.6;
+    }
+
+    .welcome-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .welcome-stat-card {
+        background: var(--welcome-card-bg);
+        border-radius: var(--welcome-radius-xl);
+        padding: 2rem;
+        box-shadow: var(--welcome-shadow-xl);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        transition: var(--welcome-transition-bounce);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-stat-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--welcome-shadow-2xl);
+    }
+
+    .welcome-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg,
+            var(--welcome-primary),
+            var(--welcome-accent),
+            var(--welcome-success),
+            var(--welcome-primary-light));
+        background-size: 300% 100%;
+        animation: statGlow 8s ease-in-out infinite;
+    }
+
+    @keyframes statGlow {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+
+    .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.8;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--welcome-text-primary);
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: var(--welcome-text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .welcome-actions {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 3rem;
+    }
+
+    .welcome-btn {
+        background: linear-gradient(135deg, var(--welcome-primary), var(--welcome-primary-light));
+        background-size: 200% 200%;
+        border: none;
+        color: var(--welcome-text-white);
+        padding: 1.25rem 2.5rem;
+        border-radius: var(--welcome-radius-xl);
+        font-weight: 700;
+        font-size: 1.125rem;
+        letter-spacing: 0.025em;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: var(--welcome-transition-bounce);
+        box-shadow: var(--welcome-shadow-xl);
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .welcome-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            rgba(255, 255, 255, 0.1),
+            transparent);
+        transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .welcome-btn:hover::before {
+        left: 100%;
+    }
+
+    .welcome-btn:hover {
+        transform: translateY(-6px) scale(1.05);
+        box-shadow: var(--welcome-shadow-2xl);
+        background-position: right center;
+    }
+
+    .welcome-btn-secondary {
+        background: transparent;
+        border: 2px solid var(--welcome-border);
+        color: var(--welcome-text-secondary);
+    }
+
+    .welcome-btn-secondary:hover {
+        background: var(--welcome-text-secondary);
+        color: var(--welcome-text-white);
+        border-color: var(--welcome-text-secondary);
+    }
+
+    .welcome-features {
+        margin-top: 4rem;
+        text-align: center;
+    }
+
+    .welcome-features h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--welcome-text-primary);
+        margin-bottom: 2rem;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
+        background: var(--welcome-card-bg);
+        border-radius: var(--welcome-radius-xl);
+        padding: 2rem;
+        box-shadow: var(--welcome-shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        transition: var(--welcome-transition);
+        text-align: left;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--welcome-shadow-xl);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        color: var(--welcome-primary);
+        margin-bottom: 1rem;
+    }
+
+    .feature-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--welcome-text-primary);
+        margin-bottom: 0.75rem;
+    }
+
+    .feature-description {
+        color: var(--welcome-text-secondary);
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .welcome-navbar-toggle {
+            display: flex;
+        }
+
+        .welcome-navbar-menu {
+            display: none;
+        }
+
+        .welcome-navbar-menu.active {
+            display: flex;
+        }
+
+        .welcome-hero {
+            padding: 1rem;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1rem;
+        }
+
+        .welcome-stats {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .welcome-stat-card {
+            padding: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+        }
+
+        .welcome-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .welcome-btn {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .welcome-title {
+            font-size: 2rem;
+        }
+
+        .welcome-logo {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+
+        .welcome-stat-card {
+            padding: 1rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+        }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .welcome-content,
+    .welcome-stat-card,
+    .welcome-btn,
+    .feature-card {
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .welcome-stat-card:nth-child(1) { animation-delay: 0.2s; }
+    .welcome-stat-card:nth-child(2) { animation-delay: 0.4s; }
+    .welcome-stat-card:nth-child(3) { animation-delay: 0.6s; }
+    .welcome-stat-card:nth-child(4) { animation-delay: 0.8s; }
+
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.2s; }
+    .feature-card:nth-child(3) { animation-delay: 0.3s; }
+    .feature-card:nth-child(4) { animation-delay: 0.4s; }
+    .feature-card:nth-child(5) { animation-delay: 0.5s; }
+    .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+    /* Premium Status Indicators */
+    .welcome-indicators {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+    }
+
+    .indicator-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--welcome-radius-xl);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--welcome-text-white);
+        transition: var(--welcome-transition);
+    }
+
+    .indicator-item:hover {
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: var(--welcome-shadow-lg);
+    }
+
+    .indicator-item i {
+        color: var(--welcome-accent);
+        font-size: 1rem;
+    }
+
+    /* Scroll Indicator */
+    .welcome-scroll-indicator {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        opacity: 0.7;
+        animation: scrollBounce 2s ease-in-out infinite;
+    }
+
+    .scroll-mouse {
+        width: 24px;
+        height: 36px;
+        border: 2px solid var(--welcome-text-white);
+        border-radius: 12px;
+        position: relative;
+    }
+
+    .scroll-wheel {
+        width: 4px;
+        height: 8px;
+        background: var(--welcome-accent);
+        border-radius: 2px;
+        position: absolute;
+        top: 6px;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: scrollWheel 2s ease-in-out infinite;
+    }
+
+    .scroll-arrows {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .scroll-arrows span {
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid var(--welcome-text-white);
+        animation: scrollArrows 2s ease-in-out infinite;
+    }
+
+    .scroll-arrows span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .scroll-arrows span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes scrollBounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateX(-50%) translateY(0);
+        }
+        40% {
+            transform: translateX(-50%) translateY(-6px);
+        }
+        60% {
+            transform: translateX(-50%) translateY(-3px);
+        }
+    }
+
+    @keyframes scrollWheel {
+        0%, 100% {
+            opacity: 0;
+            transform: translateX(-50%) translateY(0);
+        }
+        50% {
+            opacity: 1;
+            transform: translateX(-50%) translateY(12px);
+        }
+    }
+
+    @keyframes scrollArrows {
+        0%, 100% {
+            opacity: 0;
+            transform: translateY(0);
+        }
+        50% {
+            opacity: 1;
+            transform: translateY(4px);
+        }
+    }
+
+    /* Responsive adjustments for indicators */
+    @media (max-width: 768px) {
+        .welcome-indicators {
+            gap: 1rem;
+        }
+
+        .indicator-item {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .welcome-scroll-indicator {
+            bottom: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .welcome-indicators {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .indicator-item {
+            width: 200px;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Premium Navigation -->
+<nav class="welcome-navbar">
+    <div class="welcome-navbar-container">
+        <div class="welcome-navbar-brand">
+            <i class="fas fa-calendar-check"></i>
+            <span>KeFS LMS</span>
+        </div>
+
+        <div class="welcome-navbar-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="welcome-navbar-menu">
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'dashboard:dashboard' %}" class="welcome-nav-link">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+
+            {% if request.user.is_superuser or request.user.is_staff %}
+            <div class="welcome-nav-dropdown">
+                <div class="welcome-nav-dropdown-toggle">
+                    <i class="fas fa-users-cog"></i>
+                    Management
+                    <i class="fas fa-chevron-down" style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+                </div>
+                <div class="welcome-nav-dropdown-menu">
+                    <a href="{% url 'dashboard:employees' %}" class="welcome-nav-dropdown-item">
+                        <i class="fas fa-users"></i>
+                        Employees
+                    </a>
+                    <a href="{% url 'dashboard:leaveslist' %}" class="welcome-nav-dropdown-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        Leave Requests
+                    </a>
+                    <a href="{% url 'dashboard:employeecreate' %}" class="welcome-nav-dropdown-item">
+                        <i class="fas fa-user-plus"></i>
+                        Add Employee
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <a href="{% url 'dashboard:createleave' %}" class="welcome-nav-link">
+                <i class="fas fa-calendar-plus"></i>
+                Apply Leave
+            </a>
+
+            <span class="welcome-user-greeting">
+                <i class="fas fa-user-circle"></i>
+                Welcome, {{ request.user.get_full_name|default:request.user.username }}
+            </span>
+
+            <a href="{% url 'accounts:logout' %}" class="welcome-nav-link">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+            {% else %}
+            <a href="{% url 'accounts:login' %}" class="welcome-nav-link welcome-nav-primary">
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </a>
+            <a href="#features" class="welcome-nav-link">
+                <i class="fas fa-star"></i>
+                Features
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<div class="welcome-hero">
+    <!-- Premium Particle Effects -->
+    <div class="welcome-particles">
+        <div class="welcome-particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="welcome-particle" style="left: 25%; animation-delay: 1.5s;"></div>
+        <div class="welcome-particle" style="left: 40%; animation-delay: 3s;"></div>
+        <div class="welcome-particle" style="left: 55%; animation-delay: 4.5s;"></div>
+        <div class="welcome-particle" style="left: 70%; animation-delay: 6s;"></div>
+        <div class="welcome-particle" style="left: 85%; animation-delay: 7.5s;"></div>
+        <div class="welcome-particle" style="left: 15%; animation-delay: 9s;"></div>
+        <div class="welcome-particle" style="left: 35%; animation-delay: 10.5s;"></div>
+        <div class="welcome-particle" style="left: 65%; animation-delay: 12s;"></div>
+        <div class="welcome-particle" style="left: 80%; animation-delay: 13.5s;"></div>
+    </div>
+
+    <!-- Elite Geometric Shapes -->
+    <div class="welcome-geometric">
+        <div class="geometric-shape circle"></div>
+        <div class="geometric-shape triangle"></div>
+        <div class="geometric-shape square"></div>
+        <div class="geometric-shape hexagon"></div>
+    </div>
+
+    <div class="welcome-content">
+        <!-- Logo -->
+        <div class="welcome-logo">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+
+        <!-- Main Title -->
+        <h1 class="welcome-title">Welcome to KeFS</h1>
+
+        <!-- Subtitle -->
+        <p class="welcome-subtitle">
+            Experience the future of leave management with our comprehensive, user-friendly platform designed to streamline HR processes and enhance employee satisfaction.
+        </p>
+
+        <!-- Premium Status Indicators -->
+        <div class="welcome-indicators">
+            <div class="indicator-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Enterprise Security</span>
+            </div>
+            <div class="indicator-item">
+                <i class="fas fa-bolt"></i>
+                <span>Lightning Fast</span>
+            </div>
+            <div class="indicator-item">
+                <i class="fas fa-mobile-alt"></i>
+                <span>Mobile Optimized</span>
+            </div>
+            <div class="indicator-item">
+                <i class="fas fa-headset"></i>
+                <span>24/7 Support</span>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="welcome-scroll-indicator">
+            <div class="scroll-mouse">
+                <div class="scroll-wheel"></div>
+            </div>
+            <div class="scroll-arrows">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Statistics Overview -->
+        <div class="welcome-stats">
+            <div class="welcome-stat-card">
+                <i class="fas fa-users stat-icon" style="color: #667eea;"></i>
+                <div class="stat-value">{{ employees.count }}</div>
+                <div class="stat-label">Total Employees</div>
+            </div>
+
+            <div class="welcome-stat-card">
+                <i class="fas fa-calendar-alt stat-icon" style="color: #f093fb;"></i>
+                <div class="stat-value">{{ leaves.count }}</div>
+                <div class="stat-label">Active Leaves</div>
+            </div>
+
+            <div class="welcome-stat-card">
+                <i class="fas fa-clock stat-icon" style="color: #4facfe;"></i>
+                <div class="stat-value">{{ pending_leaves.count|default:0 }}</div>
+                <div class="stat-label">Pending Approvals</div>
+            </div>
+
+            <div class="welcome-stat-card">
+                <i class="fas fa-check-circle stat-icon" style="color: #43e97b;"></i>
+                <div class="stat-value">{{ approved_today|default:0 }}</div>
+                <div class="stat-label">Approved Today</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="welcome-actions">
+            <a href="{% url 'dashboard:dashboard' %}" class="welcome-btn">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Go to Dashboard</span>
+            </a>
+            <a href="{% url 'dashboard:createleave' %}" class="welcome-btn welcome-btn-secondary">
+                <i class="fas fa-calendar-plus"></i>
+                <span>Apply for Leave</span>
+            </a>
+            <a href="{% url 'accounts:logout' %}" class="welcome-btn welcome-btn-secondary">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+
+        <!-- Features Section -->
+        <div id="features" class="welcome-features">
+            <h3>Why Choose KeFS Leave Management?</h3>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-rocket feature-icon"></i>
+                    <h4 class="feature-title">Lightning Fast</h4>
+                    <p class="feature-description">Streamlined processes that save time and reduce administrative burden for both employees and managers.</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt feature-icon"></i>
+                    <h4 class="feature-title">Secure & Reliable</h4>
+                    <p class="feature-description">Enterprise-grade security with data encryption, role-based access, and comprehensive audit trails.</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt feature-icon"></i>
+                    <h4 class="feature-title">Mobile Optimized</h4>
+                    <p class="feature-description">Responsive design that works perfectly on all devices, ensuring access anywhere, anytime.</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-chart-line feature-icon"></i>
+                    <h4 class="feature-title">Advanced Analytics</h4>
+                    <p class="feature-description">Comprehensive reporting and analytics to track leave patterns and organizational insights.</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-users-cog feature-icon"></i>
+                    <h4 class="feature-title">User-Friendly</h4>
+                    <p class="feature-description">Intuitive interface designed with user experience in mind, making leave management effortless.</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-headset feature-icon"></i>
+                    <h4 class="feature-title">24/7 Support</h4>
+                    <p class="feature-description">Dedicated support team available to help you maximize the system's potential and resolve issues.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced welcome animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe all animated elements
+    document.querySelectorAll('.welcome-stat-card, .welcome-btn, .feature-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(50px)';
+        el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+        observer.observe(el);
+    });
+
+    // Add click animations to buttons
+    document.querySelectorAll('.welcome-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            // Add ripple effect
+            const ripple = document.createElement('div');
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '50%';
+            ripple.style.background = 'rgba(255, 255, 255, 0.3)';
+            ripple.style.transform = 'scale(0)';
+            ripple.style.animation = 'ripple 0.6s linear';
+            ripple.style.left = '50%';
+            ripple.style.top = '50%';
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            ripple.style.marginLeft = '-10px';
+            ripple.style.marginTop = '-10px';
+
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+
+    // Add CSS for ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Dynamic particle generation
+    function createParticle() {
+        const particle = document.createElement('div');
+        particle.className = 'welcome-particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+
+        document.querySelector('.welcome-particles').appendChild(particle);
+
+        setTimeout(() => {
+            particle.remove();
+        }, 25000);
+    }
+
+    // Create new particles periodically
+    setInterval(createParticle, 3000);
+
+    // Mobile menu toggle
+    const menuToggle = document.querySelector('.welcome-navbar-toggle');
+    const menu = document.querySelector('.welcome-navbar-menu');
+
+    if (menuToggle && menu) {
+        menuToggle.addEventListener('click', function() {
+            menu.classList.toggle('active');
+            this.classList.toggle('active');
+
+            // Animate hamburger icon
+            const spans = this.querySelectorAll('span');
+            if (menu.classList.contains('active')) {
+                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                spans[1].style.opacity = '0';
+                spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+            } else {
+                spans[0].style.transform = 'none';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = 'none';
+            }
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!menuToggle.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('active');
+                menuToggle.classList.remove('active');
+                const spans = menuToggle.querySelectorAll('span');
+                spans[0].style.transform = 'none';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = 'none';
+            }
+        });
+
+        // Close menu when clicking on a link
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
+                menu.classList.remove('active');
+                menuToggle.classList.remove('active');
+                const spans = menuToggle.querySelectorAll('span');
+                spans[0].style.transform = 'none';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = 'none';
+            });
+        });
+    }
+
+    // Smooth scroll for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                const headerOffset = 100;
+                const elementPosition = target.offsetTop;
+                const offsetPosition = elementPosition - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Welcome message animation
+    setTimeout(() => {
+        if (typeof $ !== 'undefined' && $.notify) {
+            $.notify({
+                icon: 'fa fa-star',
+                title: 'Welcome to KeFS LMS!',
+                message: 'Discover the power of streamlined leave management',
+                url: '',
+                target: '_blank'
+            }, {
+                type: 'info',
+                timer: 4000,
+                placement: {
+                    from: 'top',
+                    align: 'center'
+                },
+                animate: {
+                    enter: 'animated bounceInDown',
+                    exit: 'animated bounceOutUp'
+                }
+            });
+        }
+    }, 1500);
+});
+</script>
+{% endblock %}

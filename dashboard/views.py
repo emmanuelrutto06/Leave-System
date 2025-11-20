@@ -22,17 +22,118 @@ def dashboard(request):
     user = request.user
     if not request.user.is_authenticated:
         return redirect('accounts:login')
+
+    # Get current date for filtering
+    from datetime import date, timedelta
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+
+    # Base data - always available
     employees = Employee.objects.all()
+    all_leaves = Leave.objects.all()
     leaves = Leave.objects.all_pending_leaves()
     leavey = Leave.objects.all_recommended_leaves()
     staff_leaves = Leave.objects.filter(user=user)
-    dataset['employees'] = employees
-    dataset['leaves'] = leaves
-    dataset['leavey'] = leavey
-    dataset['staff_leaves'] = staff_leaves
-    dataset['title'] = 'summary'
 
-    return render(request, 'dashboard/dashboard_index.html', dataset)
+    # Initialize default values for all variables
+    pending_leaves = Leave.objects.none()  # Empty queryset
+    approved_today = 0
+    recent_leaves = Leave.objects.none()
+    departments = Department.objects.none()
+    department_stats = []
+
+    # Employee-specific statistics (always calculated)
+    employee_leaves = Leave.objects.filter(user=user)
+    pending_staff_leaves = employee_leaves.filter(status='pending')
+    approved_staff_leaves = employee_leaves.filter(status='approved')
+    rejected_staff_leaves = employee_leaves.filter(status='rejected')
+
+    # Leave balance calculation (assuming 30 days annual leave)
+    annual_leave_days = 30
+    used_days = sum((leave.enddate - leave.startdate).days + 1
+                   for leave in approved_staff_leaves
+                   if leave.enddate and leave.startdate)
+    remaining_days = max(0, annual_leave_days - used_days)
+
+    # Calculate SVG circle values for leave balance chart
+    total_circumference = 314  # 2 * π * 50 (radius)
+    used_percentage = (used_days / annual_leave_days) if annual_leave_days > 0 else 0
+    remaining_percentage = (remaining_days / annual_leave_days) if annual_leave_days > 0 else 0
+
+    # Upcoming leaves for employees
+    upcoming_leaves = employee_leaves.filter(
+        startdate__gte=today,
+        status__in=['approved', 'pending']
+    ).order_by('startdate')[:3]
+
+    # Enhanced statistics for admin/staff
+    if request.user.is_superuser or request.user.is_staff or request.user.role == CustomUser.SUPERVISOR:
+        # Pending leaves for approval
+        pending_leaves = Leave.objects.filter(status='pending')
+
+        # Leaves approved today
+        approved_today = Leave.objects.filter(
+            status='approved',
+            updated__date=today
+        ).count()
+
+        # Recent leave activities (last 10)
+        recent_leaves = Leave.objects.all().order_by('-created')[:10]
+
+        # Department-wise statistics
+        departments = Department.objects.all()
+        department_stats = []
+        for dept in departments:
+            dept_employees = Employee.objects.filter(Department=dept)
+            dept_leaves = Leave.objects.filter(user__employee__Department=dept)
+            department_stats.append({
+                'department': dept,
+                'employee_count': dept_employees.count(),
+                'leave_count': dept_leaves.count(),
+                'pending_count': dept_leaves.filter(status='pending').count()
+            })
+
+    # Common data for all users (including welcome page)
+    dataset.update({
+        'employees': employees,
+        'leaves': leaves,
+        'leavey': leavey,
+        'staff_leaves': staff_leaves,
+        'title': 'Dashboard - KeFS Leave Management',
+        'current_date': today,
+        'total_employees': employees.count(),
+        'active_leaves': leaves.count(),
+        # Admin/Staff specific data
+        'pending_leaves': pending_leaves,
+        'approved_today': approved_today,
+        'recent_leaves': recent_leaves,
+        'departments': departments,
+        'department_stats': department_stats,
+        'total_leave_requests': all_leaves.count(),
+        'approved_leaves_count': all_leaves.filter(status='approved').count(),
+        'rejected_leaves_count': all_leaves.filter(status='rejected').count(),
+        'approved_offset': int(157 * (1 - (all_leaves.filter(status='approved').count() / all_leaves.count() if all_leaves.count() > 0 else 0))),
+        'approval_percentage': round((all_leaves.filter(status='approved').count() / all_leaves.count() * 100) if all_leaves.count() > 0 else 0, 1),
+        # Employee specific data
+        'pending_staff_leaves': pending_staff_leaves,
+        'approved_staff_leaves': approved_staff_leaves,
+        'rejected_staff_leaves': rejected_staff_leaves,
+        'annual_leave_days': annual_leave_days,
+        'used_leave_days': used_days,
+        'remaining_leave_days': remaining_days,
+        'leave_balance_circumference': total_circumference,
+        'leave_balance_used_dash': int(used_percentage * total_circumference),
+        'leave_balance_remaining_dash': int(remaining_percentage * total_circumference),
+        'upcoming_leaves': upcoming_leaves,
+    })
+
+    # Check if this is the first visit to show welcome page
+    show_welcome = request.session.get('show_welcome', True)
+    if show_welcome:
+        request.session['show_welcome'] = False
+        return render(request, 'dashboard/welcome.html', dataset)
+    else:
+        return render(request, 'dashboard/dashboard_index.html', dataset)
 
 
 from django.shortcuts import render
@@ -314,7 +415,7 @@ def employee_edit_data(request, id):
             instance = form.save(commit=False)
 
             user_id = request.POST.get('user')
-            assigned_user = User.objects.get(id=user_id)
+            assigned_user = CustomUser.objects.get(id=user_id)
             instance.user = assigned_user
 
             instance.image = request.FILES.get('image')
@@ -323,11 +424,11 @@ def employee_edit_data(request, id):
             instance.othername = request.POST.get('othername')
             instance.birthday = request.POST.get('birthday')
 
-            department_id = request.POST.get('department')
+            department_id = request.POST.get('Department')
             logger.info(f"Received department ID: {department_id}")
             try:
                 department = Department.objects.get(id=department_id)
-                instance.department = department
+                instance.Department = department
             except ObjectDoesNotExist:
                 messages.error(request, 'Department does not exist.',
                                extra_tags='alert alert-danger alert-dismissible show')
@@ -1607,6 +1708,10 @@ def view_my_leave_table(request):
     # Prepare the dataset for each user
     user_leave_data = []
     for emp in users:
+        # Skip if employee is None (no employee record exists)
+        if emp is None:
+            continue
+
         total_days_taken = Leave.get_total_days_taken(emp.user, financial_year_start, financial_year_end)
 
         # Fetch carried forward days
@@ -1654,7 +1759,7 @@ def view_my_leave_table(request):
                                  f'{data["employee"].get_full_name}: Leave days are running low. Only {data["days_remaining"]} days remaining.',
                                  extra_tags='alert alert-warning alert-dismissible show')
     else:
-        if user_leave_data[0]['days_remaining'] <= 7:
+        if user_leave_data and user_leave_data[0]['days_remaining'] <= 7:
             messages.warning(request,
                              f'Your leave days are running low. Only {user_leave_data[0]["days_remaining"]} days remaining.',
                              extra_tags='alert alert-warning alert-dismissible show')
